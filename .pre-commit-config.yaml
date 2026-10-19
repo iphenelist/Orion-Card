@@ -8,7 +8,7 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
-        files: "e_card_ms.*"
+        files: "orion_card.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-merge-conflict
       - id: check-ast
@@ -38,11 +38,11 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                e_card_ms/public/dist/.*|
+                orion_card/public/dist/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                e_card_ms/templates/includes/.*|
-                e_card_ms/public/js/lib/.*
+                orion_card/templates/includes/.*|
+                orion_card/public/js/lib/.*
             )$
 
 
@@ -55,12 +55,12 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                e_card_ms/public/dist/.*|
+                orion_card/public/dist/.*|
                 cypress/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                e_card_ms/templates/includes/.*|
-                e_card_ms/public/js/lib/.*
+                orion_card/templates/includes/.*|
+                orion_card/public/js/lib/.*
             )$
 
 ci:

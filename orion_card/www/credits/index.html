@@ -1,0 +1,234 @@
+{% extends "templates/orioncard_site_base.html" %}
+
+{% block ec_content %}
+<section class="ec-credits">
+	<div class="ec-wrap">
+		<h1 class="ec-sr" data-i18n="credits.title">Nunua credits</h1>
+
+		<div class="ec-balances" role="group" aria-label="Channel">
+			<button type="button" class="ec-balance ec-ch-sms" data-channel="SMS" aria-pressed="true">
+				<div class="ec-balance-top">
+					<span class="ec-balance-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm2.3.6 6.7 5.2 6.7-5.2H5.3Zm13.7 1.8-6.4 5a1 1 0 0 1-1.2 0L5 7.9V18.5c0 .3.2.5.5.5h13c.3 0 .5-.2.5-.5V7.9Z"/></svg>
+					</span>
+					<span>
+						<span class="ec-balance-label" data-i18n="credits.balance">Credits ulizonazo</span>
+						<span class="ec-balance-num" id="balSMS">{{ page_data.balances.sms_balance }}</span>
+						<span class="ec-balance-used"><span data-i18n="credits.used">Zilizotumika</span>: <span id="usedSMS">{{ page_data.balances.sms_used }}</span></span>
+					</span>
+				</div>
+				<div class="ec-balance-buy">
+					<span><b data-i18n="credits.buy_sms">Nunua SMS credits</b><small>1 credit = {{ page_data.currency }} {{ "{:,.0f}".format(page_data.prices.SMS) }}</small></span>
+					<span class="ec-radio" aria-hidden="true"></span>
+				</div>
+			</button>
+			<button type="button" class="ec-balance ec-ch-wa" data-channel="WhatsApp" aria-pressed="false">
+				<div class="ec-balance-top">
+					<span class="ec-balance-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.7 4.3 3.8 1.6.7 2.2.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.5-.3Z"/></svg>
+					</span>
+					<span>
+						<span class="ec-balance-label" data-i18n="credits.balance">Credits ulizonazo</span>
+						<span class="ec-balance-num" id="balWhatsApp">{{ page_data.balances.whatsapp_balance }}</span>
+						<span class="ec-balance-used"><span data-i18n="credits.used">Zilizotumika</span>: <span id="usedWhatsApp">{{ page_data.balances.whatsapp_used }}</span></span>
+					</span>
+				</div>
+				<div class="ec-balance-buy">
+					<span><b data-i18n="credits.buy_wa">Nunua WhatsApp credits</b><small>1 credit = {{ page_data.currency }} {{ "{:,.0f}".format(page_data.prices.WhatsApp) }}</small></span>
+					<span class="ec-radio" aria-hidden="true"></span>
+				</div>
+			</button>
+		</div>
+
+		<div class="ec-ch-sms" id="channelScope">
+			<h2 id="packageTitle">Chagua kifurushi cha SMS</h2>
+			<div class="ec-packages-grid" id="packageGrid" role="group" aria-labelledby="packageTitle"></div>
+
+			<div class="ec-custom ec-field">
+				<label class="ec-sr" for="customQty" data-i18n="credits.custom_label">Idadi nyingine</label>
+				<input type="number" id="customQty" min="{{ page_data.min_custom }}" step="1" inputmode="numeric">
+			</div>
+
+			<div class="ec-total">
+				<div>
+					<div class="ec-total-label" data-i18n="credits.total">Jumla ya kulipa</div>
+					<div class="ec-total-amount"><span>{{ page_data.currency }}</span><b id="totalAmount">0</b></div>
+				</div>
+				<button type="button" class="ec-btn ec-btn-primary" id="proceedBtn" disabled data-i18n="credits.proceed">Endelea kulipa</button>
+			</div>
+
+			<div class="ec-pay ec-panel" id="payPanel" hidden>
+				<div class="ec-alert" id="payAlert" role="status" aria-live="polite"></div>
+				<div id="payForm">
+					{% if page_data.online_payment %}
+					<div class="ec-field">
+						<label for="payPhone" data-i18n="credits.phone">Namba ya pesa ya simu (M-Pesa, Mixx, Airtel, HaloPesa)</label>
+						<input type="tel" id="payPhone" value="{{ user_phone }}" placeholder="07XX XXX XXX" inputmode="tel" autocomplete="tel">
+						<div class="ec-help" data-i18n="credits.phone_help">Utapokea ombi la kuweka PIN kwenye simu hii.</div>
+					</div>
+					{% else %}
+					<div class="ec-alert ec-alert-info is-shown" data-i18n="credits.manual_note">Malipo ya mtandaoni hayajawashwa bado. Ukiendelea, utapata maelekezo ya kulipa na credits zitaongezwa malipo yakithibitishwa.</div>
+					{% endif %}
+					<label class="ec-check">
+						<input type="checkbox" id="acceptCredits">
+						<span data-i18n-html="credits.accept">Nakubali kuwa credits hazirudishwi wala kubadilishwa kuwa pesa, na zinatumika kwa mujibu wa <a href="/terms" target="_blank">Vigezo na Masharti</a>.</span>
+					</label>
+					<button type="button" class="ec-btn ec-btn-primary" id="payBtn" style="width:100%" data-i18n="credits.pay">Lipa sasa</button>
+				</div>
+			</div>
+		</div>
+
+		{% if page_data.recent_purchases %}
+		<div class="ec-recent">
+			<h2 style="font-size:1.3rem;text-align:left" data-i18n="credits.recent">Manunuzi ya karibuni</h2>
+			<table>
+				{% for p in page_data.recent_purchases %}
+				<tr>
+					<td>{{ p.name }}</td>
+					<td>{{ p.channel }}</td>
+					<td>{{ "{:,}".format(p.credits) }}</td>
+					<td>{{ page_data.currency }} {{ "{:,.0f}".format(p.amount) }}</td>
+					<td>{{ p.status }}{% if p.status == "Paid" %} · <a href="/api/method/orion_card.receipts.download_receipt?doctype=Credit%20Purchase&name={{ p.name }}" data-i18n="credits.receipt">Risiti</a>{% endif %}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+		{% endif %}
+		<p class="ec-credits-back"><a href="/app/occasion" data-i18n="credits.back">Rudi kwenye matukio yangu</a></p>
+	</div>
+</section>
+{% endblock %}
+
+{% block ec_script %}
+<script>
+(function () {
+	const DATA = {{ page_data | tojson }};
+	const state = { channel: "SMS", credits: 0, pkg: null, polling: null };
+	const $ = (id) => document.getElementById(id);
+	const fmt = (n) => Math.round(n).toLocaleString("en-US");
+
+	function selectChannel(channel) {
+		state.channel = channel;
+		state.credits = 0;
+		state.pkg = null;
+		document.querySelectorAll(".ec-balance").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.channel === channel)));
+		$("channelScope").className = channel === "SMS" ? "ec-ch-sms" : "ec-ch-wa";
+		$("packageTitle").textContent = EC.t(channel === "SMS" ? "credits.pick_sms" : "credits.pick_wa");
+		$("customQty").value = "";
+		$("customQty").placeholder = EC.t("credits.custom_ph", [DATA.min_custom * 15]);
+		$("payPanel").hidden = true;
+		renderPackages();
+		renderTotal();
+	}
+
+	function renderPackages() {
+		const grid = $("packageGrid");
+		grid.innerHTML = "";
+		for (const p of DATA.packages[state.channel]) {
+			const b = document.createElement("button");
+			b.type = "button";
+			b.className = "ec-package";
+			b.setAttribute("aria-pressed", String(state.pkg === p.label));
+			b.innerHTML = `<div class="ec-package-label"></div><div class="ec-package-credits"></div><div class="ec-package-price"></div>`;
+			b.children[0].textContent = p.label;
+			b.children[1].textContent = `${fmt(p.credits)} Credits`;
+			b.children[2].textContent = `${DATA.currency} ${fmt(p.amount)}`;
+			b.addEventListener("click", () => {
+				state.pkg = p.label;
+				state.credits = p.credits;
+				$("customQty").value = p.credits;
+				renderPackages();
+				renderTotal();
+			});
+			grid.appendChild(b);
+		}
+	}
+
+	function renderTotal() {
+		const amount = state.credits * DATA.prices[state.channel];
+		$("totalAmount").textContent = fmt(amount);
+		const valid = state.credits > 0 && (state.pkg || state.credits >= DATA.min_custom);
+		$("proceedBtn").disabled = !valid;
+	}
+
+	$("customQty").addEventListener("input", (e) => {
+		state.credits = Math.max(0, parseInt(e.target.value, 10) || 0);
+		const match = DATA.packages[state.channel].find((p) => p.credits === state.credits);
+		state.pkg = match ? match.label : null;
+		renderPackages();
+		renderTotal();
+	});
+
+	document.querySelectorAll(".ec-balance").forEach((b) => b.addEventListener("click", () => selectChannel(b.dataset.channel)));
+
+	$("proceedBtn").addEventListener("click", () => {
+		$("payPanel").hidden = false;
+		$("payForm").style.display = "";
+		$("payAlert").className = "ec-alert";
+		$("payPanel").scrollIntoView({ behavior: "smooth", block: "center" });
+	});
+
+	function payAlert(kind, text) {
+		$("payAlert").className = "ec-alert is-shown ec-alert-" + kind;
+		$("payAlert").textContent = text;
+	}
+
+	$("payBtn").addEventListener("click", async () => {
+		if (!$("acceptCredits").checked) return payAlert("err", EC.t("err.credit_terms"));
+		const phoneEl = $("payPhone");
+		if (phoneEl && phoneEl.value.replace(/\D/g, "").length < 9) return payAlert("err", EC.t("err.phone"));
+		$("payBtn").disabled = true;
+		try {
+			const res = await EC.post("orion_card.api.payments.create_purchase", {
+				channel: state.channel,
+				credit_count: state.credits,
+				package: state.pkg,
+				phone: phoneEl ? phoneEl.value.trim() : null,
+				accept_terms: 1,
+			});
+			$("payForm").style.display = "none";
+			if (res.manual) {
+				payAlert("info", `${EC.t("credits.manual_ref", [res.purchase])}\n\n${res.message}`);
+				$("payAlert").style.whiteSpace = "pre-line";
+			} else {
+				payAlert("info", res.message);
+				poll(res.purchase, 0);
+			}
+		} catch (err) {
+			payAlert("err", err.message);
+		} finally {
+			$("payBtn").disabled = false;
+		}
+	});
+
+	function poll(purchase, attempt) {
+		if (attempt > 45) {
+			payAlert("info", EC.t("credits.slow", [purchase]));
+			return;
+		}
+		setTimeout(async () => {
+			try {
+				const s = await EC.get("orion_card.api.payments.get_purchase_status", { purchase });
+				if (s.status === "Paid") {
+					$("balSMS").textContent = s.balances.sms_balance;
+					$("balWhatsApp").textContent = s.balances.whatsapp_balance;
+					$("usedSMS").textContent = s.balances.sms_used;
+					$("usedWhatsApp").textContent = s.balances.whatsapp_used;
+					payAlert("ok", EC.t("credits.done", [fmt(s.credits), s.channel]));
+					return;
+				}
+				if (s.status === "Failed" || s.status === "Cancelled") {
+					payAlert("err", EC.t("credits.failed"));
+					$("payForm").style.display = "";
+					return;
+				}
+			} catch (e) { /* network blip: keep polling */ }
+			poll(purchase, attempt + 1);
+		}, 4000);
+	}
+
+	document.addEventListener("ec:lang", () => selectChannel(state.channel));
+	selectChannel("SMS");
+})();
+</script>
+{% endblock %}

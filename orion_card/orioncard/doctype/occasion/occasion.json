@@ -1,0 +1,547 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_import": 1,
+ "autoname": "field:occasion_name",
+ "creation": "2024-01-01 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "occasion_name",
+  "couple_names",
+  "occasion_date",
+  "occasion_time",
+  "col_break_1",
+  "venue_name",
+  "venue_address",
+  "venue_location",
+  "details_section",
+  "dress_code",
+  "contact_1",
+  "col_break_2",
+  "contact_2",
+  "status",
+  "assigned_user",
+  "card_tab",
+  "card_style_section",
+  "name_font_size",
+  "name_font",
+  "col_break_card_style",
+  "card_type_color",
+  "name_color",
+  "card_section",
+  "card_design",
+  "column_break_liqk",
+  "card_design_preview",
+  "card_preview_image",
+  "guests_tab",
+  "billing_section",
+  "subscription_status_html",
+  "col_break_billing",
+  "request_subscription_btn",
+  "buy_credits_btn",
+  "checkin_section",
+  "allow_reentry",
+  "table_size",
+  "column_break_kru2",
+  "gate_pin",
+  "open_gate_checkin_btn",
+  "budget_tab",
+  "budget_summary_section",
+  "total_budget",
+  "total_spent",
+  "col_break_summary_1",
+  "total_pledged",
+  "total_collected",
+  "col_break_summary_2",
+  "outstanding_pledges",
+  "funding_gap",
+  "budget_items_section",
+  "budget_items",
+  "contributors_section",
+  "contribution_deadline",
+  "col_break_contrib",
+  "payment_instructions",
+  "contributors_table_section",
+  "contributors",
+  "contributor_actions_section",
+  "import_contributors_btn",
+  "export_contributors_btn",
+  "col_break_contrib_actions_2",
+  "send_reminders_btn",
+  "guest_actions_section",
+  "generate_cards_btn",
+  "col_break_guest_actions",
+  "send_whatsapp_btn",
+  "col_break_guest_actions_2",
+  "send_sms_btn",
+  "reminders_section",
+  "reminder_template",
+  "col_break_reminders",
+  "auto_reminders",
+  "reminder_interval_days",
+  "ocassion_statistics_tab",
+  "statistics_html"
+ ],
+ "fields": [
+  {
+   "description": "e.g. Abel & Jackline's Wedding, or Amani's Graduation Party",
+   "fieldname": "occasion_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Occasion Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "e.g. Abel & Jackline, or John Doe (event host/organizer)",
+   "fieldname": "couple_names",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Host / Organizer Names",
+   "reqd": 1
+  },
+  {
+   "fieldname": "occasion_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Occasion Date",
+   "reqd": 1
+  },
+  {
+   "description": "e.g. Saa 10:00 jioni, or 4:00 PM \u2014 sent exactly as typed",
+   "fieldname": "occasion_time",
+   "fieldtype": "Data",
+   "label": "Occasion Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "venue_name",
+   "fieldtype": "Data",
+   "label": "Venue Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "venue_address",
+   "fieldtype": "Small Text",
+   "label": "Venue Address"
+  },
+  {
+   "description": "Paste a Google Maps link \u2014 shown as View Location button",
+   "fieldname": "venue_location",
+   "fieldtype": "Data",
+   "label": "Venue Google Maps URL"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Occasion Details"
+  },
+  {
+   "description": "e.g. Darkblue & Gold",
+   "fieldname": "dress_code",
+   "fieldtype": "Data",
+   "label": "Dress Code"
+  },
+  {
+   "fieldname": "contact_1",
+   "fieldtype": "Data",
+   "label": "Contact 1 (Phone)"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_2",
+   "fieldtype": "Data",
+   "label": "Contact 2 (Phone)"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nActive\nCompleted"
+  },
+  {
+   "description": "The Occasion Manager who owns this occasion. Set automatically to whoever creates it; only a System Manager can change it.",
+   "fieldname": "assigned_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Assigned To",
+   "options": "User",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "card_tab",
+   "fieldtype": "Tab Break",
+   "label": "Card"
+  },
+  {
+   "fieldname": "card_style_section",
+   "fieldtype": "Section Break",
+   "label": "Card Text Style"
+  },
+  {
+   "default": "36",
+   "fieldname": "name_font_size",
+   "fieldtype": "Int",
+   "label": "Guest Name Font Size"
+  },
+  {
+   "default": "Default",
+   "fieldname": "name_font",
+   "fieldtype": "Select",
+   "label": "Name Font Style",
+   "options": "Default\nSerif\nSans-Serif"
+  },
+  {
+   "fieldname": "col_break_card_style",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "#C8960C",
+   "fieldname": "card_type_color",
+   "fieldtype": "Color",
+   "label": "Card Type Color"
+  },
+  {
+   "default": "#8B6914",
+   "fieldname": "name_color",
+   "fieldtype": "Color",
+   "label": "Guest Name Color"
+  },
+  {
+   "fieldname": "card_section",
+   "fieldtype": "Section Break",
+   "label": "Invitation Card Design"
+  },
+  {
+   "description": "Upload your Canva-exported card. The system will overlay guest name, card type, and QR code automatically.",
+   "fieldname": "card_design",
+   "fieldtype": "Attach Image",
+   "label": "Card Design (Upload PNG/JPG)"
+  },
+  {
+   "fieldname": "column_break_liqk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "card_design_preview",
+   "fieldtype": "Image",
+   "label": "Preview",
+   "options": "card_preview_image"
+  },
+  {
+   "description": "Sample composited card (guest name/type/QR badge overlaid on the design).",
+   "fieldname": "card_preview_image",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "Card Preview Image (Composited)"
+  },
+  {
+   "fieldname": "guests_tab",
+   "fieldtype": "Tab Break",
+   "label": "Subscription & Gate"
+  },
+  {
+   "fieldname": "billing_section",
+   "fieldtype": "Section Break",
+   "label": "Subscription & Credits"
+  },
+  {
+   "fieldname": "subscription_status_html",
+   "fieldtype": "HTML",
+   "label": "Subscription Status"
+  },
+  {
+   "fieldname": "col_break_billing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "request_subscription_btn",
+   "fieldtype": "Button",
+   "label": "Request Card Subscription / Lipia Kadi"
+  },
+  {
+   "fieldname": "buy_credits_btn",
+   "fieldtype": "Button",
+   "label": "Buy SMS / WhatsApp Credits"
+  },
+  {
+   "fieldname": "checkin_section",
+   "fieldtype": "Section Break",
+   "label": "Gate Check-in Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_reentry",
+   "fieldtype": "Check",
+   "label": "Allow Re-entry (QR scan twice)"
+  },
+  {
+   "default": "10",
+   "description": "How many people one TABLE card lets in. You can change it on each guest.",
+   "fieldname": "table_size",
+   "fieldtype": "Int",
+   "label": "Table Card Size (people)",
+   "non_negative": 1
+  },
+  {
+   "description": "Gate staff enter this PIN once on the check-in page before scanning. Keep it private.",
+   "fieldname": "gate_pin",
+   "fieldtype": "Data",
+   "label": "Gate PIN",
+   "read_only": 1
+  },
+  {
+   "fieldname": "open_gate_checkin_btn",
+   "fieldtype": "Button",
+   "label": "\ud83d\udeaa Open Gate Check-in Link"
+  },
+  {
+   "fieldname": "budget_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bajeti & Michango"
+  },
+  {
+   "fieldname": "budget_summary_section",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "total_budget",
+   "fieldtype": "Currency",
+   "label": "Total Budget",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_spent",
+   "fieldtype": "Currency",
+   "label": "Total Spent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_summary_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_pledged",
+   "fieldtype": "Currency",
+   "label": "Total Pledged (Ahadi)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_collected",
+   "fieldtype": "Currency",
+   "label": "Total Collected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_summary_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "outstanding_pledges",
+   "fieldtype": "Currency",
+   "label": "Outstanding Pledges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "funding_gap",
+   "fieldtype": "Currency",
+   "label": "Funding Gap (Budget \u2212 Collected)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "budget_items_section",
+   "fieldtype": "Section Break",
+   "label": "Budget"
+  },
+  {
+   "fieldname": "budget_items",
+   "fieldtype": "Table",
+   "label": "Budget Items",
+   "options": "Occasion Budget Item"
+  },
+  {
+   "description": "Everyone on this list is a guest: they get an invitation card and are checked in at the gate. Update Paid Amount as money comes in.",
+   "fieldname": "contributors_section",
+   "fieldtype": "Section Break",
+   "label": "Contributors & Guests (Wachangiaji / Wageni)"
+  },
+  {
+   "fieldname": "contribution_deadline",
+   "fieldtype": "Date",
+   "label": "Contribution Deadline"
+  },
+  {
+   "fieldname": "col_break_contrib",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "How contributors should pay, e.g. M-Pesa 07XX XXX XXX (Jina). Used in reminders as {payment_info}.",
+   "fieldname": "payment_instructions",
+   "fieldtype": "Small Text",
+   "label": "Payment Instructions"
+  },
+  {
+   "fieldname": "contributors_table_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "contributors",
+   "fieldtype": "Table",
+   "label": "Contributors / Guests",
+   "options": "Occasion Contributor"
+  },
+  {
+   "fieldname": "contributor_actions_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "import_contributors_btn",
+   "fieldtype": "Button",
+   "label": "Import Contributors (Excel/CSV)"
+  },
+  {
+   "fieldname": "export_contributors_btn",
+   "fieldtype": "Button",
+   "label": "Export Contributors (Excel)"
+  },
+  {
+   "fieldname": "col_break_contrib_actions_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "send_reminders_btn",
+   "fieldtype": "Button",
+   "label": "Send Contribution Reminders"
+  },
+  {
+   "fieldname": "guest_actions_section",
+   "fieldtype": "Section Break",
+   "label": "Invitation Cards"
+  },
+  {
+   "fieldname": "generate_cards_btn",
+   "fieldtype": "Button",
+   "label": "Generate Cards"
+  },
+  {
+   "fieldname": "col_break_guest_actions",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "send_whatsapp_btn",
+   "fieldtype": "Button",
+   "label": "Send Cards by WhatsApp"
+  },
+  {
+   "fieldname": "col_break_guest_actions_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "send_sms_btn",
+   "fieldtype": "Button",
+   "label": "Send Cards by SMS"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "reminders_section",
+   "fieldtype": "Section Break",
+   "label": "Reminder Settings"
+  },
+  {
+   "description": "Placeholders: {name} {pledged} {paid} {balance} {occasion} {date} {deadline} {payment_info} {sender}. Leave blank for the default Swahili message.",
+   "fieldname": "reminder_template",
+   "fieldtype": "Small Text",
+   "label": "Reminder Message"
+  },
+  {
+   "fieldname": "col_break_reminders",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Every N days until the deadline (or the occasion date), remind contributors who still have a balance. Uses your credits.",
+   "fieldname": "auto_reminders",
+   "fieldtype": "Check",
+   "label": "Send reminders automatically"
+  },
+  {
+   "default": "7",
+   "depends_on": "auto_reminders",
+   "fieldname": "reminder_interval_days",
+   "fieldtype": "Int",
+   "label": "Remind every (days)"
+  },
+  {
+   "fieldname": "ocassion_statistics_tab",
+   "fieldtype": "Tab Break",
+   "label": "Ocassion statistics"
+  },
+  {
+   "fieldname": "statistics_html",
+   "fieldtype": "HTML",
+   "label": "Statistics"
+  },
+  {
+   "fieldname": "column_break_kru2",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "hide_toolbar": 1,
+ "image_field": "card_design",
+ "links": [],
+ "make_attachments_public": 1,
+ "modified": "2026-10-19 11:29:59.711919",
+ "modified_by": "Administrator",
+ "module": "OrionCard",
+ "name": "Occasion",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Occasion Manager",
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "occasion_name",
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}

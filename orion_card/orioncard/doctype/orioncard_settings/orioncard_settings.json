@@ -1,0 +1,526 @@
+{
+ "actions": [],
+ "creation": "2026-09-13 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "pricing_tab",
+  "card_price_section",
+  "price_per_guest_card",
+  "col_break_pricing",
+  "currency",
+  "top_up_locked_percent",
+  "card_tiers_section",
+  "card_price_tiers",
+  "credit_price_section",
+  "enable_credit_billing",
+  "sms_credit_price",
+  "whatsapp_credit_price",
+  "col_break_credit_price",
+  "min_custom_credits",
+  "packages_section",
+  "credit_packages",
+  "sms_tab",
+  "sms_section",
+  "sms_enabled",
+  "sms_provider",
+  "rodsms_api_key",
+  "rodsms_sender_id",
+  "rodsms_base_url",
+  "check_sms_balance_btn",
+  "notify_africa_api_token",
+  "col_break_sms",
+  "notify_africa_sms_sender_id",
+  "test_sms_phone",
+  "send_test_sms_btn",
+  "whatsapp_tab",
+  "whatsapp_section",
+  "whatsapp_enabled",
+  "whatsapp_provider",
+  "whatsapp_send_card_image",
+  "wasender_api_token",
+  "col_break_whatsapp",
+  "test_whatsapp_phone",
+  "send_test_whatsapp_btn",
+  "payment_tab",
+  "payment_section",
+  "payment_enabled",
+  "gateway_provider",
+  "request_timeout",
+  "col_break_payment",
+  "base_url",
+  "poll_pending_payments",
+  "payment_keys_section",
+  "abliner_api_key",
+  "col_break_payment_keys",
+  "abliner_webhook_secret",
+  "webhook_url_preview",
+  "manual_payment_section",
+  "manual_payment_instructions",
+  "terms_tab",
+  "business_section",
+  "business_legal_name",
+  "support_email",
+  "col_break_business",
+  "support_phone",
+  "business_address",
+  "terms_version_section",
+  "terms_version",
+  "require_reacceptance",
+  "col_break_terms_version",
+  "terms_effective_date",
+  "credit_expiry_months",
+  "liability_cap_months",
+  "terms_content_section",
+  "terms_content_sw",
+  "terms_content_en",
+  "privacy_content_section",
+  "privacy_content_sw",
+  "privacy_content_en",
+  "reset_legal_text_btn"
+ ],
+ "fields": [
+  {
+   "fieldname": "pricing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pricing & Credits"
+  },
+  {
+   "fieldname": "card_price_section",
+   "fieldtype": "Section Break",
+   "label": "Card Subscription Pricing"
+  },
+  {
+   "description": "Replaced by Card Price Tiers below; kept for older subscriptions.",
+   "fieldname": "price_per_guest_card",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Price per guest card (old flat price)"
+  },
+  {
+   "fieldname": "col_break_pricing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "TZS",
+   "fieldname": "currency",
+   "fieldtype": "Data",
+   "label": "Currency"
+  },
+  {
+   "fieldname": "credit_price_section",
+   "fieldtype": "Section Break",
+   "label": "Message Credits"
+  },
+  {
+   "default": "1",
+   "description": "When off, messages are sent without deducting credits (e.g. during testing).",
+   "fieldname": "enable_credit_billing",
+   "fieldtype": "Check",
+   "label": "Charge credits for every message sent"
+  },
+  {
+   "default": "25",
+   "description": "1 SMS credit = one 160-character SMS part.",
+   "fieldname": "sms_credit_price",
+   "fieldtype": "Currency",
+   "label": "Price per SMS credit"
+  },
+  {
+   "default": "75",
+   "fieldname": "whatsapp_credit_price",
+   "fieldtype": "Currency",
+   "label": "Price per WhatsApp credit"
+  },
+  {
+   "fieldname": "col_break_credit_price",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "min_custom_credits",
+   "fieldtype": "Int",
+   "label": "Minimum custom quantity"
+  },
+  {
+   "fieldname": "packages_section",
+   "fieldtype": "Section Break",
+   "label": "Credit Packages"
+  },
+  {
+   "description": "Package price = credits × price per credit of that channel.",
+   "fieldname": "credit_packages",
+   "fieldtype": "Table",
+   "label": "Packages",
+   "options": "Credit Package"
+  },
+  {
+   "fieldname": "sms_tab",
+   "fieldtype": "Tab Break",
+   "label": "SMS Gateway"
+  },
+  {
+   "fieldname": "sms_section",
+   "fieldtype": "Section Break",
+   "label": "SMS gateway"
+  },
+  {
+   "default": "1",
+   "fieldname": "sms_enabled",
+   "fieldtype": "Check",
+   "label": "SMS sending enabled"
+  },
+  {
+   "default": "RodSMS",
+   "fieldname": "sms_provider",
+   "fieldtype": "Select",
+   "label": "Provider",
+   "options": "RodSMS\nNotify Africa"
+  },
+  {
+   "depends_on": "eval:doc.sms_provider=='Notify Africa'",
+   "description": "Bearer token for the Notify Africa SMS API account used to send SMS.",
+   "fieldname": "notify_africa_api_token",
+   "fieldtype": "Password",
+   "label": "Notify Africa API Token"
+  },
+  {
+   "fieldname": "col_break_sms",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.sms_provider=='Notify Africa'",
+   "fieldname": "notify_africa_sms_sender_id",
+   "fieldtype": "Data",
+   "label": "Notify Africa SMS Sender ID"
+  },
+  {
+   "fieldname": "test_sms_phone",
+   "fieldtype": "Data",
+   "label": "Test phone number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "send_test_sms_btn",
+   "fieldtype": "Button",
+   "label": "Send test SMS"
+  },
+  {
+   "fieldname": "whatsapp_tab",
+   "fieldtype": "Tab Break",
+   "label": "WhatsApp Gateway"
+  },
+  {
+   "fieldname": "whatsapp_section",
+   "fieldtype": "Section Break",
+   "label": "WhatsApp (WaSenderAPI)"
+  },
+  {
+   "default": "1",
+   "fieldname": "whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "WhatsApp sending enabled"
+  },
+  {
+   "default": "WaSenderAPI",
+   "fieldname": "whatsapp_provider",
+   "fieldtype": "Select",
+   "label": "Provider",
+   "options": "WaSenderAPI"
+  },
+  {
+   "default": "0",
+   "fieldname": "whatsapp_send_card_image",
+   "fieldtype": "Check",
+   "label": "Send the card image on WhatsApp",
+   "description": "Invitations go out as the card picture with the invitation text as caption. Leave off to send text with the download link only. The site must be on a public domain (https://...) so WaSenderAPI can fetch the image."
+  },
+  {
+   "description": "Bearer token for the WaSenderAPI account used to send WhatsApp messages.",
+   "fieldname": "wasender_api_token",
+   "fieldtype": "Password",
+   "label": "WaSender API Token"
+  },
+  {
+   "fieldname": "col_break_whatsapp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "test_whatsapp_phone",
+   "fieldtype": "Data",
+   "label": "Test phone number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "send_test_whatsapp_btn",
+   "fieldtype": "Button",
+   "label": "Send test WhatsApp"
+  },
+  {
+   "fieldname": "payment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payment Gateway"
+  },
+  {
+   "fieldname": "payment_section",
+   "fieldtype": "Section Break",
+   "label": "Abliner"
+  },
+  {
+   "default": "0",
+   "description": "Turn on once the Abliner API key and webhook secret are set. While off, buyers see the manual payment instructions and a System Manager marks purchases Paid.",
+   "fieldname": "payment_enabled",
+   "fieldtype": "Check",
+   "label": "Online payment enabled"
+  },
+  {
+   "default": "Abliner",
+   "fieldname": "gateway_provider",
+   "fieldtype": "Select",
+   "label": "Gateway Provider",
+   "options": "Abliner"
+  },
+  {
+   "default": "30",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request timeout (seconds)"
+  },
+  {
+   "fieldname": "col_break_payment",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "https://abliner.net/api/v1",
+   "fieldname": "base_url",
+   "fieldtype": "Data",
+   "label": "API Base URL"
+  },
+  {
+   "default": "1",
+   "description": "Asks the gateway for the status of purchases still Pending in case the webhook was missed.",
+   "fieldname": "poll_pending_payments",
+   "fieldtype": "Check",
+   "label": "Poll pending payments every 5 minutes"
+  },
+  {
+   "fieldname": "payment_keys_section",
+   "fieldtype": "Section Break",
+   "label": "API Keys"
+  },
+  {
+   "description": "Starts with tsl_live_. Sent as the Bearer token.",
+   "fieldname": "abliner_api_key",
+   "fieldtype": "Password",
+   "label": "Abliner API Key"
+  },
+  {
+   "fieldname": "col_break_payment_keys",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Starts with whsec_. Signs deposit requests and verifies incoming webhooks.",
+   "fieldname": "abliner_webhook_secret",
+   "fieldtype": "Password",
+   "label": "Abliner Webhook Secret"
+  },
+  {
+   "fieldname": "webhook_url_preview",
+   "fieldtype": "Data",
+   "is_virtual": 1,
+   "label": "Webhook URL (paste into Abliner)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "manual_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Manual Payment"
+  },
+  {
+   "description": "Shown on the Buy Credits page when online payment is off, e.g. 'Lipa kwa M-Pesa 07XX XXX XXX (Jina) kisha tuma ujumbe wa muamala.'",
+   "fieldname": "manual_payment_instructions",
+   "fieldtype": "Small Text",
+   "label": "Manual payment instructions"
+  },
+  {
+   "fieldname": "terms_tab",
+   "fieldtype": "Tab Break",
+   "label": "Terms & Privacy"
+  },
+  {
+   "fieldname": "business_section",
+   "fieldtype": "Section Break",
+   "label": "Business Details (used in the Terms)"
+  },
+  {
+   "fieldname": "business_legal_name",
+   "fieldtype": "Data",
+   "label": "Business legal name"
+  },
+  {
+   "fieldname": "support_email",
+   "fieldtype": "Data",
+   "label": "Support email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "col_break_business",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "support_phone",
+   "fieldtype": "Data",
+   "label": "Support phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "business_address",
+   "fieldtype": "Small Text",
+   "label": "Business address"
+  },
+  {
+   "fieldname": "terms_version_section",
+   "fieldtype": "Section Break",
+   "label": "Version"
+  },
+  {
+   "default": "1.0",
+   "description": "Change this after editing the text below to make every Occasion Manager accept the new version.",
+   "fieldname": "terms_version",
+   "fieldtype": "Data",
+   "label": "Terms version"
+  },
+  {
+   "default": "1",
+   "fieldname": "require_reacceptance",
+   "fieldtype": "Check",
+   "label": "Require users to accept a new version"
+  },
+  {
+   "fieldname": "col_break_terms_version",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "terms_effective_date",
+   "fieldtype": "Date",
+   "label": "Effective date"
+  },
+  {
+   "default": "0",
+   "description": "0 = credits never expire. Shown in the Terms.",
+   "fieldname": "credit_expiry_months",
+   "fieldtype": "Int",
+   "label": "Credits expire after (months)"
+  },
+  {
+   "default": "3",
+   "fieldname": "liability_cap_months",
+   "fieldtype": "Int",
+   "label": "Liability cap (months of fees)"
+  },
+  {
+   "fieldname": "terms_content_section",
+   "fieldtype": "Section Break",
+   "label": "Terms & Conditions"
+  },
+  {
+   "fieldname": "terms_content_sw",
+   "fieldtype": "Text Editor",
+   "label": "Vigezo na Masharti (Kiswahili)"
+  },
+  {
+   "fieldname": "terms_content_en",
+   "fieldtype": "Text Editor",
+   "label": "Terms & Conditions (English)"
+  },
+  {
+   "fieldname": "privacy_content_section",
+   "fieldtype": "Section Break",
+   "label": "Privacy Policy"
+  },
+  {
+   "fieldname": "privacy_content_sw",
+   "fieldtype": "Text Editor",
+   "label": "Sera ya Faragha (Kiswahili)"
+  },
+  {
+   "fieldname": "privacy_content_en",
+   "fieldtype": "Text Editor",
+   "label": "Privacy Policy (English)"
+  },
+  {
+   "fieldname": "reset_legal_text_btn",
+   "fieldtype": "Button",
+   "label": "Restore default Terms & Privacy text"
+  },
+  {
+   "description": "Each card is priced by its number on the Occasion: e.g. cards 1–100 at 900, cards 101 and up at 1,200. Profit is internal; the SMS/WhatsApp credits are added to the customer's account when the subscription is approved.",
+   "fieldname": "card_price_tiers",
+   "fieldtype": "Table",
+   "label": "Card Price Tiers",
+   "options": "Card Price Tier"
+  },
+  {
+   "fieldname": "card_tiers_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "20",
+   "description": "When a customer adds guests later, up to this % of the cards they already paid for keep their earlier rate. The rest pay the normal tier price.",
+   "fieldname": "top_up_locked_percent",
+   "fieldtype": "Int",
+   "label": "Extra guests at previous rate (%)"
+  },
+  {
+   "depends_on": "eval:doc.sms_provider=='RodSMS'",
+   "description": "From the RodSMS dashboard → API keys (starts with rodsms_live_). Needs the sms:send permission, plus sms:read for the balance button.",
+   "fieldname": "rodsms_api_key",
+   "fieldtype": "Password",
+   "label": "RodSMS API Key"
+  },
+  {
+   "depends_on": "eval:doc.sms_provider=='RodSMS'",
+   "description": "One of your approved Sender IDs (max 11 letters/digits), e.g. ORIONCARD.",
+   "fieldname": "rodsms_sender_id",
+   "fieldtype": "Data",
+   "label": "RodSMS Sender ID"
+  },
+  {
+   "default": "https://rodsms.com/api/v1",
+   "depends_on": "eval:doc.sms_provider=='RodSMS'",
+   "fieldname": "rodsms_base_url",
+   "fieldtype": "Data",
+   "label": "RodSMS API Base URL"
+  },
+  {
+   "depends_on": "eval:doc.sms_provider=='RodSMS'",
+   "fieldname": "check_sms_balance_btn",
+   "fieldtype": "Button",
+   "label": "Check RodSMS balance & Sender IDs"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-19 13:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "OrionCard",
+ "name": "OrionCard Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

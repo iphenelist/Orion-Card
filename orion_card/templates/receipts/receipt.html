@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<title>Risiti {{ receipt_no }}</title>
+<style>
+	/* Rendered by wkhtmltopdf (old WebKit): tables, no flex/grid. */
+	@page { size: A5; margin: 0; }
+	body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; color: #1a1d2e; font-size: 11px; }
+	.pindo { height: 10px; background: #1b2559; border-bottom: 4px solid #f2b705; }
+	.page { padding: 26px 30px 20px; }
+	table { width: 100%; border-collapse: collapse; }
+	.brand { font-family: Georgia, serif; font-size: 24px; color: #1b2559; }
+	.brand-mark { display: inline-block; width: 18px; height: 18px; background: #f2b705; border: 4px solid #1b2559; border-radius: 4px; vertical-align: -5px; margin-right: 6px; }
+	.muted { color: #5b6078; }
+	.right { text-align: right; }
+	.title { font-family: Georgia, serif; font-size: 20px; color: #1b2559; margin: 0; }
+	.paid { display: inline-block; margin-top: 6px; padding: 4px 12px; border: 2px solid #1e7a54; color: #1e7a54; border-radius: 14px; font-weight: bold; letter-spacing: 1px; font-size: 11px; }
+	.meta td { padding: 2px 0; vertical-align: top; }
+	.box { margin-top: 18px; background: #eef0f7; border-radius: 8px; padding: 10px 12px; }
+	.items { margin-top: 18px; }
+	.items th { text-align: left; font-size: 10px; color: #5b6078; border-bottom: 1.5px solid #1b2559; padding: 6px 4px; }
+	.items td { padding: 8px 4px; border-bottom: 1px solid #d9dcea; vertical-align: top; }
+	.items .num { text-align: right; white-space: nowrap; }
+	.total td { border-bottom: 0; padding-top: 12px; font-size: 14px; }
+	.total .amount { font-family: Georgia, serif; font-size: 20px; color: #1b2559; }
+	.note { margin-top: 16px; font-size: 10px; color: #5b6078; line-height: 1.5; }
+	.foot { margin-top: 22px; padding-top: 10px; border-top: 1px solid #d9dcea; font-size: 9.5px; color: #5b6078; text-align: center; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="pindo"></div>
+<div class="page">
+	<table>
+		<tr>
+			<td style="vertical-align: top;">
+				<div class="brand"><span class="brand-mark"></span>OrionCard</div>
+				<div class="muted" style="margin-top: 6px; line-height: 1.5;">
+					{{ business_name }}{% if business_address %}<br>{{ business_address }}{% endif %}
+					{% if support_phone %}<br>{{ support_phone }}{% endif %}{% if support_email %} · {{ support_email }}{% endif %}
+				</div>
+			</td>
+			<td class="right" style="vertical-align: top;">
+				<p class="title">Risiti / Receipt</p>
+				<div class="paid">IMELIPWA · PAID</div>
+			</td>
+		</tr>
+	</table>
+
+	<table class="meta" style="margin-top: 18px;">
+		<tr>
+			<td style="width: 55%;">
+				<div class="muted">Kwa / Billed to</div>
+				<div style="font-weight: bold; font-size: 12px; margin-top: 2px;">{{ customer_name }}</div>
+				{% if customer_phone %}<div>{{ customer_phone }}</div>{% endif %}
+				{% if customer_email %}<div>{{ customer_email }}</div>{% endif %}
+			</td>
+			<td class="right">
+				<div><span class="muted">Namba / No.</span> <b>{{ receipt_no }}</b></div>
+				<div><span class="muted">Tarehe / Date</span> {{ receipt_date }}</div>
+				{% if occasion %}<div><span class="muted">Tukio / Event</span> {{ occasion }}</div>{% endif %}
+			</td>
+		</tr>
+	</table>
+
+	<table class="items">
+		<thead>
+			<tr>
+				<th>Maelezo / Description</th>
+				<th class="num">Idadi / Qty</th>
+				<th class="num">Bei / Rate</th>
+				<th class="num">Jumla / Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for item in items %}
+			<tr>
+				<td>{{ item.description }}{% if item.detail %}<div class="muted" style="margin-top: 2px;">{{ item.detail }}</div>{% endif %}</td>
+				<td class="num">{{ "{:,}".format(item.qty) }}</td>
+				<td class="num">{{ money(item.rate) }}</td>
+				<td class="num">{{ money(item.amount) }}</td>
+			</tr>
+			{% endfor %}
+			<tr class="total">
+				<td colspan="3" class="right"><b>Jumla imelipwa / Total paid</b></td>
+				<td class="num amount">{{ money(total) }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="box">
+		<table>
+			<tr>
+				<td><span class="muted">Njia ya malipo / Paid via</span><br><b>{{ payment_method }}</b></td>
+				{% if payment_reference %}<td><span class="muted">Kumbukumbu / Reference</span><br><b>{{ payment_reference }}</b></td>{% endif %}
+				{% if included %}<td><span class="muted">Imejumuisha / Includes</span><br><b>{{ included }}</b></td>{% endif %}
+			</tr>
+		</table>
+	</div>
+
+	<div class="note">
+		Credits zimeongezwa kwenye akaunti yako na hazirudishwi wala kubadilishwa kuwa fedha.
+		Credits have been added to your account and are non-refundable.
+		Vigezo na Masharti / Terms: {{ terms_url }}
+	</div>
+
+	<div class="foot">
+		Asante kwa kutumia OrionCard! · Thank you for using OrionCard!<br>
+		Risiti hii imetengenezwa na mfumo na ni halali bila sahihi. / This receipt is system-generated and valid without a signature.
+	</div>
+</div>
+</body>
+</html>

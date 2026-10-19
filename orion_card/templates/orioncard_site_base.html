@@ -1,0 +1,89 @@
+{% extends "templates/base.html" %}
+
+{%- block title -%}{{ title or "OrionCard" }}{%- endblock -%}
+
+{%- block head_include %}
+<meta name="description" content="Kadi za mwaliko za kidijitali, michango, bajeti na ukaguzi wa wageni getini — kwa matukio ya Tanzania.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css?v={{ asset_version("css/orioncard_site.css") }}">
+<script>
+	window.EC_CSRF = {{ (frappe.session.csrf_token or "") | tojson }};
+	window.EC_LOGGED_IN = {{ (frappe.session.user != "Guest") | tojson }};
+</script>
+{% endblock -%}
+
+{%- block navbar -%}
+<div class="ec ec-navwrap">
+	<header class="ec-nav" id="ecNav">
+		<div class="ec-wrap">
+			<a class="ec-logo" href="/"><span class="ec-logo-mark" aria-hidden="true"></span>OrionCard</a>
+			<button class="ec-menu-btn" id="ecMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="ecNav">
+				<span></span><span></span><span></span>
+			</button>
+			<nav class="ec-nav-links" aria-label="Main">
+				<a href="/orioncard#jinsi" data-i18n="nav.how">Jinsi inavyofanya kazi</a>
+				<a href="/orioncard#vipengele" data-i18n="nav.features">Vipengele</a>
+				<a href="/orioncard#bei" data-i18n="nav.pricing">Bei</a>
+				<a href="/orioncard#maswali" data-i18n="nav.faq">Maswali</a>
+			</nav>
+			<div class="ec-nav-actions">
+				<div class="ec-lang" role="group" aria-label="Language">
+					<button type="button" data-lang="sw" aria-pressed="true">SW</button>
+					<button type="button" data-lang="en" aria-pressed="false">EN</button>
+				</div>
+				{% if frappe.session.user != "Guest" %}
+				<a class="ec-btn ec-btn-text" href="/credits" data-i18n="nav.credits">Credits</a>
+				<a class="ec-btn ec-btn-primary" href="/app/occasion" data-i18n="nav.dashboard">Matukio yangu</a>
+				{% else %}
+				<a class="ec-btn ec-btn-text" href="/login?redirect-to=/app/occasion" data-i18n="nav.login">Ingia</a>
+				<a class="ec-btn ec-btn-primary" href="/signup" data-i18n="nav.signup">Jisajili bure</a>
+				{% endif %}
+			</div>
+		</div>
+	</header>
+</div>
+{%- endblock -%}
+
+{%- block content -%}
+<main class="ec" id="main">
+	{% block ec_content %}{% endblock %}
+</main>
+{%- endblock -%}
+
+{%- block footer -%}
+<footer class="ec ec-footer">
+	<div class="ec-wrap">
+		<div class="ec-footer-grid">
+			<div>
+				<a class="ec-logo" href="/"><span class="ec-logo-mark" aria-hidden="true"></span>OrionCard</a>
+				<p data-i18n="footer.tag">Kadi, michango na wageni wa tukio lako, mahali pamoja.</p>
+			</div>
+			<div>
+				<h3 data-i18n="footer.product">Huduma</h3>
+				<nav aria-label="Huduma">
+					<a href="/orioncard#jinsi" data-i18n="nav.how">Jinsi inavyofanya kazi</a>
+					<a href="/orioncard#bei" data-i18n="nav.pricing">Bei</a>
+					{% if frappe.session.user != "Guest" %}<a href="/app/occasion" data-i18n="nav.dashboard">Matukio yangu</a>{% else %}<a href="/signup" data-i18n="nav.signup">Jisajili bure</a>{% endif %}
+				</nav>
+			</div>
+			<div>
+				<h3 data-i18n="footer.help">Msaada</h3>
+				<nav aria-label="Msaada">
+					<a href="/orioncard#maswali" data-i18n="nav.faq">Maswali</a>
+					<a href="/terms" data-i18n="footer.terms">Vigezo na Masharti</a>
+					<a href="/privacy" data-i18n="footer.privacy">Sera ya Faragha</a>
+				</nav>
+			</div>
+		</div>
+		<div class="ec-footer-legal">© {{ frappe.utils.nowdate()[:4] }} {{ ec_business_name or "OrionCard" }}</div>
+	</div>
+</footer>
+{%- endblock -%}
+
+{%- block script %}
+{{ super() }}
+<script src="/assets/orion_card/js/orioncard_site.js?v={{ asset_version("js/orioncard_site.js") }}"></script>
+{% block ec_script %}{% endblock %}
+{%- endblock %}
