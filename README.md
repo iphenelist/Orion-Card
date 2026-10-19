@@ -1,4 +1,4 @@
-### E Card
+### OrionCard
 
 electronic card management app
 
@@ -9,7 +9,7 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch main
-bench install-app e_card_ms
+bench install-app orion_card
 ```
 
 ### Contributing
@@ -17,7 +17,7 @@ bench install-app e_card_ms
 This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
 
 ```bash
-cd apps/e_card_ms
+cd apps/orion_card
 pre-commit install
 ```
 

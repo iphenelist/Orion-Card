@@ -1,0 +1,364 @@
+{% extends "templates/orioncard_site_base.html" %}
+
+{% block ec_content %}
+{# ------------------------------------------------------------------ HERO #}
+<section class="ec-hero">
+	<div class="ec-wrap">
+		<h1 data-i18n="hero.title">Michango, kadi na wageni wa sherehe yako, bila Excel.</h1>
+		<p class="ec-lede" data-i18n="hero.lede">Rekodi kila ahadi na malipo, tuma kadi za mwaliko zenye QR code kwa SMS na WhatsApp, kisha pokea wageni getini kwa kuskani simu.</p>
+		<div class="ec-hero-ctas">
+			<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
+			<a class="ec-btn ec-btn-ghost ec-btn-lg" href="#bei" data-i18n="cta.calc">Kokotoa bei yako</a>
+		</div>
+		<p class="ec-hero-note" data-i18n="hero.note2">Kuanza ni bure. Lipa kwa M-Pesa, Mixx, Airtel au HaloPesa.</p>
+		<div class="ec-shot">
+			<img src="/assets/orion_card/images/site/contributors.webp" width="1202" height="874"
+				 alt="Orodha ya wachangiaji wa harusi ya Amina na Baraka, na hali ya malipo ya kila mmoja">
+		</div>
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ STEPS #}
+<section class="ec-section ec-band" id="jinsi">
+	<div class="ec-wrap">
+		<div class="ec-section-head">
+			<h2 data-i18n="how.title">Kutoka kikao cha kamati hadi mlangoni</h2>
+			<p class="ec-lede" data-i18n="how.lede">Hatua nne, kwenye simu au kompyuta.</p>
+		</div>
+		<ol class="ec-steps">
+			<li>
+				<h3 data-i18n="how.s1.t">Jisajili</h3>
+				<p data-i18n="how.s1.d">Fungua akaunti kwa barua pepe, kisha unda tukio lako.</p>
+			</li>
+			<li>
+				<h3 data-i18n="how.s2.t">Panga michango na bajeti</h3>
+				<p data-i18n="how.s2.d">Andika wachangiaji na ahadi zao, kisha weka walicholipa. Hali ya malipo inajihesabu yenyewe.</p>
+			</li>
+			<li>
+				<h3 data-i18n="how.s3.t">Tuma kadi</h3>
+				<p data-i18n="how.s3.d">Kila mgeni anapata kadi yenye jina lake na QR code kwa SMS au WhatsApp. Wewe unachagua nani apate.</p>
+			</li>
+			<li>
+				<h3 data-i18n="how.s4.t">Pokea wageni getini</h3>
+				<p data-i18n="how.s4.d">Mlinzi anaskani QR kwa simu. Kadi moja inaingia mara moja tu.</p>
+			</li>
+		</ol>
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ FEATURES #}
+<section class="ec-section" id="vipengele">
+	<div class="ec-wrap">
+		<div class="ec-feature">
+			<div class="ec-feature-copy">
+				<h2 data-i18n="feat.money.t">Michango na bajeti kwenye ukurasa mmoja</h2>
+				<p class="ec-lede" data-i18n="feat.money.d">Kila mchangiaji, ahadi yake, alicholipa na salio. Bajeti inaonyesha kilichopangwa, kilichotumika na pengo lililobaki.</p>
+				<ul class="ec-list">
+					<li data-i18n="feat.money.l1">Hali ya malipo inajihesabu: hajalipa, amelipa sehemu au amekamilisha</li>
+					<li data-i18n="feat.money.l2">Pakia orodha yako ya Excel, au pakua yote kwa ajili ya kamati</li>
+					<li data-i18n="feat.money.l3">Tuma vikumbusho vya michango kwa SMS au WhatsApp</li>
+				</ul>
+			</div>
+			<div class="ec-shot">
+				<img loading="lazy" src="/assets/orion_card/images/site/budget.webp" width="1202" height="950" alt="Bajeti ya harusi kwa makundi, kilichopangwa dhidi ya kilichotumika">
+			</div>
+		</div>
+
+		<div class="ec-feature ec-feature-flip">
+			<div class="ec-feature-copy">
+				<h2 data-i18n="feat.card.t">Kadi yako ya Canva, na jina la kila mgeni</h2>
+				<p class="ec-lede" data-i18n="feat.card.d">Pakia muundo wa kadi uliotengeneza. OrionCard inaongeza jina, aina ya kadi na QR code ya kila mgeni.</p>
+				<ul class="ec-list">
+					<li data-i18n="feat.card.l1">Tuma kwa SMS, au picha ya kadi yenyewe kwenye WhatsApp</li>
+					<li data-i18n="feat.card.l2">Chagua wanaopata kadi: waliokamilisha tu, au hata waliolipa sehemu</li>
+					<li data-i18n="feat.card.l3">Mgeni anathibitisha kuja kupitia link ya kadi yake</li>
+				</ul>
+			</div>
+			<div class="ec-shot">
+				<img loading="lazy" src="/assets/orion_card/images/site/card-design.webp" width="1202" height="1059" alt="Kupakia muundo wa kadi na kuona kadi ya mfano">
+			</div>
+		</div>
+
+		<div class="ec-feature">
+			<div class="ec-feature-copy">
+				<h2 data-i18n="gate.title">Getini, kila kadi inaingia mara moja</h2>
+				<p class="ec-lede" data-i18n="gate.lede">Walinzi wanafungua ukurasa wa geti kwenye simu zao na kuskani. Kadi iliyokwisha tumika inaonekana papo hapo.</p>
+				<ul class="ec-list">
+					<li data-i18n="gate.t1">Inafanya kazi kwenye simu yoyote yenye kamera</li>
+					<li data-i18n="gate.t2">PIN ya geti inazuia mtu yeyote asiye mlinzi</li>
+					<li data-i18n="gate.t3">Ona wageni wangapi wameshafika, wakati wowote</li>
+				</ul>
+			</div>
+			<div class="ec-shot">
+				<img loading="lazy" src="/assets/orion_card/images/site/stats.webp" width="1202" height="752" alt="Takwimu za wageni walioalikwa, walioingia na michango">
+			</div>
+		</div>
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ GUEST JOURNEY #}
+<section class="ec-section ec-band" id="mgeni">
+	<div class="ec-wrap">
+		<div class="ec-section-head">
+			<h2 data-i18n="guest.title">Mgeni wako anachopata</h2>
+			<p class="ec-lede" data-i18n="guest.lede">Kutoka ujumbe wa mwaliko hadi kuingia getini, kwenye simu yake.</p>
+		</div>
+		<div class="ec-phones">
+			<figure>
+				<div class="ec-phone ec-phone-card">
+					<img loading="lazy" src="/assets/orion_card/images/site/card-real.webp" width="900" height="1125" alt="Kadi ya mwaliko yenye jina la mgeni na QR code">
+				</div>
+				<figcaption><b data-i18n="guest.c1t">Mwaliko</b><span data-i18n="guest.c1">Anapokea mwaliko kwa WhatsApp au SMS</span></figcaption>
+			</figure>
+			<figure>
+				<div class="ec-phone">
+					<img loading="lazy" src="/assets/orion_card/images/site/invite-page.webp" width="780" height="1606" alt="Ukurasa wa mwaliko wa mgeni">
+				</div>
+				<figcaption><b data-i18n="guest.c2t">Kadi na kuthibitisha</b><span data-i18n="guest.c2">Anapakua kadi yake na kuthibitisha kuja</span></figcaption>
+			</figure>
+			<figure>
+				<div class="ec-phone">
+					<img loading="lazy" src="/assets/orion_card/images/site/gate.webp" width="780" height="1368" alt="Skrini ya geti ikimkaribisha mgeni">
+				</div>
+				<figcaption><b data-i18n="guest.c3t">Getini</b><span data-i18n="guest.c3">Getini, QR inaskaniwa na anakaribishwa</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ MORE #}
+<section class="ec-section">
+	<div class="ec-wrap">
+		<div class="ec-section-head">
+			<h2 data-i18n="more.title">Pia kwenye OrionCard</h2>
+		</div>
+		<div class="ec-grid">
+			<div>
+				<h3 data-i18n="more.types.t">Kadi za DOUBLE, VIP na TABLE</h3>
+				<p data-i18n="more.types.d">Kadi moja inaweza kuingiza watu wawili, au meza nzima kwa idadi unayoweka.</p>
+			</div>
+			<div>
+				<h3 data-i18n="also.auto.t">Vikumbusho vya moja kwa moja</h3>
+				<p data-i18n="also.auto.d">Chagua kila baada ya siku ngapi wenye salio wakumbushwe, hadi siku ya mwisho.</p>
+			</div>
+			<div>
+				<h3 data-i18n="also.excel.t">Pakua kwa Excel</h3>
+				<p data-i18n="also.excel.d">Pakua michango yote kwa ajili ya kamati.</p>
+			</div>
+			<div>
+				<h3 data-i18n="more.pay.t">Lipa kwa pesa ya simu</h3>
+				<p data-i18n="more.pay.d">M-Pesa, Mixx by Yas, Airtel Money na HaloPesa. Unathibitisha kwa PIN kwenye simu yako.</p>
+			</div>
+			<div>
+				<h3 data-i18n="more.receipt.t">Risiti kwa kila malipo</h3>
+				<p data-i18n="more.receipt.d">Risiti ya kadi na credits inakuja kwa WhatsApp na barua pepe.</p>
+			</div>
+			<div>
+				<h3 data-i18n="also.privacy.t">Taarifa zako ni zako</h3>
+				<p data-i18n="also.privacy.d">Ni wewe tu unayeona tukio lako. Hatuuzi taarifa za wageni.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ PRICING #}
+<section class="ec-section ec-band" id="bei">
+	<div class="ec-wrap">
+		<div class="ec-section-head">
+			<h2 data-i18n="price.title2">Bei ya wazi, kwa idadi ya wageni wako</h2>
+			<p class="ec-lede" data-i18n="price.lede2">Kuunda tukio, bajeti na michango ni bure. Unalipia kadi za wageni, na kila kadi inakuja na credits za SMS na WhatsApp.</p>
+		</div>
+
+		<div class="ec-calc">
+			<div class="ec-calc-input">
+				<label for="calcGuests" data-i18n="calc.label">Una wageni wangapi?</label>
+				<div class="ec-calc-number">
+					<input type="number" id="calcGuests" min="1" max="2000" value="120" inputmode="numeric">
+					<span data-i18n="calc.guests">wageni</span>
+				</div>
+				<input type="range" id="calcRange" min="1" max="500" value="120" aria-label="Idadi ya wageni">
+				<ul class="ec-tiers">
+					{% for tier in card_tiers %}
+					<li>
+						<b>{{ money(tier.price) }}</b>
+						<span data-i18n="{{ 'calc.tier_range' if tier.to_card else 'calc.tier_open' }}" data-i18n-args="[{{ tier.from_card }}, {{ tier.to_card or 0 }}]">{% if tier.to_card %}kwa kila kadi, wageni {{ tier.from_card }}–{{ tier.to_card }}{% else %}kwa kila kadi kuanzia mgeni wa {{ tier.from_card }}{% endif %}</span>
+						<small data-i18n="calc.tier_credits" data-i18n-args="[{{ tier.sms }}, {{ tier.whatsapp }}]">+ SMS {{ tier.sms }} na WhatsApp {{ tier.whatsapp }} kwa kila kadi</small>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="ec-calc-result" aria-live="polite">
+				<div class="ec-calc-lines" id="calcLines"></div>
+				<div class="ec-calc-total">
+					<span data-i18n="calc.total">Jumla ya kulipa</span>
+					<b><small>TZS</small><span id="calcTotal">0</span></b>
+				</div>
+				<div class="ec-calc-credits">
+					<span data-i18n="calc.included">Credits utakazopata:</span>
+					<b id="calcSms">0</b> SMS, <b id="calcWa">0</b> WhatsApp
+				</div>
+				<div class="ec-calc-topup">
+					<b data-i18n="calc.topup_t">Ukiongeza wageni baadaye</b>
+					<span data-i18n="calc.topup_d" data-i18n-args="[{{ top_up_percent }}]">Unaweza kuongeza hadi {{ top_up_percent }}% ya wageni uliowalipia kwa bei ileile uliyoanza nayo. Zaidi ya hapo, bei ya kawaida inatumika.</span>
+				</div>
+				<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="calc.cta">Anza sasa</a>
+			</div>
+		</div>
+
+		<div class="ec-howpay">
+			<h3 data-i18n="pay.title">Jinsi ya kulipa</h3>
+			<ol>
+				<li data-i18n="pay.s1">Omba kifurushi cha kadi kwenye tukio lako, au chagua credits kwenye ukurasa wa Credits.</li>
+				<li data-i18n="pay.s2">Weka namba yako ya pesa ya simu na uthibitishe kwa PIN kwenye simu yako.</li>
+				<li data-i18n="pay.s3">Malipo yakithibitishwa, credits zinaongezwa na risiti inakuja kwa WhatsApp.</li>
+			</ol>
+		</div>
+
+		{% if package_rows %}
+		<div class="ec-credit-table">
+			<h3 data-i18n="price.extra">Unahitaji ujumbe zaidi? Vifurushi vya credits</h3>
+			<div class="ec-table-scroll">
+				<table>
+					<thead>
+						<tr>
+							<th data-i18n="price.pkg">Kifurushi</th>
+							<th class="num">Credits</th>
+							<th class="num">SMS <small>({{ money(sms_price) }})</small></th>
+							<th class="num">WhatsApp <small>({{ money(whatsapp_price) }})</small></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for row in package_rows %}
+						<tr>
+							<td>{{ row.label }}</td>
+							<td class="num">{{ "{:,}".format(row.credits) }}</td>
+							<td class="num">{{ money(row.SMS) if row.SMS else "—" }}</td>
+							<td class="num">{{ money(row.WhatsApp) if row.WhatsApp else "—" }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</section>
+
+{# ------------------------------------------------------------------ FAQ #}
+<section class="ec-section" id="maswali">
+	<div class="ec-wrap ec-faq-wrap">
+		<div>
+			<h2 data-i18n="faq.title">Maswali yanayoulizwa mara nyingi</h2>
+		</div>
+		<div class="ec-faq">
+			<details>
+				<summary data-i18n="faq.q1">Je, OrionCard inapokea pesa za michango?</summary>
+				<p data-i18n="faq.a1">Hapana. Michango inalipwa moja kwa moja kwa mwandaaji. OrionCard inarekodi tu ahadi na malipo unayoingiza, ili kamati ione hali halisi.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q8">Nikiongeza wageni baada ya kulipa?</summary>
+				<p data-i18n="faq.a8" data-i18n-args="[{{ top_up_percent }}]">Unaomba kadi za ziada kwenye tukio lako. Hadi {{ top_up_percent }}% ya kadi ulizolipia zinaongezwa kwa bei ileile uliyoanza nayo; zaidi ya hapo bei ya kawaida ya idadi hiyo inatumika.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q2">Ujumbe usipofika inakuwaje?</summary>
+				<p data-i18n="faq.a2">Ujumbe uliokataliwa na mtoa huduma haukatwi credits. Ujumbe uliokubaliwa unategemea mitandao ya simu, kwa hiyo hatuwezi kudhamini kuwa kila mmoja utasomwa.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q3">Kwa nini SMS ndefu inatumia credits zaidi ya moja?</summary>
+				<p data-i18n="faq.a3">SMS moja ni herufi 160. Ujumbe mrefu zaidi hugawanywa vipande, na kila kipande ni credit 1. Emoji hupunguza kipande kuwa herufi 70. Unaona idadi ya credits kabla ya kutuma.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q4">Ninalipaje?</summary>
+				<p data-i18n="faq.a4">Kwa M-Pesa, Mixx by Yas, Airtel Money au HaloPesa. Unapokea ombi la PIN kwenye simu yako, na risiti inatumwa kwa WhatsApp malipo yakithibitishwa.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q5">Credits zinaisha muda?</summary>
+				<p data-i18n="{{ 'faq.a5_expiry' if credit_expiry_months else 'faq.a5' }}" data-i18n-args="[{{ credit_expiry_months }}]">{% if credit_expiry_months %}Ndiyo, credits ambazo hazijatumika zinaisha miezi {{ credit_expiry_months }} baada ya kununuliwa.{% else %}Hapana. Credits zinabaki kwenye akaunti yako hadi utakapozitumia, kwenye tukio lolote.{% endif %}</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q6">Intaneti ikikatika getini?</summary>
+				<p data-i18n="faq.a6">Simu ya kuskani inahitaji intaneti. Tunashauri uwe na orodha ya wageni iliyochapishwa kama akiba siku ya tukio.</p>
+			</details>
+			<details>
+				<summary data-i18n="faq.q7">Nani anaona taarifa za wageni wangu?</summary>
+				<p data-i18n-html="faq.a7">Wewe na wasimamizi wa mfumo pekee. Soma <a href="/privacy">Sera ya Faragha</a> na <a href="/terms">Vigezo na Masharti</a>, ikiwemo mapungufu ya mfumo.</p>
+			</details>
+		</div>
+	</div>
+</section>
+
+<section class="ec-section ec-band ec-cta">
+	<div class="ec-wrap">
+		<h2 data-i18n="cta.title">Anza kupanga sherehe yako leo</h2>
+		<p data-i18n="cta.lede">Kufungua akaunti ni bure. Unalipia kadi na credits unapozihitaji tu.</p>
+		<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
+	</div>
+</section>
+{% endblock %}
+
+{% block ec_script %}
+<script>
+(function () {
+	const TIERS = {{ card_tiers | tojson }};
+	const $ = (id) => document.getElementById(id);
+	const fmt = (n) => Math.round(n).toLocaleString("en-US");
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	// ---------------------------------------------------------------- price calculator
+	// Same rule as the server (orion_card.utils.pricing.quote) for a first booking.
+	function tierFor(card) {
+		return TIERS.find((t) => card >= t.from_card && (!t.to_card || card <= t.to_card)) || TIERS[TIERS.length - 1];
+	}
+	function quote(n) {
+		const lines = [];
+		for (let card = 1; card <= n; card++) {
+			const t = tierFor(card);
+			let line = lines[lines.length - 1];
+			if (!line || line.tier !== t) {
+				line = { tier: t, from: card, to: card, cards: 0 };
+				lines.push(line);
+			}
+			line.cards++;
+			line.to = card;
+		}
+		return lines;
+	}
+	let shown = 0;
+	function animateTotal(target) {
+		const start = shown, t0 = performance.now(), dur = 450;
+		const step = (now) => {
+			const k = reduceMotion ? 1 : Math.min(1, (now - t0) / dur);
+			shown = start + (target - start) * (1 - Math.pow(1 - k, 3));
+			$("calcTotal").textContent = fmt(shown);
+			if (k < 1) requestAnimationFrame(step);
+		};
+		requestAnimationFrame(step);
+	}
+	function renderCalc() {
+		if (!TIERS.length) return;
+		const n = Math.max(1, Math.min(2000, parseInt($("calcGuests").value, 10) || 1));
+		let total = 0, sms = 0, wa = 0;
+		$("calcLines").innerHTML = quote(n).map((l) => {
+			total += l.cards * l.tier.price;
+			sms += l.cards * l.tier.sms;
+			wa += l.cards * l.tier.whatsapp;
+			return `<div><span>${EC.t("calc.line", [l.from, l.to])}</span><span>${fmt(l.cards)} × ${fmt(l.tier.price)}</span><b>${fmt(l.cards * l.tier.price)}</b></div>`;
+		}).join("");
+		animateTotal(total);
+		$("calcSms").textContent = fmt(sms);
+		$("calcWa").textContent = fmt(wa);
+	}
+	$("calcGuests").addEventListener("input", () => {
+		$("calcRange").value = Math.min(500, parseInt($("calcGuests").value, 10) || 1);
+		renderCalc();
+	});
+	$("calcRange").addEventListener("input", () => {
+		$("calcGuests").value = $("calcRange").value;
+		renderCalc();
+	});
+	document.addEventListener("ec:lang", renderCalc);
+	renderCalc();
+
+})();
+</script>
+{% endblock %}

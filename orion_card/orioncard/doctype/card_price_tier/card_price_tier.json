@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "creation": "2026-10-14 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_card",
+  "to_card",
+  "price_per_card",
+  "profit_per_card",
+  "sms_credits_per_card",
+  "whatsapp_credits_per_card"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "Card number this tier starts at, e.g. 1 or 101.",
+   "fieldname": "from_card",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "From Card No.",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "description": "Last card number in this tier. 0 = no upper limit.",
+   "fieldname": "to_card",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "To Card No.",
+   "non_negative": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "price_per_card",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Price per Card",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "description": "Owner's profit. Never shown to customers.",
+   "fieldname": "profit_per_card",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Profit per Card (internal)",
+   "non_negative": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "sms_credits_per_card",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "SMS Credits per Card",
+   "non_negative": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "whatsapp_credits_per_card",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "WhatsApp Credits per Card",
+   "non_negative": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-14 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "OrionCard",
+ "name": "Card Price Tier",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
