@@ -10,7 +10,7 @@
 			<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
 			<a class="ec-btn ec-btn-ghost ec-btn-lg" href="#bei" data-i18n="cta.calc">Kokotoa bei yako</a>
 		</div>
-		<p class="ec-hero-note" data-i18n="hero.note2">Kuanza ni bure. Lipa kwa M-Pesa, Mixx, Airtel au HaloPesa.</p>
+		<p class="ec-hero-note" data-i18n="hero.note2">Kuanza ni bure. Lipa kwa Mixx, Airtel au HaloPesa.</p>
 		<div class="ec-shot">
 			<img src="/assets/orion_card/images/site/contributors.webp" width="1202" height="874"
 				 alt="Orodha ya wachangiaji wa harusi ya Amina na Baraka, na hali ya malipo ya kila mmoja">
@@ -138,8 +138,8 @@
 				<p data-i18n="more.types.d">Kadi moja inaweza kuingiza watu wawili, au meza nzima kwa idadi unayoweka.</p>
 			</div>
 			<div>
-				<h3 data-i18n="also.auto.t">Vikumbusho vya moja kwa moja</h3>
-				<p data-i18n="also.auto.d">Chagua kila baada ya siku ngapi wenye salio wakumbushwe, hadi siku ya mwisho.</p>
+				<h3 data-i18n="also.auto.t">Vikumbusho vya michango</h3>
+				<p data-i18n="also.auto.d">Wakumbushe wenye salio kwa SMS au WhatsApp kwa kubonyeza mara moja.</p>
 			</div>
 			<div>
 				<h3 data-i18n="also.excel.t">Pakua kwa Excel</h3>
@@ -147,7 +147,7 @@
 			</div>
 			<div>
 				<h3 data-i18n="more.pay.t">Lipa kwa pesa ya simu</h3>
-				<p data-i18n="more.pay.d">M-Pesa, Mixx by Yas, Airtel Money na HaloPesa. Unathibitisha kwa PIN kwenye simu yako.</p>
+				<p data-i18n="more.pay.d">Mixx by Yas, Airtel Money na HaloPesa. Unathibitisha kwa PIN kwenye simu yako.</p>
 			</div>
 			<div>
 				<h3 data-i18n="more.receipt.t">Risiti kwa kila malipo</h3>
@@ -166,7 +166,7 @@
 	<div class="ec-wrap">
 		<div class="ec-section-head">
 			<h2 data-i18n="price.title2">Bei ya wazi, kwa idadi ya wageni wako</h2>
-			<p class="ec-lede" data-i18n="price.lede2">Kuunda tukio, bajeti na michango ni bure. Unalipia kadi za wageni, na kila kadi inakuja na credits za SMS na WhatsApp.</p>
+			<p class="ec-lede" data-i18n="price.lede2">Kuunda tukio, bajeti na michango ni bure. Unalipia kadi za wageni tu.</p>
 		</div>
 
 		<div class="ec-calc">
@@ -182,7 +182,6 @@
 					<li>
 						<b>{{ money(tier.price) }}</b>
 						<span data-i18n="{{ 'calc.tier_range' if tier.to_card else 'calc.tier_open' }}" data-i18n-args="[{{ tier.from_card }}, {{ tier.to_card or 0 }}]">{% if tier.to_card %}kwa kila kadi, wageni {{ tier.from_card }}–{{ tier.to_card }}{% else %}kwa kila kadi kuanzia mgeni wa {{ tier.from_card }}{% endif %}</span>
-						<small data-i18n="calc.tier_credits" data-i18n-args="[{{ tier.sms }}, {{ tier.whatsapp }}]">+ SMS {{ tier.sms }} na WhatsApp {{ tier.whatsapp }} kwa kila kadi</small>
 					</li>
 					{% endfor %}
 				</ul>
@@ -193,13 +192,9 @@
 					<span data-i18n="calc.total">Jumla ya kulipa</span>
 					<b><small>TZS</small><span id="calcTotal">0</span></b>
 				</div>
-				<div class="ec-calc-credits">
-					<span data-i18n="calc.included">Credits utakazopata:</span>
-					<b id="calcSms">0</b> SMS, <b id="calcWa">0</b> WhatsApp
-				</div>
 				<div class="ec-calc-topup">
 					<b data-i18n="calc.topup_t">Ukiongeza wageni baadaye</b>
-					<span data-i18n="calc.topup_d" data-i18n-args="[{{ top_up_percent }}]">Unaweza kuongeza hadi {{ top_up_percent }}% ya wageni uliowalipia kwa bei ileile uliyoanza nayo. Zaidi ya hapo, bei ya kawaida inatumika.</span>
+					<span data-i18n="calc.topup_d">Wageni wa ziada wanahesabiwa baada ya kadi ulizokwisha lipia, kwa bei ya kawaida ya idadi hiyo.</span>
 				</div>
 				<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="calc.cta">Anza sasa</a>
 			</div>
@@ -208,13 +203,13 @@
 		<div class="ec-howpay">
 			<h3 data-i18n="pay.title">Jinsi ya kulipa</h3>
 			<ol>
-				<li data-i18n="pay.s1">Omba kifurushi cha kadi kwenye tukio lako, au chagua credits kwenye ukurasa wa Credits.</li>
+				<li data-i18n="pay.s1">Omba kadi za wageni kwenye tukio lako.</li>
 				<li data-i18n="pay.s2">Weka namba yako ya pesa ya simu na uthibitishe kwa PIN kwenye simu yako.</li>
-				<li data-i18n="pay.s3">Malipo yakithibitishwa, credits zinaongezwa na risiti inakuja kwa WhatsApp.</li>
+				<li data-i18n="pay.s3">Malipo yakithibitishwa, kadi zako zinafunguliwa na risiti inakuja kwa WhatsApp.</li>
 			</ol>
 		</div>
 
-		{% if package_rows %}
+		{% if allow_credit_purchase and package_rows %}
 		<div class="ec-credit-table">
 			<h3 data-i18n="price.extra">Unahitaji ujumbe zaidi? Vifurushi vya credits</h3>
 			<div class="ec-table-scroll">
@@ -257,7 +252,7 @@
 			</details>
 			<details>
 				<summary data-i18n="faq.q8">Nikiongeza wageni baada ya kulipa?</summary>
-				<p data-i18n="faq.a8" data-i18n-args="[{{ top_up_percent }}]">Unaomba kadi za ziada kwenye tukio lako. Hadi {{ top_up_percent }}% ya kadi ulizolipia zinaongezwa kwa bei ileile uliyoanza nayo; zaidi ya hapo bei ya kawaida ya idadi hiyo inatumika.</p>
+				<p data-i18n="faq.a8">Unaomba kadi za ziada kwenye tukio lako. Zinahesabiwa baada ya kadi ulizokwisha lipia, kwa bei ya kawaida ya idadi hiyo, kwa hiyo hupotezi chochote kwa kuongeza baadaye.</p>
 			</details>
 			<details>
 				<summary data-i18n="faq.q2">Ujumbe usipofika inakuwaje?</summary>
@@ -269,7 +264,7 @@
 			</details>
 			<details>
 				<summary data-i18n="faq.q4">Ninalipaje?</summary>
-				<p data-i18n="faq.a4">Kwa M-Pesa, Mixx by Yas, Airtel Money au HaloPesa. Unapokea ombi la PIN kwenye simu yako, na risiti inatumwa kwa WhatsApp malipo yakithibitishwa.</p>
+				<p data-i18n="faq.a4">Kwa Mixx by Yas, Airtel Money au HaloPesa. Unapokea ombi la PIN kwenye simu yako, na risiti inatumwa kwa WhatsApp malipo yakithibitishwa.</p>
 			</details>
 			<details>
 				<summary data-i18n="faq.q5">Credits zinaisha muda?</summary>
@@ -337,16 +332,12 @@
 	function renderCalc() {
 		if (!TIERS.length) return;
 		const n = Math.max(1, Math.min(2000, parseInt($("calcGuests").value, 10) || 1));
-		let total = 0, sms = 0, wa = 0;
+		let total = 0;
 		$("calcLines").innerHTML = quote(n).map((l) => {
 			total += l.cards * l.tier.price;
-			sms += l.cards * l.tier.sms;
-			wa += l.cards * l.tier.whatsapp;
 			return `<div><span>${EC.t("calc.line", [l.from, l.to])}</span><span>${fmt(l.cards)} × ${fmt(l.tier.price)}</span><b>${fmt(l.cards * l.tier.price)}</b></div>`;
 		}).join("");
 		animateTotal(total);
-		$("calcSms").textContent = fmt(sms);
-		$("calcWa").textContent = fmt(wa);
 	}
 	$("calcGuests").addEventListener("input", () => {
 		$("calcRange").value = Math.min(500, parseInt($("calcGuests").value, 10) || 1);

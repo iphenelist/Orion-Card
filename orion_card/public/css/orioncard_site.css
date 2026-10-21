@@ -272,14 +272,17 @@ body.ec-body {
 
 /* ---------------------------------------------------------------- footer */
 .ec-footer { border-top: 1px solid var(--oc-line); padding: 56px 0 32px; font-size: .875rem; color: var(--oc-muted); }
-.ec-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+.ec-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 32px; }
 .ec-footer p { margin: 12px 0 0; max-width: 34ch; }
 .ec-footer h3 { font-size: .875rem; font-weight: 600; margin-bottom: 12px; }
 .ec-footer nav { display: flex; flex-direction: column; gap: 8px; }
 .ec-footer nav a { text-decoration: none; }
 .ec-footer nav a:hover { color: var(--oc-ink); }
+.ec-footer-social a { display: inline-flex; align-items: center; gap: 8px; }
+.ec-footer-social svg { width: 18px; height: 18px; flex: none; }
+.ec-footer-social span { white-space: nowrap; }
 .ec-footer-legal { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--oc-line); }
-@media (max-width: 640px) { .ec-footer-grid { grid-template-columns: 1fr 1fr; } .ec-footer-grid > div:first-child { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .ec-footer-grid { grid-template-columns: 1fr 1fr; } .ec-footer-grid > div:first-child, .ec-footer-contact { grid-column: 1 / -1; } }
 
 @media (prefers-reduced-motion: reduce) { .ec * { transition: none !important; } }
 

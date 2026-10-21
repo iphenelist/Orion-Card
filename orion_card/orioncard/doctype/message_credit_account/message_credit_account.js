@@ -4,6 +4,34 @@
 frappe.ui.form.on("Message Credit Account", {
 	refresh(frm) {
 		if (frm.is_new() || !frappe.user.has_role("System Manager")) return;
+		// Customers who ran out contact OrionCard; their credits are added here.
+		frm.add_custom_button(__("Add / remove credits"), () => {
+			frappe.prompt(
+				[
+					{ fieldname: "channel", fieldtype: "Select", label: __("Credit type"), options: ["SMS", "WhatsApp"], default: "SMS", reqd: 1 },
+					{
+						fieldname: "credits", fieldtype: "Int", label: __("Credits"), reqd: 1,
+						description: __("A negative number takes credits away."),
+					},
+					{ fieldname: "remarks", fieldtype: "Small Text", label: __("Reason / note") },
+				],
+				(values) => {
+					frappe.call({
+						method: "orion_card.utils.credits.admin_adjust",
+						args: { user: frm.doc.user, ...values },
+						freeze: true,
+					}).then((r) => {
+						frappe.show_alert({
+							message: __("{0} {1} credits. New balance: {2}", [values.credits, values.channel, r.message]),
+							indicator: "green",
+						}, 7);
+						frm.reload_doc();
+					});
+				},
+				__("Add / remove credits"),
+				__("Save"),
+			);
+		});
 		frm.add_custom_button(__("Give free access & credits"), () => {
 			const d = new frappe.ui.Dialog({
 				title: __("Give free access & credits"),

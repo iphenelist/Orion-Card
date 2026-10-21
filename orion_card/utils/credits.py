@@ -9,6 +9,8 @@ Sending reserves credits first (consume) and gives them back if the gateway
 call fails (refund) — see orion_card.api.messaging.send_message.
 """
 
+import unicodedata
+
 import frappe
 from frappe import _
 from frappe.utils import cint, now_datetime
@@ -26,6 +28,11 @@ GSM7_BASIC = set(
 )
 # Extension characters cost two septets each.
 GSM7_EXTENDED = set("^{}\\[~]|€\f")
+# Common characters outside GSM 03.38 and their plain stand-ins.
+SMS_REPLACEMENTS = {
+	"\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"',
+	"\u2013": "-", "\u2014": "-", "\u2026": "...", "\u00a0": " ",
+}
 
 
 class InsufficientCreditsError(frappe.ValidationError):
@@ -34,6 +41,56 @@ class InsufficientCreditsError(frappe.ValidationError):
 
 def billing_enabled() -> bool:
 	return bool(cint(frappe.db.get_single_value("OrionCard Settings", "enable_credit_billing")))
+
+
+def purchase_enabled() -> bool:
+	"""Customers may buy credits themselves at /credits. When off, they contact
+	OrionCard and a System Manager adds credits on their Message Credit Account."""
+	return bool(cint(frappe.db.get_single_value("OrionCard Settings", "allow_credit_purchase")))
+
+
+def support_contact() -> dict:
+	"""Who customers call when their credits or invitations run out."""
+	phone, email = (
+		frappe.db.get_single_value("OrionCard Settings", field) or ""
+		for field in ("support_phone", "support_email")
+	)
+	return {"phone": phone.strip(), "email": email.strip()}
+
+
+def contact_line() -> tuple:
+	"""(Kiswahili, English) sentence telling the customer whom to contact."""
+	contact = support_contact()
+	how = contact["phone"] or contact["email"]
+	if not how:
+		return "Wasiliana na OrionCard.", "Contact OrionCard."
+	return f"Wasiliana na OrionCard: {how}.", f"Contact OrionCard: {how}."
+
+
+def out_of_credits_message(channel: str, needed: int, available: int) -> str:
+	if purchase_enabled():
+		sw, en = "Nunua credits zaidi kwenye ukurasa wa /credits.", "Buy more at /credits."
+	else:
+		sw, en = contact_line()
+		sw, en = f"{sw} Utaongezewa credits.", f"{en} They will add credits for you."
+	return _(
+		"Credits zako za {0} zimeisha: zinahitajika {1}, zimebaki {2}. {3} / "
+		"Your {0} credits have run out: {1} needed, {2} left. {4}"
+	).format(channel, needed, available, sw, en)
+
+
+def plain_sms_text(text: str) -> str:
+	"""Swap characters outside the GSM alphabet (curly quotes, dashes, accents)
+	for plain ones and drop the rest (emoji), so the SMS is billed at 160/153
+	characters per part instead of 70/67."""
+	out = []
+	for ch in text or "":
+		ch = SMS_REPLACEMENTS.get(ch, ch)
+		if all(c in GSM7_BASIC or c in GSM7_EXTENDED for c in ch):
+			out.append(ch)
+		else:
+			out.append(unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode())
+	return "".join(out)
 
 
 def sms_parts(text: str) -> int:
@@ -86,11 +143,7 @@ def ensure_balance(user: str, channel: str, needed: int):
 	available = get_balance(user, channel)
 	if available < needed:
 		frappe.throw(
-			_(
-				"Huna credits za {0} za kutosha: zinahitajika {1}, unazo {2}. "
-				"Nunua credits zaidi kwenye ukurasa wa /credits. / "
-				"Not enough {0} credits: {1} needed, {2} available. Buy more at /credits."
-			).format(channel, needed, available),
+			out_of_credits_message(channel, needed, available),
 			exc=InsufficientCreditsError,
 			title=_("Insufficient Credits"),
 		)
@@ -129,9 +182,7 @@ def _apply(user, channel, delta, transaction_type, occasion=None, reference_doct
 	new_balance = balance + delta
 	if new_balance < 0:
 		frappe.throw(
-			_("Not enough {0} credits: {1} needed, {2} available. Buy more at /credits.").format(
-				channel, -delta, balance
-			),
+			out_of_credits_message(channel, -delta, balance),
 			exc=InsufficientCreditsError,
 			title=_("Insufficient Credits"),
 		)

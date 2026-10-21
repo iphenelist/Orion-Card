@@ -77,9 +77,6 @@
   "send_sms_btn",
   "reminders_section",
   "reminder_template",
-  "col_break_reminders",
-  "auto_reminders",
-  "reminder_interval_days",
   "ocassion_statistics_tab",
   "statistics_html"
  ],
@@ -109,7 +106,7 @@
    "reqd": 1
   },
   {
-   "description": "e.g. Saa 10:00 jioni, or 4:00 PM \u2014 sent exactly as typed",
+   "description": "e.g. Saa 10:00 jioni, or 4:00 PM — sent exactly as typed",
    "fieldname": "occasion_time",
    "fieldtype": "Data",
    "label": "Occasion Time",
@@ -131,7 +128,7 @@
    "label": "Venue Address"
   },
   {
-   "description": "Paste a Google Maps link \u2014 shown as View Location button",
+   "description": "Paste a Google Maps link — shown as View Location button",
    "fieldname": "venue_location",
    "fieldtype": "Data",
    "label": "Venue Google Maps URL"
@@ -304,7 +301,7 @@
   {
    "fieldname": "open_gate_checkin_btn",
    "fieldtype": "Button",
-   "label": "\ud83d\udeaa Open Gate Check-in Link"
+   "label": "🚪 Open Gate Check-in Link"
   },
   {
    "fieldname": "budget_tab",
@@ -357,7 +354,7 @@
   {
    "fieldname": "funding_gap",
    "fieldtype": "Currency",
-   "label": "Funding Gap (Budget \u2212 Collected)",
+   "label": "Funding Gap (Budget − Collected)",
    "read_only": 1
   },
   {
@@ -428,7 +425,8 @@
   {
    "fieldname": "guest_actions_section",
    "fieldtype": "Section Break",
-   "label": "Invitation Cards"
+   "label": "Invitation Cards",
+   "description": "Each guest can get the invitation 2 times by SMS and 2 times by WhatsApp."
   },
   {
    "fieldname": "generate_cards_btn",
@@ -460,28 +458,10 @@
    "label": "Reminder Settings"
   },
   {
-   "description": "Placeholders: {name} {pledged} {paid} {balance} {occasion} {date} {deadline} {payment_info} {sender}. Leave blank for the default Swahili message.",
+   "description": "Each contributor with a balance can get 3 reminders by SMS and 3 by WhatsApp.",
    "fieldname": "reminder_template",
    "fieldtype": "Small Text",
    "label": "Reminder Message"
-  },
-  {
-   "fieldname": "col_break_reminders",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "description": "Every N days until the deadline (or the occasion date), remind contributors who still have a balance. Uses your credits.",
-   "fieldname": "auto_reminders",
-   "fieldtype": "Check",
-   "label": "Send reminders automatically"
-  },
-  {
-   "default": "7",
-   "depends_on": "auto_reminders",
-   "fieldname": "reminder_interval_days",
-   "fieldtype": "Int",
-   "label": "Remind every (days)"
   },
   {
    "fieldname": "ocassion_statistics_tab",
@@ -502,7 +482,7 @@
  "image_field": "card_design",
  "links": [],
  "make_attachments_public": 1,
- "modified": "2026-10-19 11:29:59.711919",
+ "modified": "2026-10-21 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "OrionCard",
  "name": "Occasion",

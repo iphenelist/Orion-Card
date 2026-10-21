@@ -149,6 +149,8 @@ has_permission = {
 
 website_route_rules = [
     {"from_route": "/invitee/download/occasion-card/<guest_code>", "to_route": "invitee/download/occasion-card"},
+    # Short card link used in the SMS invitation, to keep it to 2 SMS parts.
+    {"from_route": "/k/<guest_code>", "to_route": "invitee/download/occasion-card"},
     {"from_route": "/gate-checkin", "to_route": "gate-checkin"},
 ]
 
@@ -188,10 +190,6 @@ jinja = {"methods": ["orion_card.utils.assets.asset_version"]}
 
 scheduler_events = {
 	"cron": {
-		"0 * * * *": [
-			"orion_card.tasks.process_subscriptions",
-			"orion_card.tasks.process_contribution_reminders",
-		],
 		"*/5 * * * *": [
 			"orion_card.api.payments.sync_pending_purchases",
 			"orion_card.api.auth.send_pending_welcome_emails",

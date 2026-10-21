@@ -67,6 +67,10 @@ frappe.ui.form.on("Occasion", {
     },
 
     buy_credits_btn(frm) {
+        if (frm._billing && !frm._billing.allow_credit_purchase) {
+            show_contact_dialog(frm._billing.contact);
+            return;
+        }
         open_buy_credits_dialog(frm);
     },
 
@@ -289,6 +293,10 @@ function show_bulk_result(res, done_label, error_title) {
         message: `${done_label}: ${res.success} ${__("success")}, ${res.failed} ${__("failed")}`,
         indicator: res.failed > 0 ? "orange" : "green"
     });
+    if (res.credits_out) {
+        show_contact_dialog(res.contact, frappe.utils.escape_html(res.errors[res.errors.length - 1] || ""));
+        return;
+    }
     if (res.errors.length) {
         frappe.msgprint({
             title: error_title,
@@ -296,6 +304,25 @@ function show_bulk_result(res, done_label, error_title) {
             indicator: "red"
         });
     }
+}
+
+// Customers can't buy credits themselves (unless OrionCard Settings allows
+// it): when credits run out they call OrionCard, who adds them on the
+// customer's Message Credit Account.
+function show_contact_dialog(contact, reason) {
+    contact = contact || {};
+    const phone = (contact.phone || "").trim();
+    const wa = phone.replace(/\D/g, "").replace(/^0/, "255");
+    const esc = frappe.utils.escape_html;
+    let html = reason ? `<p>${reason}</p>` : `<p>${__("Ili kuongezewa credits au mialiko, wasiliana na OrionCard. / To get more credits or invitations, contact OrionCard.")}</p>`;
+    if (phone) {
+        html += `<p style="font-size:20px;font-weight:700;margin:12px 0 4px"><a href="tel:${esc(phone.replace(/\s/g, ""))}">${esc(phone)}</a></p>
+            <p><a href="https://wa.me/${wa}" target="_blank" rel="noopener">${__("Chat on WhatsApp")}</a></p>`;
+    }
+    if (contact.email) {
+        html += `<p><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></p>`;
+    }
+    frappe.msgprint({ title: __("Wasiliana na OrionCard / Contact OrionCard"), indicator: "orange", message: html });
 }
 
 function credit_line(channel, c, billing) {
@@ -309,7 +336,7 @@ function credit_line(channel, c, billing) {
 function confirm_bulk_send(frm, channel, method) {
     with_saved(frm, () => {
         let d = null;
-        let shortfall = 0;
+        let shortfall = 0, contact = null, buy_allowed = false;
         d = new frappe.ui.Dialog({
             title: __("Send Cards by {0}", [channel]),
             fields: [
@@ -318,6 +345,12 @@ function confirm_bulk_send(frm, channel, method) {
                     options: `<p class="text-muted">${__("Send the invitation card to contributors who have not received it yet and are:")}</p>`
                 },
                 ...status_fields(() => refresh_estimate()),
+                {
+                    fieldname: "resend", fieldtype: "Check", default: 0, onchange: () => refresh_estimate(),
+                    label: __("Also send again to guests already invited"),
+                    description: __("Each guest gets the {0} invitation at most {1} times.",
+                        [channel, (frm._billing && frm._billing.message_limits.Invitation) || 2])
+                },
                 { fieldname: "estimate_html", fieldtype: "HTML" }
             ],
             primary_action_label: __("Send"),
@@ -326,7 +359,8 @@ function confirm_bulk_send(frm, channel, method) {
                 if (!statuses.length) return;
                 d.hide();
                 frappe.show_alert({ message: __("Sending..."), indicator: "blue" });
-                frm.call({ method, args: { statuses }, freeze: true, freeze_message: __("Sending...") }).then(res => {
+                const args = { statuses, resend: d.get_value("resend") ? 1 : 0 };
+                frm.call({ method, args, freeze: true, freeze_message: __("Sending...") }).then(res => {
                     show_bulk_result(res.message, __("Sent"), __("{0} Errors", [channel]));
                     refresh_billing_status(frm);
                     frm.reload_doc();
@@ -345,28 +379,40 @@ function confirm_bulk_send(frm, channel, method) {
             }
             frappe.call({
                 method: "orion_card.api.messaging.estimate",
-                args: { occasion_name: frm.doc.name, channel, purpose: "Invitation", statuses }
+                args: {
+                    occasion_name: frm.doc.name, channel, purpose: "Invitation", statuses,
+                    resend: d.get_value("resend") ? 1 : 0
+                }
             }).then(r => {
                 const est = r.message;
                 const c = est.channels[channel];
+                contact = est.contact;
+                buy_allowed = est.allow_credit_purchase;
                 shortfall = c.needed - c.available;
                 d.get_primary_btn().prop("disabled", !c.messages);
                 if (!c.messages) {
-                    $out.html(`<p>${__("Everyone selected has already received a {0} invitation (or has no phone number).", [channel])}</p>`);
+                    $out.html(d.get_value("resend")
+                        ? `<p>${__("Everyone selected has received all {0} {1} invitations (or has no phone number).", [c.limit, channel])}
+                            <a href="#" class="ec-contact">${__("Need more? Contact OrionCard")}</a></p>`
+                        : `<p>${__("Everyone selected has already received a {0} invitation (or has no phone number). Tick \"Also send again\" to remind them.", [channel])}</p>`);
                     return;
                 }
                 let html = credit_line(channel, c, est.billing);
                 if (est.billing && c.needed > c.available) {
                     html += `<p style="margin-top:8px">${__("Not enough credits — only the first messages will go out.")}
-                        <a href="#" class="ec-buy-credits">${__("Buy credits")}</a></p>`;
+                        <a href="#" class="ec-buy-credits">${buy_allowed ? __("Buy credits") : __("Contact OrionCard for more credits")}</a></p>`;
                 }
                 $out.html(html);
             });
         };
-        d.$wrapper.on("click", ".ec-buy-credits", (e) => {
+        d.$wrapper.on("click", ".ec-buy-credits, .ec-contact", (e) => {
             e.preventDefault();
             d.hide();
-            open_buy_credits_dialog(frm, channel, shortfall);
+            if (buy_allowed && $(e.currentTarget).hasClass("ec-buy-credits")) {
+                open_buy_credits_dialog(frm, channel, shortfall);
+            } else {
+                show_contact_dialog(contact);
+            }
         });
         d.show();
         refresh_estimate();
@@ -511,9 +557,14 @@ function open_buy_credits_dialog(frm, channel, shortfall) {
 function open_reminder_dialog(frm, contributor_ids) {
     with_saved(frm, () => {
         let d = null;
+        const limit = (frm._billing && frm._billing.message_limits["Contribution Reminder"]) || 3;
         d = new frappe.ui.Dialog({
             title: contributor_ids ? __("Send Reminder") : __("Send Contribution Reminders"),
             fields: [
+                {
+                    fieldtype: "HTML",
+                    options: `<p class="text-muted">${__("Each contributor with a balance can get {0} reminders by SMS and {0} by WhatsApp.", [limit])}</p>`
+                },
                 {
                     fieldname: "channel", fieldtype: "Select", label: __("Send by"), default: "SMS",
                     options: "SMS\nWhatsApp\nBoth", onchange: () => refresh_estimate()
@@ -563,7 +614,10 @@ function open_reminder_dialog(frm, contributor_ids) {
             }).then(r => {
                 const est = r.message;
                 let html = "";
-                for (const [ch, c] of Object.entries(est.channels)) html += credit_line(ch, c, est.billing);
+                for (const [ch, c] of Object.entries(est.channels)) {
+                    html += c.messages ? credit_line(ch, c, est.billing)
+                        : `<div style="margin:4px 0">${ch}: ${__("everyone selected has had all {0} reminders (or has paid).", [c.limit])}</div>`;
+                }
                 if (contributor_ids) html = "";  // single-contributor send: estimate covers everyone, skip it
                 d.fields_dict.estimate_html.$wrapper.html(html);
             });
@@ -618,6 +672,10 @@ function refresh_billing_status(frm) {
     if (!field) return;
     frm.call("get_billing_status").then(r => {
         const s = r.message;
+        frm._billing = s;
+        frm.toggle_display("buy_credits_btn", s.allow_credit_purchase);
+        const more = s.allow_credit_purchase ? "" :
+            `<div class="text-muted small">${__("Need more credits?")} <a href="#" class="ec-contact">${__("Contact OrionCard")}</a></div>`;
         const pending = s.pending_requests.length
             ? `<div class="text-warning">${__("Request {0} waiting for approval", [s.pending_requests[0].name])}</div>` : "";
         apply_access(frm, s.full_access);
@@ -632,7 +690,12 @@ function refresh_billing_status(frm) {
             <div style="line-height:1.9">
                 <div>${cards}</div>${pending}
                 <div>${__("SMS credits")}: <b>${s.balances.sms_balance}</b> · ${__("WhatsApp credits")}: <b>${s.balances.whatsapp_balance}</b></div>
+                ${more}
             </div>`);
+        field.$wrapper.find(".ec-contact").on("click", (e) => {
+            e.preventDefault();
+            show_contact_dialog(s.contact);
+        });
     });
 }
 

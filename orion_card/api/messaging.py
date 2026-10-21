@@ -11,6 +11,7 @@ from frappe import _
 from frappe.utils import cint
 
 from orion_card.utils import credits
+from orion_card.utils.invites import INVITATION, REMINDER, message_limit
 
 
 def payer_for(occasion_doc) -> str:
@@ -91,7 +92,8 @@ def log_message(occasion_doc, channel, message_type, success, response, guest_co
 
 
 @frappe.whitelist()
-def estimate(occasion_name: str, channel: str, purpose: str = "Invitation", statuses: str | None = None) -> dict:
+def estimate(occasion_name: str, channel: str, purpose: str = "Invitation", statuses: str | None = None,
+			 resend=0) -> dict:
 	"""Credits a bulk send would need vs. what the payer has — shown before sending."""
 	occasion = frappe.get_doc("Occasion", occasion_name)
 	occasion.check_permission("read")
@@ -102,20 +104,29 @@ def estimate(occasion_name: str, channel: str, purpose: str = "Invitation", stat
 		from orion_card.api import sms, whatsapp
 
 		builders = {"SMS": sms.build_invitation_message, "WhatsApp": whatsapp.build_invitation_message}
-		pending = {ch: occasion.uninvited_guests(ch, statuses) for ch in channels}
+		pending = {ch: occasion.guests_to_invite(ch, statuses, resend) for ch in channels}
 		texts = {ch: [builders[ch](occasion, g) for g in pending[ch]] for ch in channels}
 	else:
 		from orion_card.api.reminders import build_reminder_message, select_contributors
 
-		rows = select_contributors(occasion, frappe.parse_json(statuses) if statuses else None)
-		texts = {ch: [build_reminder_message(occasion, c) for c in rows] for ch in channels}
+		statuses = frappe.parse_json(statuses) if statuses else None
+		texts = {
+			ch: [build_reminder_message(occasion, c, ch) for c in select_contributors(occasion, statuses, channel=ch)]
+			for ch in channels
+		}
 
 	payer = payer_for(occasion)
-	out = {"billing": credits.billing_enabled(), "channels": {}}
+	out = {
+		"billing": credits.billing_enabled(),
+		"allow_credit_purchase": credits.purchase_enabled(),
+		"contact": credits.support_contact(),
+		"channels": {},
+	}
 	for ch in channels:
 		out["channels"][ch] = {
 			"messages": len(texts[ch]),
 			"needed": sum(credits.credits_needed(ch, t) for t in texts[ch]),
 			"available": credits.get_balance(payer, ch),
+			"limit": message_limit(INVITATION if purpose == "Invitation" else REMINDER),
 		}
 	return out

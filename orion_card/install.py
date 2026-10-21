@@ -1,10 +1,20 @@
 import frappe
+from frappe.utils import cint
 
 # (from card, to card [0 = no limit], price, internal profit, SMS credits, WhatsApp credits)
 DEFAULT_CARD_TIERS = [
-    (1, 100, 900, 400, 10, 3),
-    (101, 0, 1200, 400, 14, 6),
+    (1, 100, 1200, 600, 10, 5),
+    (101, 0, 1000, 400, 10, 5),
 ]
+
+# The company behind OrionCard (Terms, receipts, website copyright) and its
+# own channels, shown in the website footer.
+WEBSITE_CONTACT = {
+    "business_legal_name": "Orion Digital Tz",
+    "website_whatsapp": "+255 703 540 517",
+    "instagram_url": "https://www.instagram.com/oriondigital_tz",
+    "tiktok_url": "https://www.tiktok.com/@oriondigitaltanzania",
+}
 
 DEFAULT_PACKAGES = [
     ("Starter", 100),
@@ -63,18 +73,20 @@ def setup_settings_defaults():
     defaults = {
         "currency": "TZS",
         "sms_credit_price": 25,
-        "whatsapp_credit_price": 75,
+        "whatsapp_credit_price": 25,
         "min_custom_credits": 10,
         "base_url": "https://abliner.net/api/v1",
         "gateway_provider": "Abliner",
         "request_timeout": 30,
         "liability_cap_months": 3,
+        **WEBSITE_CONTACT,
     }
     for field, value in defaults.items():
         if not settings.get(field):
             settings.set(field, value)
     if not _saved_before("top_up_locked_percent"):
         settings.top_up_locked_percent = 20
+    set_message_limits(settings)
     for field in ON_BY_DEFAULT:
         if not _saved_before(field):
             settings.set(field, 1)
@@ -93,6 +105,15 @@ def setup_settings_defaults():
 
     settings.flags.ignore_permissions = True
     settings.save()
+
+
+def set_message_limits(settings):
+    from orion_card.utils.invites import DEFAULT_LIMITS, LIMIT_FIELDS
+
+    # A Single saved before these fields existed stored them as 0.
+    for message_type, field in LIMIT_FIELDS.items():
+        if not cint(settings.get(field)):
+            settings.set(field, DEFAULT_LIMITS[message_type])
 
 
 def seed_card_price_tiers(settings):

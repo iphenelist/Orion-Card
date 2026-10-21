@@ -5,14 +5,16 @@ card in that range costs, how much of that is the owner's profit (internal),
 and how many SMS / WhatsApp credits the customer receives with it.
 
 A first subscription is priced card by card through the tiers ("only cards
-101+ cost more"). Top-ups may keep the rate the customer subscribed at (the
-tier of the last card of their first booking), but only for a limited number
-of cards: at most
+101+ cost less"): 250 cards = 100 x 1,200 + 150 x 1,000. Top-ups carry on
+from the cards already paid: 200 paid + 50 = 50 x 1,000.
+
+When a later tier costs more than an earlier one, top-ups may keep the rate
+the customer subscribed at (the tier of the last card of their first
+booking), but only for a limited number of cards: at most
 `top_up_locked_percent` (default 20%) of the cards already paid, counted over
 all top-ups together. Only cards that would otherwise cost more use up that
 allowance; the rest are priced by the tiers as usual.
-
-E.g. 100 cards paid at 900: +20 = 20 x 900; +30 = 20 x 900 + 10 x 1,200.
+E.g. with 900 then 1,200: 100 paid + 30 = 20 x 900 + 10 x 1,200.
 """
 
 import frappe

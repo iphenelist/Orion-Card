@@ -3,6 +3,8 @@ import requests
 
 from orion_card.api.messaging import send_message, sender_line
 from orion_card.utils.card_composer import issue_single_card
+from orion_card.utils.credits import plain_sms_text
+from orion_card.utils.invites import INVITATION, assert_within_limit
 
 NOTIFY_AFRICA_URL = "https://api.notify.africa/api/v1/api/messages/send"
 RODSMS_DEFAULT_BASE_URL = "https://rodsms.com/api/v1"
@@ -142,30 +144,52 @@ def rodsms_account_status() -> dict:
     return {"balance": balance, "sender_ids": sender_ids}
 
 
+SMS_MAX_PARTS = 2
+SMS_MAX_CHARS = SMS_MAX_PARTS * 153
+MIN_NAME_CHARS = 12
+
+
 def build_invitation_message(occasion_doc, guest_row) -> str:
-    """Build the Swahili SMS text for a guest invitation"""
+    """The Swahili SMS invitation, kept to SMS_MAX_PARTS billed parts: plain
+    GSM characters only, and a long event name, venue or guest name is cut
+    short rather than paying for a third part."""
+    names = {
+        "guest": guest_row.contributor_name or "",
+        "occasion": occasion_doc.occasion_name or "",
+        "venue": occasion_doc.venue_name or "",
+    }
+    text = _invitation_text(occasion_doc, guest_row, names)
+    for key in ("occasion", "venue", "guest"):
+        overflow = len(text) - SMS_MAX_CHARS
+        if overflow <= 0:
+            break
+        keep = max(len(names[key]) - overflow - 2, MIN_NAME_CHARS)
+        if keep < len(names[key]):
+            names[key] = names[key][:keep].rstrip() + ".."
+            text = _invitation_text(occasion_doc, guest_row, names)
+    return text
+
+
+def _invitation_text(occasion_doc, guest_row, names) -> str:
     date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
+    when = ", ".join(part for part in (date_str, occasion_doc.occasion_time) if part)
     base = frappe.utils.get_url().rstrip("/")
-    download_url = f"{base}/invitee/download/occasion-card/{guest_row.guest_code}"
-
-    dress_line = f" DRESS CODE: {occasion_doc.dress_code}." if occasion_doc.dress_code else ""
-
-    return (
-        f"Habari {guest_row.contributor_name}, Unakaribishwa kwenye {occasion_doc.occasion_name}, "
-        f"Kadi yako ni {guest_row.card_type} Na Code yako ni {guest_row.guest_code}. "
-        f"Tarehe: {date_str}, Ukumbi: {occasion_doc.venue_name}. "
-        f"MUDA: {occasion_doc.occasion_time}."
-        f"{dress_line} "
-        f"Fika na sms hii au Download card yako kwa kubonyeza link hii\n"
-        f"{download_url}\n"
-        f"{sender_line(occasion_doc)}"
-    )
+    return plain_sms_text("\n".join([
+        f"Habari {names['guest']},",
+        f"Umealikwa kwenye {names['occasion']}.",
+        f"Tarehe: {when}",
+        f"Ukumbi: {names['venue']}",
+        f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}",
+        f"Pakua kadi yako: {base}/k/{guest_row.guest_code}",
+        sender_line(occasion_doc),
+    ]))
 
 
 def send_invitation(occasion_doc, guest_row) -> dict:
     """Send the invitation text to a guest via SMS"""
     if not guest_row.phone:
         frappe.throw(f"No phone number for {guest_row.contributor_name}")
+    assert_within_limit(occasion_doc, guest_row, "SMS", INVITATION)
 
     message = build_invitation_message(occasion_doc, guest_row)
     result = send_message(

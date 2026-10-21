@@ -43,6 +43,22 @@ def make_occasion(owner=MANAGER, **kwargs):
 	return doc
 
 
+TIER_FIELDS = ("from_card", "to_card", "price_per_card", "profit_per_card",
+			   "sms_credits_per_card", "whatsapp_credits_per_card")
+# Prices that rise after card 100, so top-ups have an earlier rate worth keeping.
+RISING_TIERS = ((1, 100, 900, 400, 10, 3), (101, 0, 1200, 400, 14, 6))
+
+
+def set_card_tiers(tiers):
+	"""Replace the Card Price Tiers; returns the previous ones for cleanup."""
+	settings = frappe.get_single("OrionCard Settings")
+	previous = [tuple(row.get(f) for f in TIER_FIELDS) for row in settings.card_price_tiers]
+	settings.set("card_price_tiers", [dict(zip(TIER_FIELDS, tier)) for tier in tiers])
+	settings.flags.ignore_permissions = True
+	settings.save()
+	return previous
+
+
 def approve_subscription(occasion, guests=10):
 	sub = frappe.get_doc({
 		"doctype": "Occasion Subscription",
@@ -274,7 +290,7 @@ class IntegrationTestOccasion(IntegrationTestCase):
 		self.assertEqual(names(occasion.select_guests()), ["Full", "No Phone"], "fully paid by default")
 		self.assertEqual(names(occasion.select_guests(["Fully Paid", "Partially Paid"])), ["Full", "Part", "No Phone"])
 		self.assertEqual(names(occasion.select_guests('["Not Paid"]')), ["None"])
-		self.assertEqual(names(occasion.uninvited_guests("SMS")), ["Full"], "no phone, no message")
+		self.assertEqual(names(occasion.guests_to_invite("SMS")), ["Full"], "no phone, no message")
 
 	def test_cards_are_limited_to_the_subscription(self):
 		occasion = make_occasion()
@@ -422,6 +438,99 @@ class IntegrationTestOccasion(IntegrationTestCase):
 		self.assertEqual(send.call_count, 1)
 		self.assertIn("credits", res["errors"][0])
 
+	def test_sms_invitation_fits_two_parts(self):
+		from orion_card.api.sms import build_invitation_message
+		from orion_card.utils.credits import sms_parts
+
+		occasion = make_occasion(
+			occasion_name="Sherehe ya Kumbukumbu ya Miaka Hamsini ya Ndoa ya Mzee Abdallah na Bi. Mwanaisha 🎉",
+			venue_name="Ukumbi Mkubwa wa Mikutano wa Kimataifa wa Julius Nyerere, Barabara ya Shaaban Robert",
+			couple_names="Familia ya Mzee Abdallah “Babu” Mwinyimkuu",
+			dress_code="Kitenge",
+		)
+		guest = frappe._dict(contributor_name="Mwanahawa Abdallah Mwinyimkuu Salim", card_type="DOUBLE",
+							 guest_code="123456")
+		text = build_invitation_message(occasion, guest)
+		self.assertLessEqual(sms_parts(text), 2, text)
+		self.assertIn("/k/123456", text)
+		self.assertIn("Namba: 123456", text)
+		self.assertNotIn("Kitenge", text, "no dress code in the SMS")
+		self.assertNotIn("🎉", text)
+
+		short = build_invitation_message(make_occasion(), frappe._dict(contributor_name="Juma", card_type="SINGLE",
+																	   guest_code="654321"))
+		self.assertIn("Umealikwa kwenye Test Occasion", short, "short names are kept whole")
+
+	def test_two_invitations_per_guest_per_channel(self):
+		from orion_card.api.sms import send_single
+		from orion_card.utils.credits import add
+		from orion_card.utils.invites import MessageLimitError
+
+		occasion = make_occasion()
+		occasion.append("contributors", {"contributor_name": "Rehema", "phone": "0712000061", "paid_amount": 100,
+										 "pledged_amount": 100, "card_image": "/files/x.jpg"})
+		occasion.save()
+		approve_subscription(occasion)
+		add(MANAGER, "SMS", 20)
+		add(MANAGER, "WhatsApp", 5)
+
+		frappe.set_user(MANAGER)
+		occasion = frappe.get_doc("Occasion", occasion.name)
+		with patch("orion_card.api.messaging._gateway_send", return_value={"success": True}):
+			self.assertEqual(occasion.send_all_sms()["success"], 1)
+			self.assertEqual(occasion.send_all_sms()["success"], 0, "already invited")
+			self.assertEqual(occasion.send_all_sms(resend=1)["success"], 1, "second of 2")
+			self.assertEqual(occasion.send_all_sms(resend=1)["success"], 0, "limit reached")
+			self.assertRaises(MessageLimitError, send_single, occasion.name, occasion.contributors[0].guest_code)
+			self.assertEqual(occasion.send_all_whatsapp(resend=1)["success"], 1, "WhatsApp has its own 2")
+
+	def test_three_reminders_per_contributor_per_channel(self):
+		from orion_card.api.reminders import send_reminders
+		from orion_card.utils.credits import add
+
+		occasion = make_occasion()
+		occasion.append("contributors", {"contributor_name": "Deni", "phone": "0712000091", "pledged_amount": 50_000,
+										 "paid_amount": 10_000})
+		occasion.save()
+		approve_subscription(occasion)
+		add(MANAGER, "SMS", 30)
+		add(MANAGER, "WhatsApp", 5)
+		contributor_id = occasion.contributors[0].contributor_id
+
+		frappe.set_user(MANAGER)
+		with patch("orion_card.api.messaging._gateway_send", return_value={"success": True}):
+			sent = [send_reminders(occasion.name, "SMS")["success"] for _attempt in range(4)]
+			self.assertEqual(sent, [1, 1, 1, 0], "3 reminders, then bulk sends skip them")
+			one = send_reminders(occasion.name, "SMS", contributor_ids=[contributor_id])
+			self.assertEqual((one["success"], one["failed"]), (0, 1))
+			self.assertIn("kikomo", one["errors"][0])
+			self.assertEqual(send_reminders(occasion.name, "WhatsApp")["success"], 1, "WhatsApp has its own 3")
+		self.assertFalse(frappe.get_hooks("scheduler_events").get("cron", {}).get("0 * * * *"),
+						 "nothing is sent automatically")
+
+	def test_running_out_points_to_support_contact(self):
+		from orion_card.api.payments import create_purchase
+
+		occasion = make_occasion()
+		occasion.append("contributors", {"contributor_name": "Out", "phone": "0712000081", "paid_amount": 100,
+										 "pledged_amount": 100, "card_image": "/files/x.jpg"})
+		occasion.save()
+		approve_subscription(occasion)
+		frappe.db.set_value("Message Credit Account", MANAGER, "sms_balance", 0)
+		settings = {f: frappe.db.get_single_value("OrionCard Settings", f) for f in ("support_phone", "allow_credit_purchase")}
+		frappe.db.set_single_value("OrionCard Settings", {"support_phone": "0754 000 111", "allow_credit_purchase": 0})
+		self.addCleanup(frappe.db.set_single_value, "OrionCard Settings", settings)
+
+		frappe.set_user(MANAGER)
+		occasion = frappe.get_doc("Occasion", occasion.name)
+		with patch("orion_card.api.messaging._gateway_send", return_value={"success": True}):
+			res = occasion.send_all_sms()
+		self.assertTrue(res["credits_out"])
+		self.assertEqual(res["contact"]["phone"], "0754 000 111")
+		self.assertIn("0754 000 111", res["errors"][0])
+		self.assertNotIn("/credits", res["errors"][0])
+		self.assertRaises(frappe.ValidationError, create_purchase, "SMS", 100, accept_terms=1)
+
 	# ------------------------------------------------------------ reminders & gate
 
 	def test_reminder_message_and_selection(self):
@@ -526,14 +635,26 @@ class IntegrationTestOccasion(IntegrationTestCase):
 	# ------------------------------------------------------------ graduated card pricing
 
 	def test_graduated_card_pricing(self):
+		from orion_card.install import DEFAULT_CARD_TIERS
 		from orion_card.utils.pricing import quote
 
-		self.assertEqual(quote(1)["price"], 900)
-		self.assertEqual(quote(100)["price"], 90_000)
-		self.assertEqual(quote(101)["price"], 91_200, "only card 101 costs 1,200 — no price cliff")
+		self.addCleanup(set_card_tiers, set_card_tiers(DEFAULT_CARD_TIERS))
+		self.assertEqual(quote(1)["price"], 1200)
+		self.assertEqual(quote(100)["price"], 120_000)
+		self.assertEqual(quote(101)["price"], 121_000, "only card 101 costs 1,000 — no price cliff")
 		q = quote(120)
-		self.assertEqual((q["price"], q["profit"]), (114_000, 48_000))
-		self.assertEqual((q["sms_credits"], q["whatsapp_credits"]), (100 * 10 + 20 * 14, 100 * 3 + 20 * 6))
+		self.assertEqual((q["price"], q["profit"]), (140_000, 100 * 600 + 20 * 400))
+		self.assertEqual((q["sms_credits"], q["whatsapp_credits"]), (120 * 10, 120 * 5))
+		self.assertEqual(quote(250)["price"], 100 * 1200 + 150 * 1000)
+		# Top-ups carry on from the cards already paid; a cheaper tier has no rate to keep.
+		self.assertEqual(quote(50, already_paid=200, locked_allowance=40)["price"], 50_000, "200 paid + 50 = 50 x 1,000")
+		self.assertEqual(quote(50, already_paid=200, locked_allowance=40)["locked_cards"], 0)
+		self.assertEqual(quote(60, already_paid=60, locked_allowance=12)["price"], 40 * 1200 + 20 * 1000, "cards 61-100 at 1,200, 101-120 at 1,000")
+
+	def test_top_up_keeps_earlier_rate_when_prices_rise(self):
+		from orion_card.utils.pricing import quote
+
+		self.addCleanup(set_card_tiers, set_card_tiers(RISING_TIERS))
 		# Top-ups keep the old rate for at most `locked_allowance` cards; only
 		# cards that would otherwise cost more use the allowance.
 		self.assertEqual(quote(20, already_paid=100, locked_allowance=20)["price"], 18_000, "100 paid + 20 = 20 x 900")
@@ -545,16 +666,19 @@ class IntegrationTestOccasion(IntegrationTestCase):
 		self.assertEqual(quote(499, already_paid=1, locked_allowance=0)["price"], 99 * 900 + 400 * 1200, "no loophole via a 1-guest booking")
 
 	def test_public_quote_hides_profit(self):
+		from orion_card.install import DEFAULT_CARD_TIERS
 		from orion_card.utils.pricing import get_quote
 
+		self.addCleanup(set_card_tiers, set_card_tiers(DEFAULT_CARD_TIERS))
 		frappe.set_user("Guest")
 		q = get_quote(150)
-		self.assertEqual(q["price"], 150_000)
+		self.assertEqual(q["price"], 170_000)
 		self.assertNotIn("profit", frappe.as_json(q))
 
 	def test_subscription_price_credits_and_private_profit(self):
 		from orion_card.utils.credits import get_balance
 
+		self.addCleanup(set_card_tiers, set_card_tiers(RISING_TIERS))
 		occasion = make_occasion()
 		first = approve_subscription(occasion, guests=80)
 		self.assertEqual(first.subscription_price, 72_000)
@@ -590,8 +714,10 @@ class IntegrationTestOccasion(IntegrationTestCase):
 
 	def test_card_payment_webhook_approves_subscription(self):
 		from orion_card.api import payments
+		from orion_card.install import DEFAULT_CARD_TIERS
 		from orion_card.utils.credits import get_balance
 
+		self.addCleanup(set_card_tiers, set_card_tiers(DEFAULT_CARD_TIERS))
 		occasion = make_occasion()
 		frappe.set_user(MANAGER)
 		occasion = frappe.get_doc("Occasion", occasion.name)
@@ -606,7 +732,7 @@ class IntegrationTestOccasion(IntegrationTestCase):
 		self.assertEqual(result["status"], "success")
 		self.assertEqual(again["message"], "Already processed")
 		sub = frappe.get_doc("Occasion Subscription", req["name"])
-		self.assertEqual((sub.docstatus, sub.payment_status, sub.subscription_price), (1, "Paid", 9_000))
+		self.assertEqual((sub.docstatus, sub.payment_status, sub.subscription_price), (1, "Paid", 12_000))
 		self.assertEqual(get_balance(MANAGER, "SMS"), sms_before + 100)
 		self.assertEqual(occasion.paid_guest_capacity(), 10)
 		self.assertEqual(payments._find_payment_target("", "abl_sub_1"), ("Occasion Subscription", req["name"]))
