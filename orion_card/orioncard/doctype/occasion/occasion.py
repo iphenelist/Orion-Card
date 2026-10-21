@@ -64,15 +64,11 @@ def has_permission(doc, ptype="read", user=None):
         return True
     if ptype == "create" or doc.is_new():
         return True
-    return user in (doc.owner, _assigned_user(doc))
-
-
-def _assigned_user(doc):
-    # assigned_user is permlevel 1: when the form loads, Frappe strips it from
-    # the doc for Occasion Managers *before* checking permissions again.
-    if hasattr(doc, "assigned_user"):
-        return doc.assigned_user
-    return frappe.db.get_value("Occasion", doc.name, "assigned_user")
+    # Always check the stored values: on frm.call() the doc is rebuilt from the
+    # browser's copy, where permlevel-1 assigned_user was stripped (so it comes
+    # back as None) and owner/assigned_user could be spoofed by the client.
+    owner, assigned_user = frappe.db.get_value("Occasion", doc.name, ["owner", "assigned_user"]) or (None, None)
+    return user in (owner, assigned_user)
 
 
 class Occasion(Document):
