@@ -2,6 +2,7 @@ import frappe
 import requests
 
 from orion_card.api.messaging import send_message, sender_line
+from orion_card.utils.invites import INVITATION, assert_within_limit
 from orion_card.utils.card_composer import issue_single_card
 
 WASENDER_BASE_URL = "https://www.wasenderapi.com/api"
@@ -84,39 +85,46 @@ def send_document(phone: str, document_url: str, file_name: str, caption: str = 
 
 
 def build_invitation_message(occasion_doc, guest_row) -> str:
-    """Build the Swahili WhatsApp text message for a guest invitation"""
+    """Build the warm Swahili WhatsApp invitation (WhatsApp shows *bold* and
+    _italics_; one message costs one credit whatever its length)."""
     date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
     base = frappe.utils.get_url().rstrip("/")
     download_url = f"{base}/invitee/download/occasion-card/{guest_row.guest_code}"
-
-    contacts = ""
-    if occasion_doc.contact_1 and occasion_doc.contact_2:
-        contacts = f"{occasion_doc.contact_1} na {occasion_doc.contact_2}"
-    elif occasion_doc.contact_1:
-        contacts = occasion_doc.contact_1
+    contacts = " / ".join(c for c in (occasion_doc.contact_1, occasion_doc.contact_2) if c)
 
     lines = [
-        f"Habari {guest_row.contributor_name},",
-        f"Unakaribishwa kwenye {occasion_doc.occasion_name}.",
+        f"🎉 *Karibu sana, {guest_row.contributor_name}!*",
         "",
-        f"Kadi: {guest_row.card_type}",
-        f"Namba ya Kadi: {guest_row.guest_code}",
-        f"Tarehe: {date_str}",
-        f"Ukumbi: {occasion_doc.venue_name}",
-        f"Muda: {occasion_doc.occasion_time}",
+        f"Kwa furaha kubwa, *{occasion_doc.couple_names}* wanakualika kwa heshima kwenye",
+        f"✨ *{occasion_doc.occasion_name}* ✨",
+        "",
+        "Uwepo wako utaifanya siku hii kuwa ya kipekee zaidi. Tunatarajia sana kukuona! 💐",
+        "",
+        f"📅 *Tarehe:* {date_str}",
     ]
+    if occasion_doc.occasion_time:
+        lines.append(f"⏰ *Muda:* {occasion_doc.occasion_time}")
+    lines.append(f"📍 *Ukumbi:* {occasion_doc.venue_name}")
+    if occasion_doc.get("venue_location"):
+        lines.append(f"🗺️ *Ramani:* {occasion_doc.venue_location}")
     if occasion_doc.dress_code:
-        lines.append(f"Dress Code: {occasion_doc.dress_code}")
-    if contacts:
-        lines.append(f"Mawasiliano: {contacts}")
+        lines.append(f"👗 *Mavazi:* {occasion_doc.dress_code}")
     lines += [
         "",
-        "Fika na ujumbe huu au pakua kadi yako kwenye link hii:",
-        download_url,
+        f"🎟️ *Kadi yako:* {guest_row.card_type}",
+        f"🔢 *Namba ya kadi:* {guest_row.guest_code}",
         "",
-        sender_line(occasion_doc),
+        "📲 Pakua kadi yako hapa:",
+        download_url,
+        "Tafadhali fika na kadi hii (au ujumbe huu) mlangoni.",
     ]
-
+    if contacts:
+        lines += ["", f"📞 Kwa maswali: {contacts}"]
+    lines += [
+        "",
+        "Karibu sana, tunakusubiri kwa hamu! 🙏",
+        f"_{sender_line(occasion_doc)}_",
+    ]
     return "\n".join(lines)
 
 
@@ -142,6 +150,7 @@ def send_invitation(occasion_doc, guest_row) -> dict:
         frappe.throw(f"No phone number for {guest_row.contributor_name}")
     if not guest_row.card_image:
         frappe.throw(f"Card not generated for {guest_row.contributor_name}. Run Generate Cards first.")
+    assert_within_limit(occasion_doc, guest_row, "WhatsApp", INVITATION)
 
     message = build_invitation_message(occasion_doc, guest_row)
     result = send_message(

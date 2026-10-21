@@ -80,6 +80,9 @@ def create_purchase(channel: str, credit_count: int, phone: str | None = None, a
 	from orion_card.legal import assert_terms_accepted, record_acceptance
 
 	_require_login()
+	if not credits.purchase_enabled():
+		sw, en = credits.contact_line()
+		frappe.throw(_("Credits hazinunuliwi mtandaoni. {0} / Credits can't be bought online. {1}").format(sw, en))
 	if not cint(accept_terms):
 		frappe.throw(_("Tafadhali kubali masharti ya ununuzi wa credits. / Please accept the credit purchase terms."))
 	assert_terms_accepted()

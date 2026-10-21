@@ -10,10 +10,15 @@
   "col_break_pricing",
   "currency",
   "top_up_locked_percent",
+  "invites_section",
+  "max_invites_per_guest",
+  "col_break_invites",
+  "max_reminders_per_guest",
   "card_tiers_section",
   "card_price_tiers",
   "credit_price_section",
   "enable_credit_billing",
+  "allow_credit_purchase",
   "sms_credit_price",
   "whatsapp_credit_price",
   "col_break_credit_price",
@@ -64,6 +69,11 @@
   "col_break_business",
   "support_phone",
   "business_address",
+  "social_section",
+  "website_whatsapp",
+  "col_break_social",
+  "instagram_url",
+  "tiktok_url",
   "terms_version_section",
   "terms_version",
   "require_reacceptance",
@@ -120,6 +130,13 @@
    "label": "Charge credits for every message sent"
   },
   {
+   "default": "0",
+   "description": "When off, customers who run out of credits are asked to contact you on the Support phone (Terms & Privacy tab), and you add credits on their Message Credit Account.",
+   "fieldname": "allow_credit_purchase",
+   "fieldtype": "Check",
+   "label": "Customers can buy credits themselves (/credits)"
+  },
+  {
    "default": "25",
    "description": "1 SMS credit = one 160-character SMS part.",
    "fieldname": "sms_credit_price",
@@ -127,7 +144,7 @@
    "label": "Price per SMS credit"
   },
   {
-   "default": "75",
+   "default": "25",
    "fieldname": "whatsapp_credit_price",
    "fieldtype": "Currency",
    "label": "Price per WhatsApp credit"
@@ -371,12 +388,41 @@
    "fieldname": "support_phone",
    "fieldtype": "Data",
    "label": "Support phone",
-   "options": "Phone"
+   "options": "Phone",
+   "description": "Also shown to customers when their credits or invitations run out."
   },
   {
    "fieldname": "business_address",
    "fieldtype": "Small Text",
    "label": "Business address"
+  },
+  {
+   "fieldname": "social_section",
+   "fieldtype": "Section Break",
+   "label": "Website Contact & Social Links",
+   "description": "Shown in the footer of the public website. Leave a field empty to hide it."
+  },
+  {
+   "description": "International format, e.g. +255 703 540 517. Opens a WhatsApp chat.",
+   "fieldname": "website_whatsapp",
+   "fieldtype": "Data",
+   "label": "WhatsApp number"
+  },
+  {
+   "fieldname": "col_break_social",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "instagram_url",
+   "fieldtype": "Data",
+   "label": "Instagram link",
+   "options": "URL"
+  },
+  {
+   "fieldname": "tiktok_url",
+   "fieldtype": "Data",
+   "label": "TikTok link",
+   "options": "URL"
   },
   {
    "fieldname": "terms_version_section",
@@ -454,7 +500,7 @@
    "label": "Restore default Terms & Privacy text"
   },
   {
-   "description": "Each card is priced by its number on the Occasion: e.g. cards 1–100 at 900, cards 101 and up at 1,200. Profit is internal; the SMS/WhatsApp credits are added to the customer's account when the subscription is approved.",
+   "description": "Each card is priced by its number on the Occasion: e.g. cards 1–100 at 1,200, cards 101 and up at 1,000. Profit is internal; the SMS/WhatsApp credits are added to the customer's account when the subscription is approved.",
    "fieldname": "card_price_tiers",
    "fieldtype": "Table",
    "label": "Card Price Tiers",
@@ -470,6 +516,31 @@
    "fieldname": "top_up_locked_percent",
    "fieldtype": "Int",
    "label": "Extra guests at previous rate (%)"
+  },
+  {
+   "fieldname": "invites_section",
+   "fieldtype": "Section Break",
+   "label": "Messages per Guest"
+  },
+  {
+   "default": "2",
+   "description": "Per channel (SMS and WhatsApp). With 3 reminders that is the 5 messages per channel a card's credits pay for.",
+   "fieldname": "max_invites_per_guest",
+   "fieldtype": "Int",
+   "label": "Invitations per guest",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "col_break_invites",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "3",
+   "description": "Contribution reminders per contributor, per channel.",
+   "fieldname": "max_reminders_per_guest",
+   "fieldtype": "Int",
+   "label": "Reminders per guest",
+   "non_negative": 1
   },
   {
    "depends_on": "eval:doc.sms_provider=='RodSMS'",
@@ -501,7 +572,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-19 13:00:00.000000",
+ "modified": "2026-10-21 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "OrionCard",
  "name": "OrionCard Settings",

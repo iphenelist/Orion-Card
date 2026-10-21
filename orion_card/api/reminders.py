@@ -1,20 +1,13 @@
-"""Contribution (michango) reminders by SMS / WhatsApp."""
+"""Contribution (michango) reminders by SMS / WhatsApp, sent by hand. Each
+contributor gets at most 3 per channel (see orion_card.utils.invites)."""
 
 import frappe
 from frappe import _
-from frappe.utils import (
-	add_days,
-	cint,
-	flt,
-	fmt_money,
-	formatdate,
-	get_datetime,
-	getdate,
-	now_datetime,
-	today,
-)
+from frappe.utils import cint, flt, fmt_money, formatdate, now_datetime
 
 from orion_card.api.messaging import send_message, sender_line
+from orion_card.utils.credits import plain_sms_text
+from orion_card.utils.invites import REMINDER, MessageLimitError, assert_within_limit, message_limit, sent_counts
 
 DEFAULT_TEMPLATE = (
 	"Habari {name}, tunakukumbusha mchango wako kwa {occasion} ({date}). "
@@ -33,7 +26,7 @@ def _money(value) -> str:
 	return fmt_money(flt(value), precision=0, currency="TZS")
 
 
-def build_reminder_message(occasion_doc, contributor) -> str:
+def build_reminder_message(occasion_doc, contributor, channel: str = "SMS") -> str:
 	template = (occasion_doc.reminder_template or "").strip() or DEFAULT_TEMPLATE
 	deadline = occasion_doc.contribution_deadline or occasion_doc.occasion_date
 	values = _SafeDict(
@@ -47,10 +40,13 @@ def build_reminder_message(occasion_doc, contributor) -> str:
 		payment_info=(occasion_doc.payment_instructions or "").strip(),
 		sender=sender_line(occasion_doc),
 	)
-	return " ".join(template.format_map(values).split())
+	text = " ".join(template.format_map(values).split())
+	return plain_sms_text(text) if channel == "SMS" else text
 
 
-def select_contributors(occasion_doc, statuses=None, contributor_ids=None) -> list:
+def select_contributors(occasion_doc, statuses=None, contributor_ids=None, channel=None) -> list:
+	"""Contributors with a balance and a phone; with `channel`, only those
+	still under the reminder limit on it."""
 	statuses = [s for s in (statuses or REMINDABLE_STATUSES) if s in REMINDABLE_STATUSES]
 	rows = [
 		c for c in occasion_doc.contributors
@@ -59,11 +55,15 @@ def select_contributors(occasion_doc, statuses=None, contributor_ids=None) -> li
 	if contributor_ids:
 		wanted = set(contributor_ids)
 		rows = [c for c in rows if c.contributor_id in wanted]
+	if channel:
+		counts, limit = sent_counts(occasion_doc.name, channel, REMINDER), message_limit(REMINDER)
+		rows = [c for c in rows if counts.get(c.contributor_id, 0) < limit]
 	return rows
 
 
 def send_reminder(occasion_doc, contributor, channel: str) -> dict:
-	message = build_reminder_message(occasion_doc, contributor)
+	assert_within_limit(occasion_doc, contributor, channel, REMINDER)
+	message = build_reminder_message(occasion_doc, contributor, channel)
 	result = send_message(
 		occasion_doc,
 		channel,
@@ -99,7 +99,7 @@ def preview(occasion: str, contributor_id: str | None = None) -> str:
 
 @frappe.whitelist()
 def send_reminders(occasion: str, channel: str = "SMS", statuses=None, contributor_ids=None) -> dict:
-	from orion_card.utils.credits import InsufficientCreditsError
+	from orion_card.utils.credits import InsufficientCreditsError, support_contact
 
 	doc = frappe.get_doc("Occasion", occasion)
 	doc.check_permission("write")
@@ -110,64 +110,25 @@ def send_reminders(occasion: str, channel: str = "SMS", statuses=None, contribut
 	if any(ch not in ("SMS", "WhatsApp") for ch in channels):
 		frappe.throw(_("Unknown channel {0}").format(channel))
 
-	results = {"success": 0, "failed": 0, "errors": []}
+	results = {"success": 0, "failed": 0, "errors": [], "credits_out": False}
 	for ch in channels:
 		for contributor in select_contributors(doc, statuses, contributor_ids):
 			try:
 				send_reminder(doc, contributor, ch)
 				results["success"] += 1
+			except MessageLimitError as e:
+				# Bulk sends just skip whoever had all their reminders; a chosen contributor is told why.
+				if contributor_ids:
+					results["failed"] += 1
+					results["errors"].append(str(e))
 			except InsufficientCreditsError as e:
 				results["failed"] += 1
 				results["errors"].append(str(e))
+				results["credits_out"] = True
 				break
 			except Exception as e:
 				results["failed"] += 1
 				results["errors"].append(f"{contributor.contributor_name} ({ch}): {e}")
+	if results["credits_out"]:
+		results["contact"] = support_contact()
 	return results
-
-
-def process_auto_reminders():
-	"""Hourly: remind contributors with a balance, every N days, until the deadline."""
-	occasions = frappe.get_all(
-		"Occasion",
-		filters={"auto_reminders": 1},
-		fields=["name", "contribution_deadline", "occasion_date", "reminder_interval_days"],
-	)
-	for row in occasions:
-		last_day = getdate(row.contribution_deadline or row.occasion_date)
-		if not last_day or getdate(today()) > last_day:
-			continue
-		try:
-			_process_occasion(row)
-		except Exception:
-			frappe.log_error(title=f"Auto reminders failed for {row.name}", message=frappe.get_traceback())
-
-
-def _process_occasion(row):
-	from orion_card.legal import terms_pending
-	from orion_card.utils.credits import InsufficientCreditsError
-
-	doc = frappe.get_doc("Occasion", row.name)
-	if not doc.subscription_active():
-		return
-	if doc.assigned_user and terms_pending(doc.assigned_user):
-		return
-	interval = max(cint(row.reminder_interval_days) or 7, 1)
-	cutoff = add_days(now_datetime(), -interval)
-	# Auto reminders go by SMS: it reaches every phone, WhatsApp or not.
-	for contributor in select_contributors(doc):
-		if contributor.last_reminder_at and get_datetime(contributor.last_reminder_at) > cutoff:
-			continue
-		try:
-			send_reminder(doc, contributor, "SMS")
-		except InsufficientCreditsError:
-			frappe.log_error(
-				title=f"Auto reminders paused for {doc.name}: not enough SMS credits",
-				message=f"Payer: {doc.assigned_user}",
-			)
-			return
-		except Exception:
-			frappe.log_error(
-				title=f"Auto reminder failed for {contributor.contributor_name}", message=frappe.get_traceback()
-			)
-	frappe.db.commit()  # nosemgrep — persist each occasion's sends + ledger before the next

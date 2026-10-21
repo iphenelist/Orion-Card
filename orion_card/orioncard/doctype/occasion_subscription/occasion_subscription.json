@@ -151,18 +151,21 @@
   {
    "fieldname": "schedule_section",
    "fieldtype": "Section Break",
-   "label": "Automatic Sending Schedule"
+   "label": "Automatic Sending Schedule",
+   "hidden": 1
   },
   {
    "allow_on_submit": 1,
    "description": "Automatic WhatsApp/SMS reminders start from this date/time.",
    "fieldname": "send_start_date",
    "fieldtype": "Datetime",
-   "label": "Send Invitations From"
+   "label": "Send Invitations From",
+   "hidden": 1
   },
   {
    "fieldname": "col_break_schedule",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "allow_on_submit": 1,
@@ -170,7 +173,8 @@
    "description": "How many times each guest should receive a WhatsApp/SMS reminder in total.",
    "fieldname": "repeat_count",
    "fieldtype": "Int",
-   "label": "Number of Reminders"
+   "label": "Number of Reminders",
+   "hidden": 1
   },
   {
    "allow_on_submit": 1,
@@ -178,7 +182,8 @@
    "description": "Minimum number of days between one reminder and the next, per guest.",
    "fieldname": "repeat_interval_days",
    "fieldtype": "Int",
-   "label": "Repeat Every (Days)"
+   "label": "Repeat Every (Days)",
+   "hidden": 1
   },
   {
    "fieldname": "price_breakdown",
@@ -313,7 +318,7 @@
   }
  ],
  "links": [],
- "modified": "2026-10-14 22:05:00.965194",
+ "modified": "2026-10-21 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "OrionCard",
  "name": "Occasion Subscription",

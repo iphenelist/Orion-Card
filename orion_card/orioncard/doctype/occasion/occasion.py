@@ -276,6 +276,7 @@ class Occasion(Document):
     @frappe.whitelist()
     def get_billing_status(self):
         from orion_card.utils import credits
+        from orion_card.utils.invites import INVITATION, REMINDER, message_limit
 
         payer = self.assigned_user or frappe.session.user
         pending = frappe.get_all(
@@ -294,6 +295,9 @@ class Occasion(Document):
             # Free access is never named to the manager: their form just shows unlimited cards.
             "unlimited_cards": has_free_access(self.manager()),
             "gate_pin": self.gate_pin,
+            "allow_credit_purchase": credits.purchase_enabled(),
+            "contact": credits.support_contact(),
+            "message_limits": {t: message_limit(t) for t in (INVITATION, REMINDER)},
         }
 
     @frappe.whitelist()
@@ -358,27 +362,23 @@ class Occasion(Document):
         self.save()
         return results
 
-    def _invited_guest_codes(self, channel: str) -> set:
-        """Guests who already received a successful invitation on this channel."""
-        rows = frappe.get_all(
-            "Occasion Guest Invite Log",
-            filters={"occasion": self.name, "channel": channel, "success": 1, "message_type": "Invitation"},
-            pluck="guest_code",
-        )
-        return set(rows)
+    def guests_to_invite(self, channel: str, statuses=None, resend=False) -> list:
+        """Selected contributors with a phone who can get this channel's
+        invitation: those not invited yet, or with `resend` everyone still
+        under the per-guest limit."""
+        from orion_card.utils.invites import INVITATION, message_limit, sent_counts
 
-    def uninvited_guests(self, channel: str, statuses=None) -> list:
-        """Selected contributors with a phone who haven't had this channel's invitation yet."""
-        already_sent = self._invited_guest_codes(channel)
-        return [c for c in self.select_guests(statuses) if c.phone and c.guest_code not in already_sent]
+        counts = sent_counts(self.name, channel, INVITATION)
+        most = message_limit(INVITATION) if cint(resend) else 1
+        return [c for c in self.select_guests(statuses) if c.phone and counts.get(c.guest_code, 0) < most]
 
-    def _send_all(self, channel: str, send_fn, statuses=None) -> dict:
-        from orion_card.utils.credits import InsufficientCreditsError
+    def _send_all(self, channel: str, send_fn, statuses=None, resend=False) -> dict:
+        from orion_card.utils.credits import InsufficientCreditsError, support_contact
 
         self.check_permission("write")
         self.assert_can_send()
-        results = {"success": 0, "failed": 0, "errors": []}
-        for contributor in self.uninvited_guests(channel, statuses):
+        results = {"success": 0, "failed": 0, "errors": [], "credits_out": False}
+        for contributor in self.guests_to_invite(channel, statuses, resend):
             try:
                 if not contributor.card_image:
                     self.issue_card(contributor)
@@ -387,27 +387,28 @@ class Occasion(Document):
             except InsufficientCreditsError as e:
                 results["failed"] += 1
                 results["errors"].append(str(e))
+                results["credits_out"] = True
                 break
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append(f"{contributor.contributor_name}: {e}")
+        if results["credits_out"]:
+            results["contact"] = support_contact()
         return results
 
     @frappe.whitelist()
-    def send_all_whatsapp(self, statuses=None):
-        """Send WhatsApp invitations to the selected contributors not yet sent (first send only —
-        repeat reminders are handled by the Occasion Subscription's automatic
-        sending schedule, not this manual action)."""
+    def send_all_whatsapp(self, statuses=None, resend=0):
+        """Send WhatsApp invitations to the selected contributors not invited yet
+        (with `resend`, also again to those under the per-guest limit)."""
         from orion_card.api.whatsapp import send_invitation
-        return self._send_all("WhatsApp", send_invitation, statuses)
+        return self._send_all("WhatsApp", send_invitation, statuses, resend)
 
     @frappe.whitelist()
-    def send_all_sms(self, statuses=None):
-        """Send SMS invitations to the selected contributors not yet sent (first send only —
-        repeat reminders are handled by the Occasion Subscription's automatic
-        sending schedule, not this manual action)."""
+    def send_all_sms(self, statuses=None, resend=0):
+        """Send SMS invitations to the selected contributors not invited yet
+        (with `resend`, also again to those under the per-guest limit)."""
         from orion_card.api.sms import send_invitation
-        return self._send_all("SMS", send_invitation, statuses)
+        return self._send_all("SMS", send_invitation, statuses, resend)
 
     @frappe.whitelist()
     def get_invited_count(self) -> int:

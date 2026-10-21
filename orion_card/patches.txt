@@ -16,3 +16,6 @@ orion_card.patches.set_top_up_locked_percent
 orion_card.patches.use_rodsms_for_sms
 orion_card.patches.occasion_manager_home_desk
 orion_card.patches.set_guest_card_admits
+orion_card.patches.card_prices_1200_then_1000
+orion_card.patches.set_message_limits_per_guest
+orion_card.patches.set_website_contact_links

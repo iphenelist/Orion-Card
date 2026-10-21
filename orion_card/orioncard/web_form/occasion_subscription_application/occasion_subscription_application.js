@@ -1,5 +1,5 @@
 frappe.ready(function () {
-	// Graduated card pricing (e.g. cards 1–100 at 900, 101+ at 1,200) lives in
+	// Graduated card pricing (e.g. cards 1–100 at 1,200, 101+ at 1,000) lives in
 	// OrionCard Settings, so the live estimate asks the server for a quote.
 	let timer = null;
 
