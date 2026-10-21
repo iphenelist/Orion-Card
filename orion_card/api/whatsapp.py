@@ -4,6 +4,7 @@ import requests
 from orion_card.api.messaging import send_message, sender_line
 from orion_card.utils.invites import INVITATION, assert_within_limit
 from orion_card.utils.card_composer import issue_single_card
+from orion_card.utils.phone import normalize_phone as to_international
 
 WASENDER_BASE_URL = "https://www.wasenderapi.com/api"
 
@@ -18,7 +19,7 @@ def get_credentials():
 
 def normalize_phone(phone: str) -> str:
     """Return the phone number as digits with country code (e.g. 255712345678), no '+', as required by WaSenderAPI"""
-    return "".join(ch for ch in phone if ch.isdigit())
+    return to_international(phone)
 
 
 def send_text(phone: str, text: str) -> dict:
