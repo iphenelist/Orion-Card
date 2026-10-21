@@ -42,7 +42,7 @@ frappe.ui.form.on("Occasion", {
                     if (!statuses.length) return;
                     d.hide();
                     frappe.show_alert({ message: __("Generating cards..."), indicator: "blue" });
-                    frm.call({ method: "generate_all_cards", args: { statuses }, freeze: true }).then(r => {
+                    frm.call({ method: "generate_all_cards", doc: frm.doc, args: { statuses }, freeze: true }).then(r => {
                         show_bulk_result(r.message, __("Done"), __("Errors"));
                         frm.reload_doc();
                     });
@@ -360,7 +360,7 @@ function confirm_bulk_send(frm, channel, method) {
                 d.hide();
                 frappe.show_alert({ message: __("Sending..."), indicator: "blue" });
                 const args = { statuses, resend: d.get_value("resend") ? 1 : 0 };
-                frm.call({ method, args, freeze: true, freeze_message: __("Sending...") }).then(res => {
+                frm.call({ method, doc: frm.doc, args, freeze: true, freeze_message: __("Sending...") }).then(res => {
                     show_bulk_result(res.message, __("Sent"), __("{0} Errors", [channel]));
                     refresh_billing_status(frm);
                     frm.reload_doc();
