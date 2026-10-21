@@ -11,6 +11,11 @@ frappe.ui.form.on("Occasion", {
         }
     },
 
+    card_design(frm) {
+        // Preview shows card_preview_image, so follow the design when it's cleared or replaced
+        frm.set_value("card_preview_image", frm.doc.card_design || "");
+    },
+
     open_gate_checkin_btn(frm) {
         if (frm.is_new()) {
             frappe.msgprint(__("Save the Occasion first."));
