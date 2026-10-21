@@ -90,7 +90,10 @@ class Occasion(Document):
             contributor.admits = card_admits(contributor.card_type, contributor.admits, self.table_size)
 
     def before_save(self):
-        if self.card_design and not self.card_preview_image:
+        if not self.is_new() and self.has_value_changed("card_design"):
+            # Design cleared or replaced: drop the old preview so it can't outlive it
+            self.card_preview_image = self.card_design
+        elif self.card_design and not self.card_preview_image:
             # Sane default until the layout designer generates a styled composite
             self.card_preview_image = self.card_design
 
