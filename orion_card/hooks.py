@@ -235,7 +235,7 @@ scheduler_events = {
 
 # Request Events
 # ----------------
-# before_request = ["orion_card.utils.before_request"]
+before_request = ["orion_card.website.landing_page_at_root"]
 # after_request = ["orion_card.utils.after_request"]
 
 # Job Events
