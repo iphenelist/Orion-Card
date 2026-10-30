@@ -413,10 +413,10 @@ class Occasion(Document):
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append(f"{contributor.contributor_name}: {e}")
-            # Pace both channels: WhatsApp bans rapid senders; RodSMS enforces
-            # 60 req/min so a 1 s gap keeps bulk sends inside the limit.
+            # Pace both channels: WaSender account-protection requires ≥5 s between
+            # WhatsApp messages; RodSMS enforces 60 req/min so 1 s is enough there.
             if i < len(guests) - 1:
-                delay = random.uniform(1.5, 3.5) if channel == "WhatsApp" else 1.0
+                delay = random.uniform(5.0, 7.0) if channel == "WhatsApp" else 1.0
                 time.sleep(delay)
         if results["credits_out"]:
             results["contact"] = support_contact()
