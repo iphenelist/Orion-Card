@@ -148,7 +148,7 @@ frappe.ui.form.on("Occasion", {
                 fields: [
                     {
                         fieldtype: "HTML",
-                        options: `<p>${__("Columns: Name, Phone, Pledge, Card Type, Paid so far. Existing contributors (same phone) are updated, not duplicated.")}</p>
+                        options: `<p>${__("Columns: Name, Phone, Pledge, Card Type, Paid so far. Existing contributors are matched by phone (or by name when there is no phone) and updated, not duplicated.")}</p>
                             <p><a href="/api/method/orion_card.orioncard.doctype.occasion.occasion.download_contributor_template">${__("Download the Excel template")}</a></p>`
                     },
                     { fieldname: "file", fieldtype: "Attach", label: __("Excel / CSV file"), reqd: 1 }

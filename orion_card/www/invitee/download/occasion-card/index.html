@@ -1,139 +1,451 @@
 {% extends "templates/web.html" %}
 
+{% block head_include %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #f0f2f5;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #1f2937;
+  min-height: 100vh;
+}
+
+/* ─── page shell ─── */
+.oc-page {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+/* ─── card + panel grid ─── */
+.oc-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.13), 0 2px 8px rgba(0,0,0,.07);
+  background: #fff;
+}
+
+/* ═══ LEFT: card ═══ */
+.oc-card-panel {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  background: linear-gradient(160deg, #1e3a5f 0%, #1a2a4a 50%, #0f1e35 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  min-height: 560px;
+  position: relative;
+  overflow: hidden;
+}
+/* subtle decorative circles */
+.oc-card-panel::before,
+.oc-card-panel::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: .07;
+  background: #fff;
+  pointer-events: none;
+}
+.oc-card-panel::before { width: 280px; height: 280px; top: -80px; right: -80px; }
+.oc-card-panel::after  { width: 200px; height: 200px; bottom: -60px; left: -60px; }
+
+.oc-card-panel img {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55), 0 4px 16px rgba(0,0,0,.3);
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+.oc-no-card {
+  color: rgba(255,255,255,.55);
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+  z-index: 1;
+}
+.oc-no-card-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+
+/* ═══ RIGHT TOP: map ═══ */
+.oc-map-panel {
+  grid-column: 2;
+  grid-row: 1;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid #e5e7eb;
+}
+.oc-map-panel iframe {
+  width: 100%; height: 100%; border: none; display: block;
+}
+.oc-map-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; text-align: center; padding: 20px;
+}
+.oc-map-pin-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: #2490ef;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(36,144,239,.4);
+}
+.oc-map-pin-icon svg { width: 24px; height: 24px; fill: #fff; }
+.oc-map-venue-name { font-size: 14px; font-weight: 700; color: #1e3a5f; }
+.oc-map-venue-addr { font-size: 11px; color: #4b5563; }
+
+/* ═══ RIGHT MIDDLE: guest + event info ═══ */
+.oc-info-panel {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.oc-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: #2490ef; margin-bottom: 3px;
+}
+.oc-title {
+  font-size: 20px; font-weight: 700; color: #111827;
+  line-height: 1.2; margin-bottom: 2px;
+}
+.oc-subtitle { font-size: 12px; color: #6b7280; margin-bottom: 14px; }
+
+.oc-guest-chip {
+  display: flex; align-items: center; gap: 10px;
+  background: #f8faff; border: 1px solid #dbeafe;
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+}
+.oc-avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #2490ef, #1a6fc4);
+  color: #fff; font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.oc-guest-name  { font-size: 14px; font-weight: 600; color: #111827; }
+.oc-guest-meta  { font-size: 11px; color: #6b7280; margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.oc-badge {
+  background: #fef3c7; color: #92400e;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px; letter-spacing: .04em;
+}
+
+.oc-details { display: flex; flex-direction: column; gap: 8px; }
+.oc-detail {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12.5px; color: #374151; line-height: 1.4;
+}
+.oc-detail-ic {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: #f3f4f6; font-size: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.oc-detail-key {
+  display: block; font-size: 10px; font-weight: 600;
+  color: #9ca3af; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 1px;
+}
+
+/* ═══ RIGHT BOTTOM: actions ═══ */
+.oc-actions-panel {
+  grid-column: 2;
+  grid-row: 3;
+  padding: 18px 24px 22px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.oc-rsvp-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: #6b7280;
+}
+
+/* RSVP buttons */
+.oc-rsvp-row { display: flex; gap: 8px; }
+
+.oc-btn {
+  flex: 1; padding: 12px 10px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: inherit; text-decoration: none; line-height: 1;
+  transition: transform .12s, box-shadow .12s, filter .12s;
+}
+.oc-btn:active  { transform: scale(.96); }
+.oc-btn:hover   { filter: brightness(.93); }
+
+.oc-btn-confirm {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(22,163,74,.35);
+}
+.oc-btn-decline {
+  background: #fff; color: #dc2626;
+  border: 1.5px solid #fca5a5;
+}
+.oc-btn-download {
+  background: linear-gradient(135deg, #2490ef, #1a6fc4);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(36,144,239,.35);
+}
+.oc-btn-location {
+  background: #f9fafb; color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* icon SVGs inside buttons */
+.oc-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.oc-rsvp-result {
+  display: none; padding: 12px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; text-align: center;
+}
+.oc-rsvp-result.ok  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.oc-rsvp-result.no  { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+.oc-contacts {
+  text-align: center; font-size: 11px; color: #9ca3af; padding-top: 2px;
+}
+.oc-contacts a { color: #6b7280; text-decoration: none; }
+
+/* ─── footer ─── */
+.oc-footer {
+  margin-top: 18px; text-align: center;
+  font-size: 11px; color: #9ca3af;
+}
+.oc-footer a { color: #9ca3af; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 660px) {
+  .oc-page { padding: 0 0 32px; }
+
+  .oc-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Card on top, full width */
+  .oc-card-panel {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 300px;
+    padding: 24px 20px;
+    border-radius: 0;
+  }
+  .oc-card-panel img { max-width: 100%; }
+
+  /* Map second */
+  .oc-map-panel {
+    grid-column: 1;
+    grid-row: 2;
+    height: 180px;
+  }
+
+  /* Info third */
+  .oc-info-panel {
+    grid-column: 1;
+    grid-row: 3;
+    padding: 18px 16px;
+  }
+
+  /* Actions fourth */
+  .oc-actions-panel {
+    grid-column: 1;
+    grid-row: 4;
+    padding: 16px 16px 20px;
+  }
+
+  .oc-footer { padding: 0 16px; }
+}
+</style>
+{% endblock %}
+
 {% block page_content %}
-<div style="max-width:460px; margin:0 auto; padding:20px; font-family:Georgia,serif; text-align:center;">
+<div class="oc-page">
+  <div class="oc-shell">
 
-  <div style="background:#FDF6EE; border-radius:16px; padding:24px; border:1px solid #E8D5BC; margin-bottom:20px;">
-    <p style="font-size:12px; color:#8B6914; letter-spacing:.1em; text-transform:uppercase; margin:0 0 4px;">
-      E-Invitation
-    </p>
-    <h1 style="font-size:26px; color:#5C2D1E; margin:0 0 4px;">{{ occasion.couple_names }}</h1>
-    <p style="font-size:13px; color:#8B5E4A; margin:0 0 16px;">{{ occasion.occasion_name }}</p>
-
-    <div style="border-top:1px solid #E8D5BC; border-bottom:1px solid #E8D5BC; padding:12px 0; margin-bottom:16px;">
-      <p style="margin:4px 0; font-size:15px; color:#5C2D1E;">
-        <strong>{{ guest.guest_name }}</strong>
-      </p>
-      <p style="margin:4px 0; font-size:13px; color:#8B5E4A;">
-        Kadi: <strong style="color:#C8960C;">{{ guest.card_type }}</strong>
-        &nbsp;|&nbsp; Code: <strong>{{ guest.guest_code }}</strong>
-      </p>
+    <!-- ══════ LEFT: invitation card ══════ -->
+    <div class="oc-card-panel">
+      {% if card_download_url %}
+        <img src="{{ card_download_url }}" alt="Kadi ya mwaliko – {{ guest.guest_name }}">
+      {% else %}
+        <div class="oc-no-card">
+          <span class="oc-no-card-icon">🎫</span>
+          Kadi yako inaandaliwa.<br>Tafadhali angalia tena baadaye.
+        </div>
+      {% endif %}
     </div>
 
-    <p style="margin:5px 0; font-size:13px; color:#5C2D1E;">
-      📅 {{ frappe.utils.formatdate(occasion.occasion_date, "dd MMMM yyyy") }}
-    </p>
-    <p style="margin:5px 0; font-size:13px; color:#5C2D1E;">
-      ⏰ {{ occasion.occasion_time }}
-    </p>
-    <p style="margin:5px 0; font-size:13px; color:#5C2D1E;">
-      📍 {{ occasion.venue_name }}{% if occasion.venue_address %}, {{ occasion.venue_address }}{% endif %}
-    </p>
-    {% if occasion.dress_code %}
-    <p style="margin:5px 0; font-size:13px; color:#5C2D1E;">
-      👔 Dress Code: {{ occasion.dress_code }}
-    </p>
-    {% endif %}
-  </div>
+    <!-- ══════ RIGHT TOP: map ══════ -->
+    <div class="oc-map-panel">
+      {% if occasion.venue_location %}
+        <iframe
+          src="https://maps.google.com/maps?q={{ (occasion.venue_name ~ ' ' ~ (occasion.venue_address or '')) | urlencode }}&output=embed&z=15"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mahali pa tukio">
+        </iframe>
+      {% else %}
+        <div class="oc-map-placeholder">
+          <div class="oc-map-pin-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div class="oc-map-venue-name">{{ occasion.venue_name }}</div>
+          {% if occasion.venue_address %}
+            <div class="oc-map-venue-addr">{{ occasion.venue_address }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
 
-  {% if card_download_url %}
-  <div style="margin-bottom:20px;">
-    <img src="{{ card_download_url }}"
-         alt="Kadi yako ya mwaliko"
-         style="width:100%; border-radius:12px; border:1px solid #E8D5BC;" />
-  </div>
+    <!-- ══════ RIGHT MIDDLE: guest + event details ══════ -->
+    <div class="oc-info-panel">
+      <div class="oc-eyebrow">E-Invitation · OrionCard</div>
+      <div class="oc-title">{{ occasion.couple_names }}</div>
+      <div class="oc-subtitle">{{ occasion.occasion_name }}</div>
 
-  <a href="{{ card_download_url }}"
-     download="mwaliko_{{ guest.guest_code }}.jpg"
-     style="display:block; background:#5C2D1E; color:white; padding:14px;
-            border-radius:8px; text-decoration:none; font-size:15px;
-            font-family:sans-serif; margin-bottom:12px;">
-    ⬇️ Download Kadi Yako
-  </a>
-  {% else %}
-  <div style="background:#FFF3CD; padding:16px; border-radius:8px;
-              font-family:sans-serif; font-size:14px; color:#856404; margin-bottom:12px;">
-    Kadi yako inaandaliwa. Tafadhali angalia tena baadaye.
-  </div>
-  {% endif %}
+      <div class="oc-guest-chip">
+        <div class="oc-avatar">{{ guest.guest_name[0] | upper }}</div>
+        <div>
+          <div class="oc-guest-name">{{ guest.guest_name }}</div>
+          <div class="oc-guest-meta">
+            <span class="oc-badge">{{ guest.card_type }}</span>
+            <span>🔑 {{ guest.guest_code }}</span>
+          </div>
+        </div>
+      </div>
 
-  {% if occasion.venue_location %}
-  <a href="{{ occasion.venue_location }}" target="_blank"
-     style="display:block; background:#fff; color:#5C2D1E; padding:12px;
-            border-radius:8px; text-decoration:none; font-size:14px;
-            font-family:sans-serif; border:1px solid #D4B89A; margin-bottom:12px;">
-    📍 VIEW LOCATION
-  </a>
-  {% endif %}
-
-  <div id="rsvpBlock" style="font-family:sans-serif; margin-bottom:12px;">
-    <div id="rsvpPrompt" style="{% if guest.rsvp_status and guest.rsvp_status != 'Pending' %}display:none;{% endif %}">
-      <p style="font-size:13px; color:#8B5E4A; margin:0 0 8px;">Utahudhuria?</p>
-      <div style="display:flex; gap:10px;">
-        <button onclick="sendRsvp('Confirmed')"
-                style="flex:1; background:#2E7D32; color:#fff; border:none; padding:12px;
-                       border-radius:8px; font-size:14px; cursor:pointer;">
-          ✅ Nitahudhuria
-        </button>
-        <button onclick="sendRsvp('Declined')"
-                style="flex:1; background:#fff; color:#B3261E; border:1px solid #B3261E; padding:12px;
-                       border-radius:8px; font-size:14px; cursor:pointer;">
-          ❌ Sitahudhuria
-        </button>
+      <div class="oc-details">
+        <div class="oc-detail">
+          <div class="oc-detail-ic">📅</div>
+          <div>
+            <span class="oc-detail-key">Tarehe &amp; Muda</span>
+            {{ frappe.utils.formatdate(occasion.occasion_date, "EEEE, dd MMMM yyyy") }}
+            {% if occasion.occasion_time %} · {{ occasion.occasion_time }}{% endif %}
+          </div>
+        </div>
+        <div class="oc-detail">
+          <div class="oc-detail-ic">📍</div>
+          <div>
+            <span class="oc-detail-key">Mahali</span>
+            {{ occasion.venue_name }}{% if occasion.venue_address %}, {{ occasion.venue_address }}{% endif %}
+          </div>
+        </div>
+        {% if occasion.dress_code %}
+        <div class="oc-detail">
+          <div class="oc-detail-ic">👔</div>
+          <div>
+            <span class="oc-detail-key">Dress Code</span>
+            {{ occasion.dress_code }}
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
-    <div id="rsvpResult" style="{% if not guest.rsvp_status or guest.rsvp_status == 'Pending' %}display:none;{% endif %}
-                                 padding:12px; border-radius:8px; font-size:14px;
-                                 background:{% if guest.rsvp_status == 'Confirmed' %}#E8F5E9{% else %}#FDECEA{% endif %};
-                                 color:{% if guest.rsvp_status == 'Confirmed' %}#2E7D32{% else %}#B3261E{% endif %};">
-      <span id="rsvpResultText">
-        {% if guest.rsvp_status == 'Confirmed' %}✅ Umethibitisha kuhudhuria. Asante!
-        {% elif guest.rsvp_status == 'Declined' %}❌ Umethibitisha kutohudhuria. Asante kwa kutujulisha.
-        {% endif %}
-      </span>
-    </div>
+
+    <!-- ══════ RIGHT BOTTOM: actions ══════ -->
+    <div class="oc-actions-panel">
+
+      <!-- RSVP -->
+      <div id="rsvpPrompt" {% if guest.rsvp_status and guest.rsvp_status != 'Pending' %}style="display:none"{% endif %}>
+        <div class="oc-rsvp-label" style="margin-bottom:8px;">Utahudhuria?</div>
+        <div class="oc-rsvp-row">
+          <button class="oc-btn oc-btn-confirm" onclick="sendRsvp('Confirmed')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Nitahudhuria
+          </button>
+          <button class="oc-btn oc-btn-decline" onclick="sendRsvp('Declined')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Sitahudhuria
+          </button>
+        </div>
+      </div>
+
+      <div id="rsvpResult"
+           class="oc-rsvp-result {% if guest.rsvp_status == 'Confirmed' %}ok{% elif guest.rsvp_status == 'Declined' %}no{% endif %}"
+           style="{% if not guest.rsvp_status or guest.rsvp_status == 'Pending' %}display:none{% else %}display:block{% endif %}">
+        <span id="rsvpResultText">
+          {% if guest.rsvp_status == 'Confirmed' %}✅ Umethibitisha kuhudhuria. Asante!
+          {% elif guest.rsvp_status == 'Declined' %}❌ Umethibitisha kutohudhuria. Asante.
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- Download -->
+      {% if card_download_url %}
+      <a href="{{ card_download_url }}" download="mwaliko_{{ guest.guest_code }}.jpg" class="oc-btn oc-btn-download" style="flex:unset; width:100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Pakua Kadi Yako
+      </a>
+      {% endif %}
+
+      <!-- Location -->
+      {% if occasion.venue_location %}
+      <a href="{{ occasion.venue_location }}" target="_blank" rel="noopener" class="oc-btn oc-btn-location" style="flex:unset; width:100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Angalia Mahali kwenye Ramani
+      </a>
+      {% endif %}
+
+      <!-- Contacts -->
+      {% if occasion.contact_1 or occasion.contact_2 %}
+      <div class="oc-contacts">
+        Mawasiliano:
+        {% if occasion.contact_1 %}<a href="tel:{{ occasion.contact_1 }}">{{ occasion.contact_1 }}</a>{% endif %}
+        {% if occasion.contact_2 %} &nbsp;·&nbsp; <a href="tel:{{ occasion.contact_2 }}">{{ occasion.contact_2 }}</a>{% endif %}
+      </div>
+      {% endif %}
+
+    </div><!-- /actions -->
+  </div><!-- /shell -->
+
+  <div class="oc-footer">
+    Mwaliko huu umetumwa kupitia <strong>OrionCard</strong> &nbsp;·&nbsp;
+    <a href="/privacy">Sera ya Faragha</a> &nbsp;·&nbsp; <a href="/terms">Masharti</a>
   </div>
-
-  {% if occasion.contact_1 or occasion.contact_2 %}
-  <p style="font-size:12px; color:#aaa; font-family:sans-serif; margin-top:16px;">
-    Mawasiliano:
-    {% if occasion.contact_1 %}{{ occasion.contact_1 }}{% endif %}
-    {% if occasion.contact_2 %} | {{ occasion.contact_2 }}{% endif %}
-  </p>
-  {% endif %}
-
-  <p style="font-size:11px; color:#aaa; font-family:sans-serif; margin-top:12px;">
-    Mwaliko huu umetumwa na mwandaaji wa tukio kupitia OrionCard ·
-    <a href="/privacy" style="color:#aaa;">Sera ya Faragha</a> ·
-    <a href="/terms" style="color:#aaa;">Vigezo na Masharti</a>
-  </p>
-
 </div>
 
 <script>
-const RSVP_GUEST_CODE = {{ guest.guest_code | tojson }};
+const RSVP_CODE = {{ guest.guest_code | tojson }};
 
 function sendRsvp(status) {
+  const btns = document.querySelectorAll('#rsvpPrompt .oc-btn');
+  btns.forEach(b => { b.disabled = true; b.style.opacity = '.55'; });
+
   fetch("/api/method/orion_card.www.invitee.download.occasion-card.index.confirm_rsvp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-Frappe-CSRF-Token": "{{ frappe.session.csrf_token }}"
     },
-    body: JSON.stringify({ guest_code: RSVP_GUEST_CODE, status: status })
+    body: JSON.stringify({ guest_code: RSVP_CODE, status })
   })
-    .then(r => r.json())
-    .then(data => {
-      if (!data.message || !data.message.success) throw new Error("failed");
-      document.getElementById("rsvpPrompt").style.display = "none";
-      const box = document.getElementById("rsvpResult");
-      box.style.display = "block";
-      box.style.background = status === "Confirmed" ? "#E8F5E9" : "#FDECEA";
-      box.style.color = status === "Confirmed" ? "#2E7D32" : "#B3261E";
-      document.getElementById("rsvpResultText").textContent =
-        status === "Confirmed" ? "✅ Umethibitisha kuhudhuria. Asante!" : "❌ Umethibitisha kutohudhuria. Asante kwa kutujulisha.";
-    })
-    .catch(() => alert("Imeshindikana kutuma. Tafadhali jaribu tena."));
+  .then(r => r.json())
+  .then(data => {
+    if (!data.message?.success) throw new Error();
+    document.getElementById("rsvpPrompt").style.display = "none";
+    const box = document.getElementById("rsvpResult");
+    box.className = "oc-rsvp-result " + (status === "Confirmed" ? "ok" : "no");
+    box.style.display = "block";
+    document.getElementById("rsvpResultText").textContent =
+      status === "Confirmed"
+        ? "✅ Umethibitisha kuhudhuria. Asante!"
+        : "❌ Umethibitisha kutohudhuria. Asante kwa kutujulisha.";
+  })
+  .catch(() => {
+    btns.forEach(b => { b.disabled = false; b.style.opacity = '1'; });
+    alert("Imeshindikana kutuma. Tafadhali jaribu tena.");
+  });
 }
 </script>
 {% endblock %}

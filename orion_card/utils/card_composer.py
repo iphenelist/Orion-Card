@@ -49,108 +49,97 @@ def hex_to_rgb(hex_color: str):
 
 
 def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: str, guest_code: str = None) -> Image.Image:
-    """Build the composited card image: a bottom-right white badge box with
-    the QR code on top, guest name (bold, caps, wraps onto up to 3 lines for
-    long names) and card type (smaller, muted) stacked below it.
-
-    Used both for real guest cards and for the sample preview (with
-    placeholder text).
+    """Compose card with reference layout:
+      - Card type:   top-right corner (bold overlay text)
+      - QR code:     bottom-left corner (white badge box)
+      - Guest name:  bottom-left, to the right of the QR box (bold, caps)
+      - Card number: below the name, to the right of the QR box ("NO: <code>")
     """
     card_img = load_card_image(occasion_doc.card_design)
     width, height = card_img.size
 
     draw = ImageDraw.Draw(card_img)
 
-    name_rgb = hex_to_rgb(occasion_doc.name_color or "#1A1A1A")
-    type_rgb = hex_to_rgb(occasion_doc.card_type_color or "#777777")
+    type_rgb = hex_to_rgb(occasion_doc.card_type_color or "#FFFFFF")
+    no_rgb = hex_to_rgb(occasion_doc.name_color or "#1A1A1A")
 
     margin = int(width * 0.025)
-    box_width = int(width * 0.16)
-    pad = int(box_width * 0.09)
-    gap = int(box_width * 0.05)
+    qr_box_size = int(width * 0.16)
+    pad = int(qr_box_size * 0.08)
+    qr_size = qr_box_size - 2 * pad
 
-    qr_size = box_width - 2 * pad
-    inner_width = box_width - 2 * pad
-    display_name = name_text.upper()
+    # --- Card type: top-right corner ---
     raw_type = type_text.strip()
     display_type = raw_type if len(raw_type) <= 3 else raw_type.title()
-
-    def wrap_lines(text, font, max_width):
-        words = text.split()
-        lines, current = [], ""
-        for word in words:
-            trial = f"{current} {word}".strip()
-            if draw.textbbox((0, 0), trial, font=font)[2] <= max_width or not current:
-                current = trial
-            else:
-                lines.append(current)
-                current = word
-        if current:
-            lines.append(current)
-        return lines
-
-    def truncate_to_fit(text, font, max_width):
-        if draw.textbbox((0, 0), text, font=font)[2] <= max_width:
-            return text
-        while text and draw.textbbox((0, 0), text + "…", font=font)[2] > max_width:
-            text = text[:-1]
-        return (text + "…") if text else text
-
-    # Wrap long names onto up to 3 lines; only shrink the font if a
-    # single word still doesn't fit the box width even wrapped.
-    name_font_size = max(int(box_width * 0.115), 10)
-    while True:
-        name_font = get_font(name_font_size, bold=True)
-        name_lines = wrap_lines(display_name, name_font, inner_width)
-        widest = max(draw.textbbox((0, 0), line, font=name_font)[2] for line in name_lines)
-        if (widest <= inner_width and len(name_lines) <= 3) or name_font_size <= 8:
-            break
-        name_font_size -= 1
-
-    # Last-resort safety net: a single word with no spaces (e.g. a name
-    # typed without one) can still overflow the box even at the floor font
-    # size — truncate it instead of letting it spill past the badge edge.
-    name_lines = [truncate_to_fit(line, name_font, inner_width) for line in name_lines[:3]]
-
-    line_height = int(name_font_size * 1.25)
-    name_block_height = line_height * len(name_lines)
-
-    type_font = get_font(max(int(box_width * 0.085), 8), bold=False)
+    type_font_size = max(int(width * 0.018), 9)
+    type_font = get_font(type_font_size, bold=False)
     type_bbox = draw.textbbox((0, 0), display_type, font=type_font)
-    type_w, type_h = type_bbox[2] - type_bbox[0], type_bbox[3] - type_bbox[1]
+    type_w = type_bbox[2] - type_bbox[0]
+    type_h = type_bbox[3] - type_bbox[1]
+    type_x = width - margin - type_w
+    type_y = margin
+    # drop shadow for legibility on any background
+    draw.text((type_x - type_bbox[0] + 1, type_y - type_bbox[1] + 1), display_type, font=type_font, fill=(0, 0, 0, 160))
+    draw.text((type_x - type_bbox[0], type_y - type_bbox[1]), display_type, font=type_font, fill=type_rgb)
 
-    box_height = pad + qr_size + gap + name_block_height + int(gap * 0.5) + type_h + pad
-
-    box_x2, box_y2 = width - margin, height - margin
-    box_x1, box_y1 = box_x2 - box_width, box_y2 - box_height
+    # --- QR code: bottom-left, white badge box ---
+    box_x1 = margin
+    box_y1 = height - margin - qr_box_size
+    box_x2 = box_x1 + qr_box_size
+    box_y2 = height - margin
 
     draw.rounded_rectangle(
         [box_x1, box_y1, box_x2, box_y2],
-        radius=max(int(box_width * 0.035), 4),
+        radius=max(int(qr_box_size * 0.035), 4),
         fill=(255, 255, 255, 255),
         outline=(220, 220, 220, 255),
         width=1,
     )
 
-    qr_x = box_x1 + (box_width - qr_size) // 2
+    qr_x = box_x1 + pad
     qr_y = box_y1 + pad
-
-    name_y = qr_y + qr_size + gap
-    for line in name_lines:
-        line_bbox = draw.textbbox((0, 0), line, font=name_font)
-        line_w = line_bbox[2] - line_bbox[0]
-        line_x = box_x1 + (box_width - line_w) // 2
-        draw.text((line_x - line_bbox[0], name_y - line_bbox[1]), line, font=name_font, fill=name_rgb)
-        name_y += line_height
-
-    type_x = box_x1 + (box_width - type_w) // 2
-    type_y = name_y + int(gap * 0.5)
-    draw.text((type_x - type_bbox[0], type_y - type_bbox[1]), display_type, font=type_font, fill=type_rgb)
 
     qr_buffer = generate_qr(guest_code or code_text, occasion_doc.name)
     qr_img = Image.open(qr_buffer).convert("RGBA")
     qr_img = qr_img.resize((qr_size, qr_size), Image.LANCZOS)
     card_img.paste(qr_img, (qr_x, qr_y), qr_img)
+
+    # --- Guest name + card number: to the right of the QR box, bottom-aligned ---
+    side_x = box_x2 + int(margin * 0.5)
+    side_max_w = width - side_x - margin
+
+    display_code = guest_code or code_text.replace("Code: ", "")
+    no_label = f"NO: {display_code}"
+    no_font_size = max(int(width * 0.014), 8)
+    no_font = get_font(no_font_size, bold=False)
+    no_bbox = draw.textbbox((0, 0), no_label, font=no_font)
+    no_h = no_bbox[3] - no_bbox[1]
+
+    name_font_size = max(int(width * 0.016), 9)
+    name_font = get_font(name_font_size, bold=False)
+    display_name = name_text.upper()
+    # shrink until the name fits in the available side width
+    while name_font_size > 7:
+        name_font = get_font(name_font_size, bold=False)
+        nb = draw.textbbox((0, 0), display_name, font=name_font)
+        if (nb[2] - nb[0]) <= side_max_w:
+            break
+        name_font_size -= 1
+    name_bbox = draw.textbbox((0, 0), display_name, font=name_font)
+    name_h = name_bbox[3] - name_bbox[1]
+
+    gap = int(margin * 0.4)
+    block_h = name_h + gap + no_h
+    # align the block to the bottom of the QR box
+    block_top = box_y2 - block_h
+
+    # guest name
+    name_y = block_top
+    draw.text((side_x - name_bbox[0], name_y - name_bbox[1]), display_name, font=name_font, fill=no_rgb)
+
+    # card number
+    no_y = block_top + name_h + gap
+    draw.text((side_x - no_bbox[0], no_y - no_bbox[1]), no_label, font=no_font, fill=no_rgb)
 
     return card_img
 
