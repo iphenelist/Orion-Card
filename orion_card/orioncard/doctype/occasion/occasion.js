@@ -48,7 +48,15 @@ frappe.ui.form.on("Occasion", {
                     d.hide();
                     frappe.show_alert({ message: __("Generating cards..."), indicator: "blue" });
                     frm.call({ method: "generate_all_cards", doc: frm.doc, args: { statuses }, freeze: true }).then(r => {
-                        show_bulk_result(r.message, __("Done"), __("Errors"));
+                        if (r.message && r.message.no_design) {
+                            frappe.msgprint({
+                                title: __("Card Numbers Assigned"),
+                                indicator: "blue",
+                                message: __("Card numbers have been assigned to all guests. Upload a card design under the <b>Card</b> tab to generate card images.")
+                            });
+                        } else {
+                            show_bulk_result(r.message, __("Done"), __("Errors"));
+                        }
                         frm.reload_doc();
                     });
                 }

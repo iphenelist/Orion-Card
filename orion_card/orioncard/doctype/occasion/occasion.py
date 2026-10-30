@@ -356,10 +356,19 @@ class Occasion(Document):
 
     @frappe.whitelist()
     def generate_all_cards(self, statuses=None):
-        """Bulk generate QR + composed card images for the selected contributors"""
+        """Bulk generate QR + composed card images for the selected contributors.
+        When no card design is uploaded, card numbers are still assigned (on save)
+        but no image is generated."""
         self.check_permission("write")
         self.assert_can_send()
         results = {"success": 0, "failed": 0, "errors": []}
+
+        if not self.card_design:
+            # Numbers are assigned in validate(); just save to make sure they're committed.
+            self.save()
+            results["no_design"] = True
+            return results
+
         for contributor in self.select_guests(statuses):
             try:
                 self.issue_card(contributor)
