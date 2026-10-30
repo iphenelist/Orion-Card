@@ -52,10 +52,10 @@ def hex_to_rgb(hex_color: str):
 
 def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: str, guest_code: str = None) -> Image.Image:
     """Compose card with reference layout:
-      - Card type:   top-right corner (bold overlay text)
-      - QR code:     bottom-left corner (white badge box)
-      - Guest name:  bottom-left, to the right of the QR box (bold, caps)
-      - Card number: below the name, to the right of the QR box ("NO: <code>")
+      - Card type:   top-left corner (bold overlay text)
+      - QR code:     bottom-right corner (white badge box)
+      - Guest name:  bottom-right, to the left of the QR box (bold, caps)
+      - Card number: below the name, to the left of the QR box ("NO: <code>")
     """
     card_img = load_card_image(occasion_doc.card_design)
     width, height = card_img.size
@@ -70,32 +70,28 @@ def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: 
     pad = int(qr_box_size * 0.08)
     qr_size = qr_box_size - 2 * pad
 
-    # --- Card type: top-right corner ---
+    # --- Card type: top-left corner ---
     raw_type = type_text.strip()
     display_type = raw_type if len(raw_type) <= 3 else raw_type.title()
     type_font_size = max(int(width * 0.018), 9)
     type_font = get_font(type_font_size, bold=False)
     type_bbox = draw.textbbox((0, 0), display_type, font=type_font)
-    type_w = type_bbox[2] - type_bbox[0]
-    type_h = type_bbox[3] - type_bbox[1]
-    type_x = width - margin - type_w
+    type_x = margin
     type_y = margin
     # drop shadow for legibility on any background
     draw.text((type_x - type_bbox[0] + 1, type_y - type_bbox[1] + 1), display_type, font=type_font, fill=(0, 0, 0, 160))
     draw.text((type_x - type_bbox[0], type_y - type_bbox[1]), display_type, font=type_font, fill=type_rgb)
 
-    # --- QR code: bottom-left, white badge box ---
-    box_x1 = margin
+    # --- QR code: bottom-right, white badge box ---
+    box_x2 = width - margin
+    box_x1 = box_x2 - qr_box_size
     box_y1 = height - margin - qr_box_size
-    box_x2 = box_x1 + qr_box_size
     box_y2 = height - margin
 
     draw.rounded_rectangle(
         [box_x1, box_y1, box_x2, box_y2],
         radius=max(int(qr_box_size * 0.035), 4),
         fill=(255, 255, 255, 255),
-        outline=(220, 220, 220, 255),
-        width=1,
     )
 
     qr_x = box_x1 + pad
@@ -106,9 +102,8 @@ def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: 
     qr_img = qr_img.resize((qr_size, qr_size), Image.LANCZOS)
     card_img.paste(qr_img, (qr_x, qr_y), qr_img)
 
-    # --- Guest name + card number: to the right of the QR box, bottom-aligned ---
-    side_x = box_x2 + int(margin * 0.5)
-    side_max_w = width - side_x - margin
+    # --- Guest name + card number: to the left of the QR box, bottom-aligned ---
+    side_max_w = box_x1 - margin - int(margin * 0.5)
 
     display_code = guest_code or code_text.replace("Code: ", "")
     no_label = f"NO: {display_code}"
@@ -132,16 +127,17 @@ def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: 
 
     gap = int(margin * 0.4)
     block_h = name_h + gap + no_h
-    # align the block to the bottom of the QR box
     block_top = box_y2 - block_h
 
-    # guest name
+    # guest name (right-aligned to just left of QR box)
+    name_x = box_x1 - int(margin * 0.5) - (name_bbox[2] - name_bbox[0])
     name_y = block_top
-    draw.text((side_x - name_bbox[0], name_y - name_bbox[1]), display_name, font=name_font, fill=no_rgb)
+    draw.text((name_x - name_bbox[0], name_y - name_bbox[1]), display_name, font=name_font, fill=no_rgb)
 
-    # card number
+    # card number (right-aligned to just left of QR box)
+    no_x = box_x1 - int(margin * 0.5) - (no_bbox[2] - no_bbox[0])
     no_y = block_top + name_h + gap
-    draw.text((side_x - no_bbox[0], no_y - no_bbox[1]), no_label, font=no_font, fill=no_rgb)
+    draw.text((no_x - no_bbox[0], no_y - no_bbox[1]), no_label, font=no_font, fill=no_rgb)
 
     return card_img
 
