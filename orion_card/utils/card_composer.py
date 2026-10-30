@@ -92,8 +92,6 @@ def compose_card_image(occasion_doc, name_text: str, type_text: str, code_text: 
         [box_x1, box_y1, box_x2, box_y2],
         radius=max(int(qr_box_size * 0.035), 4),
         fill=(255, 255, 255, 255),
-        outline=(220, 220, 220, 255),
-        width=1,
     )
 
     qr_x = box_x1 + pad
