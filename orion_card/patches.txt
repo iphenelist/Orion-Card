@@ -19,3 +19,4 @@ orion_card.patches.set_guest_card_admits
 orion_card.patches.card_prices_1200_then_1000
 orion_card.patches.set_message_limits_per_guest
 orion_card.patches.set_website_contact_links
+orion_card.patches.reassign_sequential_guest_codes
