@@ -105,12 +105,15 @@ def _rodsms_request(settings, method: str, path: str, payload: dict | None = Non
 def _send_rodsms(settings, phone: str, message: str) -> dict:
     from orion_card.utils.phone import normalize_phone as to_international
 
+    recipient = to_international(phone)
+    if len(recipient) < 10:
+        frappe.throw(f"Invalid phone number '{phone}' — cannot send SMS.")
+
     _api_key, sender_id = get_credentials()
     body = _rodsms_request(settings, "POST", "/messages", {
         "sender_id": sender_id,
-        "recipient": to_international(phone),
+        "recipient": recipient,
         "message": message,
-        "sms_type": "transactional",
     })
     return body.get("data") or {}
 
