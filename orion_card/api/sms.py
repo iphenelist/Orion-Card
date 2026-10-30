@@ -155,7 +155,12 @@ MIN_NAME_CHARS = 12
 def build_invitation_message(occasion_doc, guest_row) -> str:
     """The Swahili SMS invitation, kept to SMS_MAX_PARTS billed parts: plain
     GSM characters only, and a long event name, venue or guest name is cut
-    short rather than paying for a third part."""
+    short rather than paying for a third part.
+    If custom_sms_message is set on the occasion, it is used instead with
+    placeholders substituted."""
+    if occasion_doc.get("custom_sms_message"):
+        return _custom_invitation_text(occasion_doc, guest_row)
+
     names = {
         "guest": guest_row.contributor_name or "",
         "occasion": occasion_doc.occasion_name or "",
@@ -173,6 +178,27 @@ def build_invitation_message(occasion_doc, guest_row) -> str:
     return text
 
 
+def _custom_invitation_text(occasion_doc, guest_row) -> str:
+    base = frappe.utils.get_url().rstrip("/")
+    date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
+    link = f"{base}/k/{guest_row.guest_code}" if occasion_doc.card_design else ""
+    text = (occasion_doc.custom_sms_message or "").format(
+        guest=guest_row.contributor_name or "",
+        occasion=occasion_doc.occasion_name or "",
+        date=date_str,
+        venue=occasion_doc.venue_name or "",
+        address=occasion_doc.get("venue_address") or "",
+        location=occasion_doc.get("venue_location") or "",
+        card_type=guest_row.card_type or "",
+        number=guest_row.guest_code or "",
+        link=link,
+        sender=sender_line(occasion_doc),
+    )
+    # Drop lines that ended up empty (e.g. "Anwani: " when address not set)
+    lines = [l for l in text.splitlines() if l.strip() and not l.strip().endswith(":")]
+    return plain_sms_text("\n".join(lines))
+
+
 def _invitation_text(occasion_doc, guest_row, names) -> str:
     date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
     when = ", ".join(part for part in (date_str, occasion_doc.occasion_time) if part)
@@ -182,8 +208,12 @@ def _invitation_text(occasion_doc, guest_row, names) -> str:
         f"Umealikwa kwenye {names['occasion']}.",
         f"Tarehe: {when}",
         f"Ukumbi: {names['venue']}",
-        f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}",
     ]
+    if occasion_doc.get("venue_address"):
+        lines.append(f"Anwani: {occasion_doc.venue_address}")
+    if occasion_doc.get("venue_location"):
+        lines.append(f"Mahali: {occasion_doc.venue_location}")
+    lines.append(f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}")
     if occasion_doc.card_design:
         lines.append(f"Pakua kadi yako: {base}/k/{guest_row.guest_code}")
     lines.append(sender_line(occasion_doc))

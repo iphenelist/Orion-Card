@@ -70,6 +70,7 @@
   "col_break_contrib_actions_2",
   "send_reminders_btn",
   "guest_actions_section",
+  "custom_sms_message",
   "generate_cards_btn",
   "col_break_guest_actions",
   "send_whatsapp_btn",
@@ -427,6 +428,13 @@
    "fieldtype": "Section Break",
    "label": "Invitation Cards",
    "description": "Each guest can get the invitation 2 times by SMS and 2 times by WhatsApp."
+  },
+  {
+   "fieldname": "custom_sms_message",
+   "fieldtype": "Small Text",
+   "label": "Custom SMS Message",
+   "default": "Habari {guest},\nUmealikwa kwenye {occasion}.\nTarehe: {date}\nUkumbi: {venue}\nAnwani: {address}\nMahali: {location}\nKadi: {card_type}, Namba: {number}\nPakua kadi yako: {link}\n{sender}",
+   "description": "Badilisha ujumbe huu au acha jinsi ulivyo. Placeholders: {guest}, {occasion}, {date}, {venue}, {address}, {location}, {card_type}, {number}, {link}, {sender}"
   },
   {
    "fieldname": "generate_cards_btn",
