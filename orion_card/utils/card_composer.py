@@ -28,6 +28,8 @@ def get_font(size: int, bold: bool = False):
 
 def load_card_image(url: str) -> Image.Image:
     """Load card design image from Frappe file URL"""
+    if not url:
+        frappe.throw("No card design uploaded for this occasion. Please upload a card design image under the Card tab first.")
     if url.startswith("/"):
         site_path = frappe.get_site_path()
         file_path = os.path.join(site_path, "public", url.lstrip("/"))
