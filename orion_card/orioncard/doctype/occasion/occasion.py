@@ -163,8 +163,8 @@ class Occasion(Document):
     @frappe.whitelist()
     def import_contributors(self, file_url: str):
         """Add contributors from an uploaded Excel/CSV that follows the template.
-        Matches existing contributors by phone, so re-importing the same file
-        doesn't create duplicates."""
+        Matches existing contributors by phone first, then by name (case-insensitive)
+        for rows without a phone, so re-importing the same file doesn't create duplicates."""
         self.check_permission("write")
         rows = _read_spreadsheet(file_url, self)
         if not rows:
@@ -176,6 +176,7 @@ class Occasion(Document):
             frappe.throw(_("The file must have a 'Name' column. Download the template to see the expected columns."))
 
         by_phone = {normalize_phone(c.phone): c for c in self.contributors if c.phone}
+        by_name = {c.contributor_name.strip().lower(): c for c in self.contributors}
         added, updated, skipped = 0, 0, []
         for line_no, row in enumerate(rows[1:], start=2):
             value = lambda key: (row[col[key]] if col[key] is not None and col[key] < len(row) else None)  # noqa: E731
@@ -197,9 +198,12 @@ class Occasion(Document):
             if card_type not in CARD_TYPES:
                 card_type = "SINGLE"
 
-            existing = by_phone.get(normalize_phone(phone)) if phone else None
+            existing = by_phone.get(normalize_phone(phone)) if phone else by_name.get(name.lower())
             if existing:
                 existing.contributor_name = name
+                if phone and not existing.phone:
+                    existing.phone = phone
+                    by_phone[normalize_phone(phone)] = existing
                 if pledged:
                     existing.pledged_amount = pledged
                 if paid_so_far:
@@ -217,6 +221,7 @@ class Occasion(Document):
             })
             if phone:
                 by_phone[normalize_phone(phone)] = contributor
+            by_name[name.lower()] = contributor
             added += 1
 
         self.save()
