@@ -115,12 +115,16 @@ class Occasion(Document):
                 frappe.throw(_(SUBSCRIPTION_REQUIRED), title=_("Subscription required"))
 
     def _generate_unique_code(self):
-        in_this_doc = {c.guest_code for c in self.contributors if c.guest_code}
-        for _attempt in range(100):
-            code = ''.join(random.choices(string.digits, k=6))
-            if code not in in_this_doc and not frappe.db.exists("Occasion Contributor", {"guest_code": code}):
-                return code
-        frappe.throw("Could not generate a unique guest code. Please try again.")
+        """Sequential card number, unique across all occasions (1, 2, 3 …)."""
+        in_this_doc = {int(c.guest_code) for c in self.contributors if c.guest_code and c.guest_code.isdigit()}
+        result = frappe.db.sql(
+            "SELECT COALESCE(MAX(CAST(guest_code AS UNSIGNED)), 0) FROM `tabOccasion Contributor` "
+            "WHERE guest_code REGEXP '^[0-9]+$'"
+        )
+        next_code = int(result[0][0] if result else 0) + 1
+        while next_code in in_this_doc:
+            next_code += 1
+        return str(next_code)
 
     # ------------------------------------------------------------ budget & contributions
 
@@ -388,7 +392,7 @@ class Occasion(Document):
         guests = self.guests_to_invite(channel, statuses, resend)
         for i, contributor in enumerate(guests):
             try:
-                if not contributor.card_image:
+                if not contributor.card_image and self.card_design:
                     self.issue_card(contributor)
                 send_fn(self, contributor)
                 results["success"] += 1
