@@ -188,11 +188,15 @@ def _custom_invitation_text(occasion_doc, guest_row) -> str:
         date=date_str,
         venue=occasion_doc.venue_name or "",
         address=occasion_doc.get("venue_address") or "",
+        location=occasion_doc.get("venue_location") or "",
         card_type=guest_row.card_type or "",
         number=guest_row.guest_code or "",
         link=link,
+        sender=sender_line(occasion_doc),
     )
-    return plain_sms_text(text)
+    # Drop lines that ended up empty (e.g. "Anwani: " when address not set)
+    lines = [l for l in text.splitlines() if l.strip() and not l.strip().endswith(":")]
+    return plain_sms_text("\n".join(lines))
 
 
 def _invitation_text(occasion_doc, guest_row, names) -> str:
