@@ -1,6 +1,7 @@
 import frappe
 import qrcode
 from io import BytesIO
+from urllib.parse import quote
 
 
 def generate_qr(guest_code: str, occasion_name: str) -> BytesIO:
@@ -13,14 +14,14 @@ def generate_qr(guest_code: str, occasion_name: str) -> BytesIO:
     qr_data = (
         f"{base_url}/gate-checkin"
         f"?code={guest_code}"
-        f"&occasion={frappe.utils.quote(occasion_name)}"
+        f"&occasion={quote(occasion_name)}"
     )
 
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
         box_size=8,
-        border=2,
+        border=1,
     )
     qr.add_data(qr_data)
     qr.make(fit=True)
