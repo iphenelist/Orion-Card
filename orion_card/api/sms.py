@@ -155,7 +155,12 @@ MIN_NAME_CHARS = 12
 def build_invitation_message(occasion_doc, guest_row) -> str:
     """The Swahili SMS invitation, kept to SMS_MAX_PARTS billed parts: plain
     GSM characters only, and a long event name, venue or guest name is cut
-    short rather than paying for a third part."""
+    short rather than paying for a third part.
+    If custom_sms_message is set on the occasion, it is used instead with
+    placeholders substituted."""
+    if occasion_doc.get("custom_sms_message"):
+        return _custom_invitation_text(occasion_doc, guest_row)
+
     names = {
         "guest": guest_row.contributor_name or "",
         "occasion": occasion_doc.occasion_name or "",
@@ -171,6 +176,23 @@ def build_invitation_message(occasion_doc, guest_row) -> str:
             names[key] = names[key][:keep].rstrip() + ".."
             text = _invitation_text(occasion_doc, guest_row, names)
     return text
+
+
+def _custom_invitation_text(occasion_doc, guest_row) -> str:
+    base = frappe.utils.get_url().rstrip("/")
+    date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
+    link = f"{base}/k/{guest_row.guest_code}" if occasion_doc.card_design else ""
+    text = (occasion_doc.custom_sms_message or "").format(
+        guest=guest_row.contributor_name or "",
+        occasion=occasion_doc.occasion_name or "",
+        date=date_str,
+        venue=occasion_doc.venue_name or "",
+        address=occasion_doc.get("venue_address") or "",
+        card_type=guest_row.card_type or "",
+        number=guest_row.guest_code or "",
+        link=link,
+    )
+    return plain_sms_text(text)
 
 
 def _invitation_text(occasion_doc, guest_row, names) -> str:

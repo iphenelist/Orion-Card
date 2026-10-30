@@ -70,6 +70,7 @@
   "col_break_contrib_actions_2",
   "send_reminders_btn",
   "guest_actions_section",
+  "custom_sms_message",
   "generate_cards_btn",
   "col_break_guest_actions",
   "send_whatsapp_btn",
@@ -427,6 +428,12 @@
    "fieldtype": "Section Break",
    "label": "Invitation Cards",
    "description": "Each guest can get the invitation 2 times by SMS and 2 times by WhatsApp."
+  },
+  {
+   "fieldname": "custom_sms_message",
+   "fieldtype": "Small Text",
+   "label": "Custom SMS Message",
+   "description": "Optional. If set, this text is sent instead of the default template. Use {guest}, {occasion}, {date}, {venue}, {address}, {card_type}, {number}, {link} as placeholders."
   },
   {
    "fieldname": "generate_cards_btn",
