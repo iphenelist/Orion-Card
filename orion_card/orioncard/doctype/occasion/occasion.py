@@ -377,12 +377,16 @@ class Occasion(Document):
         return [c for c in self.select_guests(statuses) if c.phone and counts.get(c.guest_code, 0) < most]
 
     def _send_all(self, channel: str, send_fn, statuses=None, resend=False) -> dict:
+        import random
+        import time
+
         from orion_card.utils.credits import InsufficientCreditsError, support_contact
 
         self.check_permission("write")
         self.assert_can_send()
         results = {"success": 0, "failed": 0, "errors": [], "credits_out": False}
-        for contributor in self.guests_to_invite(channel, statuses, resend):
+        guests = self.guests_to_invite(channel, statuses, resend)
+        for i, contributor in enumerate(guests):
             try:
                 if not contributor.card_image:
                     self.issue_card(contributor)
@@ -396,6 +400,10 @@ class Occasion(Document):
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append(f"{contributor.contributor_name}: {e}")
+            # WhatsApp bans numbers that fire messages without any pause.
+            # Skip the delay after the last message.
+            if channel == "WhatsApp" and i < len(guests) - 1:
+                time.sleep(random.uniform(1.5, 3.5))
         if results["credits_out"]:
             results["contact"] = support_contact()
         return results
