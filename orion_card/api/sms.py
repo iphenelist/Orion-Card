@@ -183,6 +183,8 @@ def _invitation_text(occasion_doc, guest_row, names) -> str:
         f"Tarehe: {when}",
         f"Ukumbi: {names['venue']}",
     ]
+    if occasion_doc.get("venue_address"):
+        lines.append(f"Anwani: {occasion_doc.venue_address}")
     if occasion_doc.get("venue_location"):
         lines.append(f"Mahali: {occasion_doc.venue_location}")
     lines.append(f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}")
