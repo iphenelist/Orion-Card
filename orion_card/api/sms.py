@@ -174,15 +174,17 @@ def _invitation_text(occasion_doc, guest_row, names) -> str:
     date_str = frappe.utils.formatdate(occasion_doc.occasion_date, "dd-MM-yyyy")
     when = ", ".join(part for part in (date_str, occasion_doc.occasion_time) if part)
     base = frappe.utils.get_url().rstrip("/")
-    return plain_sms_text("\n".join([
+    lines = [
         f"Habari {names['guest']},",
         f"Umealikwa kwenye {names['occasion']}.",
         f"Tarehe: {when}",
         f"Ukumbi: {names['venue']}",
         f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}",
-        f"Pakua kadi yako: {base}/k/{guest_row.guest_code}",
-        sender_line(occasion_doc),
-    ]))
+    ]
+    if occasion_doc.card_design:
+        lines.append(f"Pakua kadi yako: {base}/k/{guest_row.guest_code}")
+    lines.append(sender_line(occasion_doc))
+    return plain_sms_text("\n".join(lines))
 
 
 def send_invitation(occasion_doc, guest_row) -> dict:
