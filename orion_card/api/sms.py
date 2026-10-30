@@ -182,8 +182,10 @@ def _invitation_text(occasion_doc, guest_row, names) -> str:
         f"Umealikwa kwenye {names['occasion']}.",
         f"Tarehe: {when}",
         f"Ukumbi: {names['venue']}",
-        f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}",
     ]
+    if occasion_doc.get("venue_location"):
+        lines.append(f"Mahali: {occasion_doc.venue_location}")
+    lines.append(f"Kadi: {guest_row.card_type}, Namba: {guest_row.guest_code}")
     if occasion_doc.card_design:
         lines.append(f"Pakua kadi yako: {base}/k/{guest_row.guest_code}")
     lines.append(sender_line(occasion_doc))
