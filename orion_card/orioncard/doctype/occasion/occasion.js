@@ -295,7 +295,7 @@ function selected_statuses(d) {
 
 function with_saved(frm, fn) {
     if (frm.is_new() || frm.is_dirty()) {
-        frm.save().then(fn);
+        frm.save("Save", fn);
     } else {
         fn();
     }
