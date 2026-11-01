@@ -194,6 +194,12 @@
   font-size: 13px;
   font-weight: 500;
   transition: background .15s, color .15s;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
 .ocd-logout svg {
