@@ -93,21 +93,21 @@ def remove_contributor(occasion, row_name):
 # ── Bulk actions ────────────────────────────────────────────────────────────
 
 @frappe.whitelist()
-def generate_all_cards(occasion):
+def generate_all_cards(occasion, statuses=None):
     doc = _require_occasion_write(occasion)
-    return doc.generate_all_cards()
+    return doc.generate_all_cards(statuses=frappe.parse_json(statuses) if statuses else None)
 
 
 @frappe.whitelist()
-def send_all_whatsapp(occasion, resend=0):
+def send_all_whatsapp(occasion, resend=0, statuses=None):
     doc = _require_occasion_write(occasion)
-    return doc.send_all_whatsapp(resend=cint(resend))
+    return doc.send_all_whatsapp(resend=cint(resend), statuses=frappe.parse_json(statuses) if statuses else None)
 
 
 @frappe.whitelist()
-def send_all_sms(occasion, resend=0):
+def send_all_sms(occasion, resend=0, statuses=None):
     doc = _require_occasion_write(occasion)
-    return doc.send_all_sms(resend=cint(resend))
+    return doc.send_all_sms(resend=cint(resend), statuses=frappe.parse_json(statuses) if statuses else None)
 
 
 @frappe.whitelist()

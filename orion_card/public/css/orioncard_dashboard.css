@@ -795,6 +795,10 @@
 
 .ocd-check-label input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
 
+.ocd-check-group { display: flex; flex-direction: column; gap: 10px; }
+.ocd-text-muted { color: var(--oc-ink-muted, #6b7280); font-size: .85em; font-weight: 400; }
+.ocd-text-warn { color: var(--oc-red, #d03b3b); font-size: 13px; }
+
 /* ── Modal body scroll ── */
 .ocd-modal-body { padding: 20px 24px; }
 .ocd-modal-body + .ocd-form-alert { margin: 0 24px 8px; }
