@@ -593,7 +593,7 @@ function validateCode(code, occasionName) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Frappe-CSRF-Token": "{{ frappe.session.csrf_token }}"
+      "X-Frappe-CSRF-Token": "{{ frappe.sessions.get_csrf_token() }}"
     },
     body: JSON.stringify({ guest_code: code, occasion_name: occasionName, pin: getPin(occasionName) })
   })
