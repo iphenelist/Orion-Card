@@ -13,4 +13,4 @@ def get_context(context):
 	context.no_breadcrumbs = 1
 	context.user_full_name = user_doc.full_name or user_doc.first_name or frappe.session.user
 	context.user_email = frappe.session.user
-	context.csrf_token = frappe.session.csrf_token
+	context.csrf_token = frappe.sessions.get_csrf_token()

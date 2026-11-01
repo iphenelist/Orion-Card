@@ -72,19 +72,20 @@ def add_contributor(occasion, contributor_name, phone, card_type="SINGLE"):
 @frappe.whitelist()
 def update_contributor(occasion, row_name, contributor_name, phone=None, card_type="SINGLE"):
     _require_occasion_write(occasion)
-    # Save directly on the child row to avoid the parent's subscription
-    # validator (_assert_access_for_new_rows), which is irrelevant here —
-    # we are only editing fields on an already-saved row.
-    row = frappe.get_doc("Occasion Contributor", row_name)
-    if row.parent != occasion or row.parenttype != "Occasion":
+    # Verify the row belongs to this occasion before writing — avoids the need
+    # to load the full parent doc (which triggers _assert_access_for_new_rows
+    # and throws Subscription Required even for already-saved rows).
+    if not frappe.db.exists("Occasion Contributor", {"name": row_name, "parent": occasion}):
         frappe.throw(_("Contributor not found on this Occasion."))
     from orion_card.orioncard.doctype.occasion.occasion import card_admits
+    card_type = card_type or "SINGLE"
     table_size = frappe.db.get_value("Occasion", occasion, "table_size")
-    row.contributor_name = contributor_name
-    row.phone = phone or None
-    row.card_type = card_type or "SINGLE"
-    row.admits = card_admits(row.card_type, row.admits, table_size)
-    row.save(ignore_permissions=True)
+    frappe.db.set_value("Occasion Contributor", row_name, {
+        "contributor_name": contributor_name,
+        "phone": phone or None,
+        "card_type": card_type,
+        "admits": card_admits(card_type, None, table_size),
+    })
     return {"status": "ok"}
 
 

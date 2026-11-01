@@ -52,7 +52,7 @@ def get_context(context):
 	context.user_email = frappe.session.user
 	context.doc = doc
 	context.can_edit = frappe.has_permission("Occasion", "write", doc=doc.name)
-	context.csrf_token = frappe.session.csrf_token
+	context.csrf_token = frappe.sessions.get_csrf_token()
 	context.budget_categories = BUDGET_CATEGORIES
 	context.stats = {
 		"total": len(contribs),
