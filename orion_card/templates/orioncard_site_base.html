@@ -37,9 +37,9 @@
 				{% if frappe.db.get_single_value("OrionCard Settings", "allow_credit_purchase") %}
 				<a class="ec-btn ec-btn-text" href="/credits" data-i18n="nav.credits">Credits</a>
 				{% endif %}
-				<a class="ec-btn ec-btn-primary" href="/app/occasion" data-i18n="nav.dashboard">Matukio yangu</a>
+				<a class="ec-btn ec-btn-primary" href="/dashboard" data-i18n="nav.dashboard">Matukio yangu</a>
 				{% else %}
-				<a class="ec-btn ec-btn-text" href="/login?redirect-to=/app/occasion" data-i18n="nav.login">Ingia</a>
+				<a class="ec-btn ec-btn-text" href="/login?redirect-to=/dashboard" data-i18n="nav.login">Ingia</a>
 				<a class="ec-btn ec-btn-primary" href="/signup" data-i18n="nav.signup">Jisajili bure</a>
 				{% endif %}
 			</div>
@@ -67,7 +67,7 @@
 				<nav aria-label="Huduma">
 					<a href="/orioncard#jinsi" data-i18n="nav.how">Jinsi inavyofanya kazi</a>
 					<a href="/orioncard#bei" data-i18n="nav.pricing">Bei</a>
-					{% if frappe.session.user != "Guest" %}<a href="/app/occasion" data-i18n="nav.dashboard">Matukio yangu</a>{% else %}<a href="/signup" data-i18n="nav.signup">Jisajili bure</a>{% endif %}
+					{% if frappe.session.user != "Guest" %}<a href="/dashboard" data-i18n="nav.dashboard">Matukio yangu</a>{% else %}<a href="/signup" data-i18n="nav.signup">Jisajili bure</a>{% endif %}
 				</nav>
 			</div>
 			<div>

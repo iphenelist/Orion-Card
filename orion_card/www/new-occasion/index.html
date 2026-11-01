@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tukio Jipya — OrionCard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
+</head>
+<body class="ocd-body">
+
+<div class="ocd-layout">
+
+  <!-- Sidebar -->
+  <aside class="ocd-sidebar" id="ocdSidebar">
+    <div class="ocd-sidebar-header">
+      <a class="ocd-logo" href="/"><span class="ec-logo-mark" aria-hidden="true"></span>OrionCard</a>
+      <button class="ocd-sidebar-close" id="ocdSidebarClose" aria-label="Funga menyu">&#10005;</button>
+    </div>
+    <nav class="ocd-nav" aria-label="Menyu kuu">
+      <span class="ocd-nav-section">Akaunti yangu</span>
+      <a class="ocd-nav-item" href="/dashboard">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4Zm0 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4Zm9-9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Zm0 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4Z"/></svg>
+        Matukio yangu
+      </a>
+      <a class="ocd-nav-item ocd-nav-active" href="/new-occasion">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
+        Tukio Jipya
+      </a>
+      <a class="ocd-nav-item" href="/credits">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H2V4Zm0 3h16v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7Zm3 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm3 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/></svg>
+        Nunua Credits
+      </a>
+    </nav>
+    <div class="ocd-sidebar-footer">
+      <div class="ocd-user-chip">
+        <div class="ocd-user-avatar" aria-hidden="true">{{ (user_full_name or "U")[0] | upper }}</div>
+        <div class="ocd-user-info">
+          <span class="ocd-user-name">{{ user_full_name }}</span>
+          <span class="ocd-user-email">{{ user_email }}</span>
+        </div>
+      </div>
+      <a class="ocd-logout" href="/api/method/logout">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Zm10.22 4.47a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H7.5a.75.75 0 0 1 0-1.5h6.69l-.97-.97a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+        Toka
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ocd-main">
+    <header class="ocd-topbar">
+      <div class="ocd-topbar-left">
+        <button class="ocd-menu-btn" id="ocdMenuBtn" aria-label="Fungua menyu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <div>
+          <a class="ocd-breadcrumb" href="/dashboard">← Matukio yangu</a>
+          <h1 class="ocd-page-title">Unda Tukio Jipya</h1>
+        </div>
+      </div>
+    </header>
+
+    <div class="ocd-panel ocd-panel--form">
+      <div class="ocd-panel-header">
+        <h2 class="ocd-panel-title">Maelezo ya Tukio</h2>
+      </div>
+      <form id="newOccasionForm" class="ocd-form ocd-form--padded">
+
+        <div class="ocd-form-row">
+          <label class="ocd-label">Jina la Tukio <span class="ocd-req">*</span></label>
+          <input class="ocd-input" type="text" name="occasion_name" required
+            placeholder="kama vile: Harusi ya John na Amina 2026"
+            autocomplete="off">
+          <span class="ocd-hint">Jina hili litatumika kama kitambulisho cha kipekee.</span>
+        </div>
+
+        <div class="ocd-form-row">
+          <label class="ocd-label">Majina ya Wenzi <span class="ocd-req">*</span></label>
+          <input class="ocd-input" type="text" name="couple_names" required
+            placeholder="kama vile: John &amp; Amina">
+        </div>
+
+        <div class="ocd-form-row ocd-form-row--2">
+          <div>
+            <label class="ocd-label">Tarehe ya Tukio</label>
+            <input class="ocd-input" type="date" name="occasion_date">
+          </div>
+          <div>
+            <label class="ocd-label">Wakati</label>
+            <input class="ocd-input" type="text" name="occasion_time" placeholder="kama vile: 14:00">
+          </div>
+        </div>
+
+        <div class="ocd-form-row">
+          <label class="ocd-label">Jina la Mahali (Venue)</label>
+          <input class="ocd-input" type="text" name="venue_name" placeholder="kama vile: Diamond Jubilee Hall">
+        </div>
+
+        <div class="ocd-form-row">
+          <label class="ocd-label">Anwani ya Venue</label>
+          <textarea class="ocd-input ocd-textarea" name="venue_address" rows="2"
+            placeholder="Mtaa, Jiji"></textarea>
+        </div>
+
+        <div class="ocd-form-row ocd-form-row--2">
+          <div>
+            <label class="ocd-label">Mavazi (Dress Code)</label>
+            <input class="ocd-input" type="text" name="dress_code" placeholder="kama vile: Formal">
+          </div>
+          <div>
+            <label class="ocd-label">Mawasiliano 1</label>
+            <input class="ocd-input" type="text" name="contact_1" placeholder="+255...">
+          </div>
+        </div>
+
+        <div id="newOccAlert" class="ocd-form-alert" hidden></div>
+
+        <div class="ocd-form-actions">
+          <a class="ocd-btn ocd-btn-ghost" href="/dashboard">Ghairi</a>
+          <button type="submit" class="ocd-btn ocd-btn-primary" id="createBtn">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
+            Unda Tukio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+<div class="ocd-overlay" id="ocdOverlay" aria-hidden="true"></div>
+
+<script>
+(function () {
+  var CSRF = {{ csrf_token | tojson }};
+
+  var menuBtn = document.getElementById("ocdMenuBtn");
+  var closeBtn = document.getElementById("ocdSidebarClose");
+  var sidebar = document.getElementById("ocdSidebar");
+  var overlay = document.getElementById("ocdOverlay");
+  function openSidebar() { sidebar.classList.add("ocd-sidebar--open"); overlay.classList.add("ocd-overlay--visible"); }
+  function closeSidebar() { sidebar.classList.remove("ocd-sidebar--open"); overlay.classList.remove("ocd-overlay--visible"); }
+  menuBtn.addEventListener("click", openSidebar);
+  closeBtn.addEventListener("click", closeSidebar);
+  overlay.addEventListener("click", closeSidebar);
+
+  var form = document.getElementById("newOccasionForm");
+  var alert = document.getElementById("newOccAlert");
+  var createBtn = document.getElementById("createBtn");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    createBtn.disabled = true;
+    createBtn.textContent = "Inaunda…";
+    alert.hidden = true;
+
+    var fd = new FormData(form);
+    var params = new URLSearchParams();
+    params.append("csrf_token", CSRF);
+    fd.forEach(function (v, k) { params.append(k, v || ""); });
+
+    fetch("/api/method/orion_card.api.dashboard.create_occasion", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "X-Frappe-CSRF-Token": CSRF },
+      body: params,
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (r.exc || !r.message || r.message.status !== "ok") {
+          var msg = "";
+          try { msg = JSON.parse(r._server_messages || "[]")[0] || ""; msg = JSON.parse(msg).message || msg; } catch (x) {}
+          alert.hidden = false;
+          alert.className = "ocd-form-alert ocd-form-alert--err";
+          alert.textContent = msg || "Hitilafu imetokea. Jaribu tena.";
+          createBtn.disabled = false;
+          createBtn.innerHTML = '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg> Unda Tukio';
+          return;
+        }
+        window.location.href = "/my-occasion?name=" + encodeURIComponent(r.message.name);
+      })
+      .catch(function () {
+        alert.hidden = false;
+        alert.className = "ocd-form-alert ocd-form-alert--err";
+        alert.textContent = "Hitilafu ya mtandao. Jaribu tena.";
+        createBtn.disabled = false;
+        createBtn.textContent = "Unda Tukio";
+      });
+  });
+})();
+</script>
+</body>
+</html>

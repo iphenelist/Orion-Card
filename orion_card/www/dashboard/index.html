@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title or "Matukio Yangu — OrionCard" }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
+</head>
+<body class="ocd-body">
+
+<div class="ocd-layout">
+
+  <!-- Sidebar -->
+  <aside class="ocd-sidebar" id="ocdSidebar">
+    <div class="ocd-sidebar-header">
+      <a class="ocd-logo" href="/">
+        <span class="ec-logo-mark" aria-hidden="true"></span>
+        OrionCard
+      </a>
+      <button class="ocd-sidebar-close" id="ocdSidebarClose" aria-label="Funga menyu">&#10005;</button>
+    </div>
+
+    <nav class="ocd-nav" aria-label="Menyu kuu">
+      <span class="ocd-nav-section">Akaunti yangu</span>
+      <a class="ocd-nav-item ocd-nav-active" href="/dashboard">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M3 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4Zm0 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4Zm9-9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Zm0 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4Z"/>
+        </svg>
+        Matukio yangu
+      </a>
+      <a class="ocd-nav-item" href="/new-occasion">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
+        </svg>
+        Tukio Jipya
+      </a>
+      <a class="ocd-nav-item" href="/credits">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M2 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H2V4Zm0 3h16v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7Zm3 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm3 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/>
+        </svg>
+        Nunua Credits
+      </a>
+    </nav>
+
+    <div class="ocd-sidebar-footer">
+      <div class="ocd-user-chip">
+        <div class="ocd-user-avatar" aria-hidden="true">
+          {{ (user_full_name or "U")[0] | upper }}
+        </div>
+        <div class="ocd-user-info">
+          <span class="ocd-user-name">{{ user_full_name }}</span>
+          <span class="ocd-user-email">{{ user_email }}</span>
+        </div>
+      </div>
+      <a class="ocd-logout" href="/api/method/logout">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Zm10.22 4.47a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H7.5a.75.75 0 0 1 0-1.5h6.69l-.97-.97a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+        </svg>
+        Toka
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="ocd-main">
+
+    <!-- Top bar -->
+    <header class="ocd-topbar">
+      <div class="ocd-topbar-left">
+        <button class="ocd-menu-btn" id="ocdMenuBtn" aria-label="Fungua menyu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <h1 class="ocd-page-title">Matukio Yangu</h1>
+      </div>
+      <div class="ocd-topbar-right">
+        <a class="ocd-btn ocd-btn-primary" href="/new-occasion">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
+          </svg>
+          Tukio Jipya
+        </a>
+      </div>
+    </header>
+
+    <!-- Stats tiles -->
+    <section class="ocd-stats" aria-label="Takwimu">
+      <div class="ocd-stat-tile">
+        <div class="ocd-stat-icon ocd-stat-icon--blue">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M5.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H6a.75.75 0 0 1-.75-.75V12Zm2 0a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H8a.75.75 0 0 1-.75-.75V12Zm-3.5-4.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H4a.75.75 0 0 0 .75-.75v-.01A.75.75 0 0 0 4 7.75h-.25ZM5.25 8.5a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H6a.75.75 0 0 1-.75-.75V8.5Zm2 0a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H8a.75.75 0 0 1-.75-.75V8.5Zm2 0a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H10a.75.75 0 0 1-.75-.75V8.5Zm2 0a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H12a.75.75 0 0 1-.75-.75V8.5ZM10.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H11a.75.75 0 0 1-.75-.75V12ZM2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 14.5v-8Zm2.5-1a1 1 0 0 0-1 1V14.5a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V6.5a1 1 0 0 0-1-1h-11Z"/>
+          </svg>
+        </div>
+        <div class="ocd-stat-body">
+          <span class="ocd-stat-label">Matukio Hai</span>
+          <span class="ocd-stat-value">{{ stats.active_occasions }}</span>
+          <span class="ocd-stat-sub">kati ya {{ stats.total_occasions }} yote</span>
+        </div>
+      </div>
+
+      <div class="ocd-stat-tile">
+        <div class="ocd-stat-icon ocd-stat-icon--green">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 17a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z"/>
+          </svg>
+        </div>
+        <div class="ocd-stat-body">
+          <span class="ocd-stat-label">Wageni Wote</span>
+          <span class="ocd-stat-value">{{ stats.total_guests }}</span>
+          <span class="ocd-stat-sub">wachangiaji waliosajiliwa</span>
+        </div>
+      </div>
+
+      <div class="ocd-stat-tile">
+        <div class="ocd-stat-icon ocd-stat-icon--purple">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/>
+            <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/>
+          </svg>
+        </div>
+        <div class="ocd-stat-body">
+          <span class="ocd-stat-label">Kadi Zilizotumwa</span>
+          <span class="ocd-stat-value">{{ stats.cards_sent }}</span>
+          <span class="ocd-stat-sub">mwaliko uliowasilishwa</span>
+        </div>
+      </div>
+
+      <div class="ocd-stat-tile">
+        <div class="ocd-stat-icon ocd-stat-icon--amber">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M1 8.25a1.25 1.25 0 0 1 2.5 0V12c0 .414.336.75.75.75h6.5a.75.75 0 0 0 .75-.75V8.25a1.25 1.25 0 0 1 2.5 0v3.75a3.25 3.25 0 0 1-3.25 3.25h-6.5A3.25 3.25 0 0 1 1 12V8.25Z"/>
+            <path d="M9.25 5.25a.75.75 0 0 1 .75-.75h1.75a2.25 2.25 0 0 1 0 4.5H10a.75.75 0 0 1-.75-.75v-3Zm1.5 2.25h.25a.75.75 0 0 0 0-1.5H10.75v1.5Z"/>
+          </svg>
+        </div>
+        <div class="ocd-stat-body">
+          <span class="ocd-stat-label">Salio la Credits</span>
+          <span class="ocd-stat-value">{{ stats.credits_balance }}</span>
+          <span class="ocd-stat-sub"><a href="/credits" class="ocd-link">Nunua zaidi</a></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Occasions table -->
+    <section class="ocd-panel">
+      <div class="ocd-panel-header">
+        <h2 class="ocd-panel-title">Orodha ya Matukio</h2>
+        <a class="ocd-btn ocd-btn-ghost" href="/new-occasion">+ Tukio Jipya</a>
+      </div>
+
+      {% if occasions %}
+      <div class="ocd-table-wrap">
+        <table class="ocd-table">
+          <thead>
+            <tr>
+              <th>Jina la Tukio</th>
+              <th>Tarehe</th>
+              <th>Mahali</th>
+              <th>Hali</th>
+              <th class="ocd-th-actions">Vitendo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for occ in occasions %}
+            <tr>
+              <td class="ocd-td-name">
+                <span class="ocd-occ-name">{{ occ.couple_names or occ.name }}</span>
+                <span class="ocd-occ-id">{{ occ.name }}</span>
+              </td>
+              <td>
+                {% if occ.occasion_date %}
+                <span>{{ frappe.utils.format_date(occ.occasion_date, "d MMM yyyy") }}</span>
+                {% if occ.occasion_time %}
+                <span class="ocd-muted"> · {{ occ.occasion_time }}</span>
+                {% endif %}
+                {% else %}
+                <span class="ocd-muted">—</span>
+                {% endif %}
+              </td>
+              <td>{{ occ.venue_name or "—" }}</td>
+              <td>
+                {% if occ.status == "Active" %}
+                <span class="ocd-badge ocd-badge--active">Hai</span>
+                {% elif occ.status == "Completed" %}
+                <span class="ocd-badge ocd-badge--done">Imekamilika</span>
+                {% else %}
+                <span class="ocd-badge ocd-badge--draft">Rasimu</span>
+                {% endif %}
+              </td>
+              <td class="ocd-td-actions">
+                <a class="ocd-action-btn" href="/my-occasion?name={{ occ.name | urlencode }}" title="Fungua">
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z"/>
+                    <path d="M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z"/>
+                  </svg>
+                  Fungua
+                </a>
+                <a class="ocd-action-btn ocd-action-btn--gate" href="/gate-checkin?occasion={{ occ.name }}" title="Ukaguzi wa Geti">
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 0 1 2-2h4.586A2 2 0 0 1 12 2.586L15.414 6A2 2 0 0 1 16 7.414V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Zm2 6a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm1 3a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2H7Z" clip-rule="evenodd"/>
+                  </svg>
+                  Geti
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="ocd-empty">
+        <svg class="ocd-empty-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="8" y="12" width="32" height="28" rx="3"/>
+          <path d="M16 12V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M20 24h8M24 20v8"/>
+        </svg>
+        <p class="ocd-empty-title">Bado huna matukio</p>
+        <p class="ocd-empty-sub">Anza sasa kwa kuunda tukio lako la kwanza.</p>
+        <a class="ocd-btn ocd-btn-primary" href="/new-occasion">Unda Tukio la Kwanza</a>
+      </div>
+      {% endif %}
+    </section>
+
+  </div><!-- /.ocd-main -->
+</div><!-- /.ocd-layout -->
+
+<div class="ocd-overlay" id="ocdOverlay" aria-hidden="true"></div>
+
+<script>
+(function () {
+  var menuBtn = document.getElementById("ocdMenuBtn");
+  var closeBtn = document.getElementById("ocdSidebarClose");
+  var sidebar = document.getElementById("ocdSidebar");
+  var overlay = document.getElementById("ocdOverlay");
+
+  function openSidebar() {
+    sidebar.classList.add("ocd-sidebar--open");
+    overlay.classList.add("ocd-overlay--visible");
+    menuBtn.setAttribute("aria-expanded", "true");
+  }
+  function closeSidebar() {
+    sidebar.classList.remove("ocd-sidebar--open");
+    overlay.classList.remove("ocd-overlay--visible");
+    menuBtn.setAttribute("aria-expanded", "false");
+  }
+
+  menuBtn.addEventListener("click", openSidebar);
+  closeBtn.addEventListener("click", closeSidebar);
+  overlay.addEventListener("click", closeSidebar);
+})();
+</script>
+</body>
+</html>
