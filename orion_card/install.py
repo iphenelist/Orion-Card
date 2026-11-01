@@ -61,7 +61,7 @@ def setup_roles():
         else:
             frappe.db.set_value("Role", role_name, "desk_access", 1)
     # Occasion Managers land on their Occasion list in the Desk after login.
-    frappe.db.set_value("Role", "Occasion Manager", "home_page", "/app/occasion")
+    frappe.db.set_value("Role", "Occasion Manager", "home_page", "/dashboard")
 
 
 def setup_settings_defaults():

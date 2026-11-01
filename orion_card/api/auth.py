@@ -80,7 +80,7 @@ def sign_up(
 	return {
 		"status": "ok",
 		"message": _("Akaunti imeundwa! / Account created!"),
-		"redirect_to": "/app/occasion",
+		"redirect_to": "/dashboard",
 	}
 
 

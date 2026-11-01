@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ doc.couple_names or doc.name }} — OrionCard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
+</head>
+<body class="ocd-body">
+
+<div class="ocd-layout">
+
+  <!-- Sidebar -->
+  <aside class="ocd-sidebar" id="ocdSidebar">
+    <div class="ocd-sidebar-header">
+      <a class="ocd-logo" href="/"><span class="ec-logo-mark" aria-hidden="true"></span>OrionCard</a>
+      <button class="ocd-sidebar-close" id="ocdSidebarClose" aria-label="Funga menyu">&#10005;</button>
+    </div>
+    <nav class="ocd-nav" aria-label="Menyu kuu">
+      <span class="ocd-nav-section">Akaunti yangu</span>
+      <a class="ocd-nav-item" href="/dashboard">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 0 1 1-1h4v6H3V4Zm0 7h5v6H4a1 1 0 0 1-1-1v-5Zm7-7h5a1 1 0 0 1 1 1v5h-6V4Zm0 7h6v5a1 1 0 0 1-1 1h-5v-6Z"/></svg>
+        Matukio yangu
+      </a>
+      <a class="ocd-nav-item ocd-nav-active" href="#">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1Zm0 5a1 1 0 0 0 0 2h8a1 1 0 1 0 0-2H6Z" clip-rule="evenodd"/></svg>
+        {{ (doc.couple_names or doc.name) | truncate(22, True, '…') }}
+      </a>
+      <a class="ocd-nav-item" href="/new-occasion">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
+        Tukio Jipya
+      </a>
+      <a class="ocd-nav-item" href="/credits">
+        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H2V4Zm0 3h16v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7Zm3 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm3 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/></svg>
+        Nunua Credits
+      </a>
+    </nav>
+    <div class="ocd-sidebar-footer">
+      <div class="ocd-user-chip">
+        <div class="ocd-user-avatar" aria-hidden="true">{{ (user_full_name or "U")[0] | upper }}</div>
+        <div class="ocd-user-info">
+          <span class="ocd-user-name">{{ user_full_name }}</span>
+          <span class="ocd-user-email">{{ user_email }}</span>
+        </div>
+      </div>
+      <a class="ocd-logout" href="/api/method/logout">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Zm10.22 4.47a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H7.5a.75.75 0 0 1 0-1.5h6.69l-.97-.97a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+        Toka
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ocd-main">
+    <header class="ocd-topbar">
+      <div class="ocd-topbar-left">
+        <button class="ocd-menu-btn" id="ocdMenuBtn" aria-label="Fungua menyu" aria-expanded="false"><span></span><span></span><span></span></button>
+        <div>
+          <a class="ocd-breadcrumb" href="/dashboard">← Matukio yangu</a>
+          <h1 class="ocd-page-title">{{ doc.couple_names or doc.name }}</h1>
+        </div>
+      </div>
+      <div class="ocd-topbar-right">
+        {% if doc.status == "Active" %}<span class="ocd-badge ocd-badge--active">Hai</span>
+        {% elif doc.status == "Completed" %}<span class="ocd-badge ocd-badge--done">Imekamilika</span>
+        {% else %}<span class="ocd-badge ocd-badge--draft">Rasimu</span>{% endif %}
+        <a class="ocd-btn ocd-btn-ghost" href="/gate-checkin?occasion={{ doc.name | urlencode }}">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 0 1 2-2h4.586A2 2 0 0 1 12 2.586L15.414 6A2 2 0 0 1 16 7.414V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Zm2 6a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm1 3a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2H7Z" clip-rule="evenodd"/></svg>
+          Ukaguzi wa Geti
+        </a>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="ocd-tabs">
+      <button class="ocd-tab ocd-tab--active" data-tab="details">Maelezo</button>
+      <button class="ocd-tab" data-tab="contributors">Wachangiaji <span class="ocd-tab-count">{{ doc.contributors | length }}</span></button>
+      <button class="ocd-tab" data-tab="budget">Bajeti</button>
+      <button class="ocd-tab" data-tab="card">Kadi</button>
+      <button class="ocd-tab" data-tab="stats">Takwimu</button>
+    </div>
+
+    <!-- ══ Tab: Maelezo ══ -->
+    <div id="tab-details" class="ocd-tab-pane ocd-tab-pane--active">
+      <!-- Basic details -->
+      <div class="ocd-panel" style="margin-top:16px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Maelezo ya Tukio</h2>
+          {% if can_edit %}<button class="ocd-btn ocd-btn-ghost" id="editDetailsBtn">Hariri</button>{% endif %}
+        </div>
+        <div class="ocd-detail-grid">
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Majina ya Wenzi</span><span class="ocd-detail-value">{{ doc.couple_names or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Tarehe</span><span class="ocd-detail-value">{{ frappe.utils.format_date(doc.occasion_date, "d MMMM yyyy") if doc.occasion_date else "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Wakati</span><span class="ocd-detail-value">{{ doc.occasion_time or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Mahali (Venue)</span><span class="ocd-detail-value">{{ doc.venue_name or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Anwani</span><span class="ocd-detail-value">{{ doc.venue_address or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Eneo (GPS/Link)</span><span class="ocd-detail-value">{% if doc.venue_location %}<a href="{{ doc.venue_location }}" target="_blank" class="ocd-link">Angalia Eneo</a>{% else %}—{% endif %}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Mavazi</span><span class="ocd-detail-value">{{ doc.dress_code or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Mawasiliano 1</span><span class="ocd-detail-value">{{ doc.contact_1 or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Mawasiliano 2</span><span class="ocd-detail-value">{{ doc.contact_2 or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Hali</span><span class="ocd-detail-value">{{ doc.status or "Draft" }}</span></div>
+        </div>
+      </div>
+      <!-- Gate settings -->
+      <div class="ocd-panel" style="margin-top:12px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Mipangilio ya Geti</h2>
+          {% if can_edit %}<button class="ocd-btn ocd-btn-ghost" id="editGateBtn">Hariri</button>{% endif %}
+        </div>
+        <div class="ocd-detail-grid">
+          <div class="ocd-detail-item"><span class="ocd-detail-label">PIN ya Geti</span><span class="ocd-detail-value ocd-pin">{{ doc.gate_pin or "—" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Ukubwa wa Meza</span><span class="ocd-detail-value">{{ doc.table_size or 10 }} watu</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Ruhusu Kuingia Tena</span><span class="ocd-detail-value">{{ "Ndiyo" if doc.allow_reentry else "Hapana" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Tab: Wachangiaji ══ -->
+    <div id="tab-contributors" class="ocd-tab-pane">
+      <!-- Bulk actions -->
+      {% if can_edit %}
+      <div class="ocd-panel ocd-panel--actions" style="margin-top:16px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Vitendo vya Pamoja</h2>
+        </div>
+        <div class="ocd-action-row">
+          <button class="ocd-btn ocd-btn-action" id="btnGenCards" title="Tengeneza kadi za wageni wote">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/><path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/></svg>
+            Tengeneza Kadi
+          </button>
+          <button class="ocd-btn ocd-btn-action ocd-btn--wa" id="btnSendWA">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.505 2.365A41.369 41.369 0 0 1 9 2c1.863 0 3.087.16 3.307.19l.065.012c1.583.268 2.394.997 2.785 1.5a3.75 3.75 0 0 1 .795 2.295c0 1.124-.403 2.077-1.068 2.783a5.264 5.264 0 0 1-.875.673c.15.31.274.627.369.948a18.07 18.07 0 0 1-1.507.48l-.167.04-.15.043-.267.072a.5.5 0 0 0-.355.47v.003a9.667 9.667 0 0 1-.39 2.714c-.165.511-.371.988-.638 1.399a4.25 4.25 0 0 1-1.024 1.118c-.432.306-.946.49-1.523.49H9a1 1 0 0 1-1-1V15.5a.5.5 0 0 0-.5-.5H7a1 1 0 0 1-1-1v-2.5a.5.5 0 0 0-.5-.5H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h.127a.5.5 0 0 0 .488-.392l.028-.143A4.25 4.25 0 0 1 7.5 5.25a1 1 0 0 0 .883-.534l.024-.046A4.25 4.25 0 0 1 11.875 2.5"/></svg>
+            Tuma WhatsApp
+          </button>
+          <button class="ocd-btn ocd-btn-action ocd-btn--sms" id="btnSendSMS">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293l-2.414 2.414A.5.5 0 0 1 .5 17.207V5Z" clip-rule="evenodd"/></svg>
+            Tuma SMS
+          </button>
+          <button class="ocd-btn ocd-btn-action ocd-btn--remind" id="btnSendReminders">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.091 32.091 0 0 0 3.256.508 3.5 3.5 0 0 0 6.972 0 32.085 32.085 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6ZM8.05 14.943a33.54 33.54 0 0 0 3.9 0 2 2 0 0 1-3.9 0Z" clip-rule="evenodd"/></svg>
+            Tuma Vikumbusha
+          </button>
+          <a class="ocd-btn ocd-btn-action ocd-btn--export"
+             href="/api/method/orion_card.orioncard.doctype.occasion.occasion.export_contributors?occasion={{ doc.name | urlencode }}">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+            Pakua Excel
+          </a>
+          <label class="ocd-btn ocd-btn-action ocd-btn--import" title="Pakia faili la Excel/CSV">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"/></svg>
+            Pakia Excel
+            <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none">
+          </label>
+        </div>
+        <div id="bulkResult" class="ocd-bulk-result" hidden></div>
+      </div>
+      {% endif %}
+
+      <!-- Contributors table -->
+      <div class="ocd-panel" style="margin-top:12px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Orodha ya Wachangiaji (<span id="contribsCount">{{ doc.contributors | length }}</span>)</h2>
+          {% if can_edit %}<button class="ocd-btn ocd-btn-primary" id="addContributorBtn">+ Ongeza</button>{% endif %}
+        </div>
+        {% if doc.contributors %}
+        <div class="ocd-search-bar">
+          <svg class="ocd-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg>
+          <input type="search" id="contribSearch" class="ocd-search-input" placeholder="Tafuta kwa jina, simu au msimbo…" autocomplete="off">
+          <button class="ocd-search-clear" id="contribSearchClear" aria-label="Futa utafutaji" hidden>&#10005;</button>
+        </div>
+        <div class="ocd-table-wrap">
+          <table class="ocd-table" id="contributorsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Jina</th>
+                <th>Simu</th>
+                <th>Kadi</th>
+                <th>Msimbo</th>
+                <th>RSVP</th>
+                <th>Malipo</th>
+                <th>Kadi Iliyoundwa</th>
+                {% if can_edit %}<th class="ocd-th-actions">Vitendo</th>{% endif %}
+              </tr>
+            </thead>
+            <tbody id="contributorsBody">
+              {% for c in doc.contributors %}
+              <tr id="row-{{ c.name }}">
+                <td class="ocd-muted">{{ loop.index }}</td>
+                <td><strong>{{ c.contributor_name }}</strong></td>
+                <td>{{ c.phone or "—" }}</td>
+                <td><span class="ocd-badge ocd-badge--cardtype ocd-cardtype-{{ (c.card_type or 'SINGLE') | lower }}">{{ c.card_type or "SINGLE" }}</span></td>
+                <td class="ocd-mono ocd-muted">{{ c.guest_code or "—" }}</td>
+                <td>
+                  {% if c.rsvp_status == "Accepted" %}<span class="ocd-badge ocd-badge--active">Amekubali</span>
+                  {% elif c.rsvp_status == "Declined" %}<span class="ocd-badge" style="background:#fee2e2;color:#b91c1c;">Amekataa</span>
+                  {% else %}<span class="ocd-badge ocd-badge--draft">Bado</span>{% endif %}
+                </td>
+                <td>
+                  {% if c.payment_status == "Fully Paid" %}<span class="ocd-badge ocd-badge--active">Imelipwa</span>
+                  {% elif c.payment_status == "Partially Paid" %}<span class="ocd-badge" style="background:#fef3c7;color:#92400e;">Sehemu</span>
+                  {% else %}<span class="ocd-badge ocd-badge--draft">Hajalipa</span>{% endif %}
+                </td>
+                <td>
+                  {% if c.card_image %}
+                  <a href="{{ c.card_image }}" target="_blank" class="ocd-badge ocd-badge--active">Ipo ✓</a>
+                  {% else %}<span class="ocd-badge ocd-badge--draft">Bado</span>{% endif %}
+                </td>
+                {% if can_edit %}
+                <td class="ocd-td-actions">
+                  <button class="ocd-action-btn ocd-action-btn--edit" data-row="{{ c.name }}"
+                    data-name="{{ c.contributor_name }}" data-phone="{{ c.phone or '' }}"
+                    data-cardtype="{{ c.card_type or 'SINGLE' }}" title="Hariri">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/></svg>
+                  </button>
+                  <button class="ocd-action-btn ocd-action-btn--del" data-row="{{ c.name }}" title="Futa">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg>
+                  </button>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+              <tr id="noSearchResults" hidden>
+                <td colspan="9" class="ocd-search-empty">Hakuna mchangiaji anayelingana na utafutaji huu.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="ocd-empty" id="emptyContributors">
+          <svg class="ocd-empty-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="24" cy="16" r="8"/><path d="M8 40c0-8.837 7.163-16 16-16s16 7.163 16 16"/></svg>
+          <p class="ocd-empty-title">Hakuna wachangiaji bado</p>
+          <p class="ocd-empty-sub">Ongeza wageni kwa kubonyeza kitufe hapo juu.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ══ Tab: Bajeti ══ -->
+    <div id="tab-budget" class="ocd-tab-pane">
+      <!-- Budget summary -->
+      <div class="ocd-stat-row" style="margin-top:16px;">
+        <div class="ocd-stat-tile ocd-stat-tile--sm">
+          <div class="ocd-stat-icon ocd-stat-icon--blue"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 0 0-1.138-.432ZM8.33 8.62c.053.055.115.11.184.164.208.16.46.284.736.363V6.603a2.45 2.45 0 0 0-.35.13c-.14.065-.27.143-.386.233-.377.292-.514.627-.514.909 0 .184.058.39.33.583Z"/><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-6a.75.75 0 0 1 .75.75v.316a3.78 3.78 0 0 1 1.653.713c.426.33.744.74.925 1.2a.75.75 0 0 1-1.395.55 1.35 1.35 0 0 0-.447-.563 2.187 2.187 0 0 0-.736-.363V9.3c.698.093 1.383.32 1.959.696.787.514 1.29 1.27 1.29 2.13 0 .86-.503 1.616-1.29 2.13-.576.377-1.261.603-1.96.696v.299a.75.75 0 0 1-1.5 0v-.3c-.697-.092-1.382-.318-1.958-.695-.482-.315-.857-.717-1.078-1.188a.75.75 0 1 1 1.359-.636c.08.173.245.376.54.569.313.205.706.353 1.138.432v-2.748a3.782 3.782 0 0 1-1.653-.713C6.9 9.433 6.5 8.681 6.5 7.875c0-.805.4-1.558 1.097-2.096a3.78 3.78 0 0 1 1.653-.713V4.75A.75.75 0 0 1 10 4Z" clip-rule="evenodd"/></svg></div>
+          <div class="ocd-stat-body"><span class="ocd-stat-label">Bajeti Jumla</span><span class="ocd-stat-value">{{ "{:,.0f}".format(doc.total_budget or 0) }}</span><span class="ocd-stat-sub">TZS</span></div>
+        </div>
+        <div class="ocd-stat-tile ocd-stat-tile--sm">
+          <div class="ocd-stat-icon ocd-stat-icon--amber"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M1 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4Zm12 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM4 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm13-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM1.75 14.5a.75.75 0 0 0 0 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.512 2.251-1.696v-.784a.75.75 0 0 0-1.5 0v.784a.272.272 0 0 1-.35.25A49.043 49.043 0 0 0 1.75 14.5Z" clip-rule="evenodd"/></svg></div>
+          <div class="ocd-stat-body"><span class="ocd-stat-label">Iliyokusanywa</span><span class="ocd-stat-value">{{ "{:,.0f}".format(doc.total_collected or 0) }}</span><span class="ocd-stat-sub">TZS</span></div>
+        </div>
+        <div class="ocd-stat-tile ocd-stat-tile--sm">
+          <div class="ocd-stat-icon ocd-stat-icon--green"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/></svg></div>
+          <div class="ocd-stat-body"><span class="ocd-stat-label">Michango (Ahadi)</span><span class="ocd-stat-value">{{ "{:,.0f}".format(doc.total_pledged or 0) }}</span><span class="ocd-stat-sub">TZS</span></div>
+        </div>
+        <div class="ocd-stat-tile ocd-stat-tile--sm">
+          <div class="ocd-stat-icon ocd-stat-icon--purple"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/></svg></div>
+          <div class="ocd-stat-body"><span class="ocd-stat-label">Pengo la Fedha</span><span class="ocd-stat-value">{{ "{:,.0f}".format(doc.funding_gap or 0) }}</span><span class="ocd-stat-sub">TZS</span></div>
+        </div>
+      </div>
+
+      <!-- Budget settings -->
+      <div class="ocd-panel" style="margin-top:12px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Mipangilio ya Michango</h2>
+          {% if can_edit %}<button class="ocd-btn ocd-btn-ghost" id="editBudgetSettingsBtn">Hariri</button>{% endif %}
+        </div>
+        <div class="ocd-detail-grid">
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Bajeti Jumla</span><span class="ocd-detail-value">TZS {{ "{:,.0f}".format(doc.total_budget or 0) }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Tarehe ya Mwisho (Michango)</span><span class="ocd-detail-value">{{ frappe.utils.format_date(doc.contribution_deadline, "d MMMM yyyy") if doc.contribution_deadline else "—" }}</span></div>
+          <div class="ocd-detail-item" style="grid-column:1/-1"><span class="ocd-detail-label">Maelekezo ya Malipo</span><span class="ocd-detail-value" style="white-space:pre-line">{{ doc.payment_instructions or "—" }}</span></div>
+        </div>
+      </div>
+
+      <!-- Budget items -->
+      <div class="ocd-panel" style="margin-top:12px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Vipengele vya Bajeti</h2>
+          {% if can_edit %}<button class="ocd-btn ocd-btn-primary" id="addBudgetItemBtn">+ Ongeza</button>{% endif %}
+        </div>
+        {% if doc.budget_items %}
+        <div class="ocd-table-wrap">
+          <table class="ocd-table" id="budgetTable">
+            <thead>
+              <tr><th>Jamii</th><th>Maelezo</th><th>Iliopangwa (TZS)</th><th>Halisi (TZS)</th>{% if can_edit %}<th class="ocd-th-actions">Vitendo</th>{% endif %}</tr>
+            </thead>
+            <tbody id="budgetBody">
+              {% for b in doc.budget_items %}
+              <tr id="brow-{{ b.name }}">
+                <td><span class="ocd-badge ocd-badge--draft">{{ b.category or "—" }}</span></td>
+                <td>{{ b.description or "—" }}</td>
+                <td class="ocd-num">{{ "{:,.0f}".format(b.budgeted_amount or 0) }}</td>
+                <td class="ocd-num">{{ "{:,.0f}".format(b.actual_amount or 0) }}</td>
+                {% if can_edit %}
+                <td class="ocd-td-actions">
+                  <button class="ocd-action-btn ocd-budget-edit" data-row="{{ b.name }}"
+                    data-cat="{{ b.category }}" data-desc="{{ b.description }}"
+                    data-budgeted="{{ b.budgeted_amount or 0 }}" data-actual="{{ b.actual_amount or 0 }}"
+                    data-notes="{{ b.notes or '' }}">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/></svg>
+                  </button>
+                  <button class="ocd-action-btn ocd-action-btn--del ocd-budget-del" data-row="{{ b.name }}">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4Z" clip-rule="evenodd"/></svg>
+                  </button>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="ocd-empty"><p class="ocd-empty-title" style="font-size:14px">Hakuna vipengele bado</p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ══ Tab: Kadi ══ -->
+    <div id="tab-card" class="ocd-tab-pane">
+      <div class="ocd-panel" style="margin-top:16px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Muundo wa Kadi</h2>
+        </div>
+        <div class="ocd-card-design-area">
+          <div class="ocd-card-preview" id="cardPreviewBox">
+            {% if doc.card_preview_image %}
+            <img src="{{ doc.card_preview_image }}" alt="Muundo wa kadi" class="ocd-card-img" id="cardPreviewImg">
+            {% else %}
+            <div class="ocd-card-placeholder" id="cardPlaceholder">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="10" width="36" height="28" rx="3"/><path d="M6 20h36M14 28h8"/></svg>
+              <p>Hakuna muundo bado</p>
+            </div>
+            {% endif %}
+          </div>
+          {% if can_edit %}
+          <div class="ocd-card-actions">
+            <p class="ocd-hint" style="margin-bottom:12px">Pakia picha ya muundo wa kadi (PNG au JPG). Inapakiwa, kadi zote zitaundwa kwa muundo huo.</p>
+            <label class="ocd-btn ocd-btn-primary ocd-upload-label" id="uploadDesignLabel">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"/></svg>
+              Pakia Muundo Mpya
+              <input type="file" id="designFileInput" accept="image/*" style="display:none">
+            </label>
+            <div id="uploadAlert" class="ocd-form-alert" hidden style="margin-top:10px"></div>
+            <hr style="border:none;border-top:1px solid var(--oc-line);margin:20px 0">
+            <p class="ocd-hint" style="margin-bottom:12px">Baada ya kupakia muundo, bonyeza hapa kutengeneza kadi za wageni wote.</p>
+            <button class="ocd-btn ocd-btn-action" id="btnGenCardsTab">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/><path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/></svg>
+              Tengeneza Kadi Zote
+            </button>
+            <div id="genCardResult" class="ocd-bulk-result" hidden style="margin-top:10px"></div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Card style settings -->
+      <div class="ocd-panel" style="margin-top:12px;">
+        <div class="ocd-panel-header">
+          <h2 class="ocd-panel-title">Mipangilio ya Kadi</h2>
+        </div>
+        <div class="ocd-detail-grid">
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Rangi ya Aina ya Kadi</span><span class="ocd-detail-value">{% if doc.card_type_color %}<span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:{{ doc.card_type_color }};vertical-align:middle;margin-right:6px"></span>{{ doc.card_type_color }}{% else %}—{% endif %}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Rangi ya Jina</span><span class="ocd-detail-value">{% if doc.name_color %}<span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:{{ doc.name_color }};vertical-align:middle;margin-right:6px"></span>{{ doc.name_color }}{% else %}—{% endif %}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Fonti ya Jina</span><span class="ocd-detail-value">{{ doc.name_font or "Default" }}</span></div>
+          <div class="ocd-detail-item"><span class="ocd-detail-label">Ukubwa wa Fonti</span><span class="ocd-detail-value">{{ doc.name_font_size or "—" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Tab: Takwimu ══ -->
+    <div id="tab-stats" class="ocd-tab-pane">
+      <div class="ocd-stat-row" style="margin-top:16px;">
+        <!-- RSVP -->
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">RSVP</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekubali</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.rsvp_accepted / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_accepted }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekataa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--red" style="width:{{ ((stats.rsvp_declined / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_declined }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajajibu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.rsvp_pending / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_pending }}</span></div>
+          </div>
+        </div>
+        <!-- Payment -->
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Hali ya Malipo</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Imelipwa Yote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.pay_full / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_full }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Sehemu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--amber" style="width:{{ ((stats.pay_part / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_part }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajalipa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.pay_none / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_none }}</span></div>
+          </div>
+        </div>
+        <!-- Cards & check-in -->
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Kadi na Geti</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Kadi Zimeundwa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:{{ ((stats.cards_generated / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.cards_generated }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Wameingia Getini</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--purple" style="width:{{ ((stats.checked_in / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.checked_in }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Wageni Wote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:100%"></span></span><span class="ocd-stats-num">{{ stats.total }}</span></div>
+          </div>
+        </div>
+        <!-- Credits -->
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Credits Zilizobaki</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">SMS</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.sms_balance }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">WhatsApp</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.wa_balance }}</span></div>
+          </div>
+          <a href="/credits" class="ocd-btn ocd-btn-ghost" style="margin-top:12px;font-size:12px">Nunua Credits</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.ocd-main -->
+</div><!-- /.ocd-layout -->
+
+<div class="ocd-overlay" id="ocdOverlay" aria-hidden="true"></div>
+
+<!-- ── Edit Details Modal ── -->
+<div class="ocd-modal" id="editModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box">
+    <div class="ocd-modal-header"><h3>Hariri Maelezo ya Tukio</h3><button class="ocd-modal-close" data-close="editModal">&#10005;</button></div>
+    <form id="editForm" class="ocd-form">
+      <div class="ocd-modal-body">
+        <div class="ocd-form-row"><label class="ocd-label">Majina ya Wenzi <span class="ocd-req">*</span></label><input class="ocd-input" type="text" name="couple_names" value="{{ doc.couple_names or '' }}" required></div>
+        <div class="ocd-form-row ocd-form-row--2">
+          <div><label class="ocd-label">Tarehe</label><input class="ocd-input" type="date" name="occasion_date" value="{{ doc.occasion_date or '' }}"></div>
+          <div><label class="ocd-label">Wakati</label><input class="ocd-input" type="text" name="occasion_time" value="{{ doc.occasion_time or '' }}" placeholder="14:00"></div>
+        </div>
+        <div class="ocd-form-row"><label class="ocd-label">Mahali (Venue)</label><input class="ocd-input" type="text" name="venue_name" value="{{ doc.venue_name or '' }}"></div>
+        <div class="ocd-form-row"><label class="ocd-label">Anwani</label><textarea class="ocd-input ocd-textarea" name="venue_address" rows="2">{{ doc.venue_address or '' }}</textarea></div>
+        <div class="ocd-form-row"><label class="ocd-label">Eneo (Link/GPS)</label><input class="ocd-input" type="text" name="venue_location" value="{{ doc.venue_location or '' }}"></div>
+        <div class="ocd-form-row ocd-form-row--2">
+          <div><label class="ocd-label">Mavazi</label><input class="ocd-input" type="text" name="dress_code" value="{{ doc.dress_code or '' }}"></div>
+          <div><label class="ocd-label">Hali</label>
+            <select class="ocd-input" name="status">
+              <option value="Draft" {{ "selected" if doc.status == "Draft" }}>Rasimu</option>
+              <option value="Active" {{ "selected" if doc.status == "Active" }}>Hai</option>
+              <option value="Completed" {{ "selected" if doc.status == "Completed" }}>Imekamilika</option>
+            </select>
+          </div>
+        </div>
+        <div class="ocd-form-row ocd-form-row--2">
+          <div><label class="ocd-label">Mawasiliano 1</label><input class="ocd-input" type="text" name="contact_1" value="{{ doc.contact_1 or '' }}"></div>
+          <div><label class="ocd-label">Mawasiliano 2</label><input class="ocd-input" type="text" name="contact_2" value="{{ doc.contact_2 or '' }}"></div>
+        </div>
+      </div>
+      <div id="editAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
+      <div class="ocd-modal-actions"><button type="button" class="ocd-btn ocd-btn-ghost" data-close="editModal">Ghairi</button><button type="submit" class="ocd-btn ocd-btn-primary" id="editSaveBtn">Hifadhi</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Edit Gate Modal ── -->
+<div class="ocd-modal" id="editGateModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--sm">
+    <div class="ocd-modal-header"><h3>Hariri Mipangilio ya Geti</h3><button class="ocd-modal-close" data-close="editGateModal">&#10005;</button></div>
+    <form id="editGateForm" class="ocd-form">
+      <div class="ocd-modal-body">
+        <div class="ocd-form-row"><label class="ocd-label">Ukubwa wa Meza (TABLE cards)</label><input class="ocd-input" type="number" name="table_size" value="{{ doc.table_size or 10 }}" min="2" max="100"></div>
+        <div class="ocd-form-row"><label class="ocd-check-label"><input type="checkbox" name="allow_reentry" value="1" {{ "checked" if doc.allow_reentry }}> Ruhusu Kuingia Tena (Re-entry)</label></div>
+      </div>
+      <div id="gateAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
+      <div class="ocd-modal-actions"><button type="button" class="ocd-btn ocd-btn-ghost" data-close="editGateModal">Ghairi</button><button type="submit" class="ocd-btn ocd-btn-primary">Hifadhi</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Add/Edit Contributor Modal ── -->
+<div class="ocd-modal" id="contribModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--sm">
+    <div class="ocd-modal-header"><h3 id="contribModalTitle">Ongeza Mchangiaji</h3><button class="ocd-modal-close" data-close="contribModal">&#10005;</button></div>
+    <form id="contribForm" class="ocd-form">
+      <input type="hidden" name="row_name" id="contribRowName">
+      <div class="ocd-modal-body">
+        <div class="ocd-form-row"><label class="ocd-label">Jina Kamili <span class="ocd-req">*</span></label><input class="ocd-input" type="text" name="contributor_name" id="contribName" required></div>
+        <div class="ocd-form-row"><label class="ocd-label">Nambari ya Simu</label><input class="ocd-input" type="tel" name="phone" id="contribPhone" placeholder="+255..."></div>
+        <div class="ocd-form-row"><label class="ocd-label">Aina ya Kadi</label>
+          <select class="ocd-input" name="card_type" id="contribCardType">
+            <option value="SINGLE">SINGLE — Mtu mmoja</option>
+            <option value="DOUBLE">DOUBLE — Watu wawili</option>
+            <option value="VIP">VIP</option>
+            <option value="TABLE">TABLE — Meza</option>
+          </select>
+        </div>
+      </div>
+      <div id="contribAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
+      <div class="ocd-modal-actions"><button type="button" class="ocd-btn ocd-btn-ghost" data-close="contribModal">Ghairi</button><button type="submit" class="ocd-btn ocd-btn-primary" id="contribSaveBtn">Hifadhi</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Budget Settings Modal ── -->
+<div class="ocd-modal" id="budgetSettingsModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--sm">
+    <div class="ocd-modal-header"><h3>Hariri Mipangilio ya Bajeti</h3><button class="ocd-modal-close" data-close="budgetSettingsModal">&#10005;</button></div>
+    <form id="budgetSettingsForm" class="ocd-form">
+      <div class="ocd-modal-body">
+        <div class="ocd-form-row"><label class="ocd-label">Bajeti Jumla (TZS)</label><input class="ocd-input" type="number" name="total_budget" value="{{ doc.total_budget or 0 }}" min="0"></div>
+        <div class="ocd-form-row"><label class="ocd-label">Tarehe ya Mwisho (Michango)</label><input class="ocd-input" type="date" name="contribution_deadline" value="{{ doc.contribution_deadline or '' }}"></div>
+        <div class="ocd-form-row"><label class="ocd-label">Maelekezo ya Malipo</label><textarea class="ocd-input ocd-textarea" name="payment_instructions" rows="3">{{ doc.payment_instructions or '' }}</textarea></div>
+      </div>
+      <div id="budgetSettingsAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
+      <div class="ocd-modal-actions"><button type="button" class="ocd-btn ocd-btn-ghost" data-close="budgetSettingsModal">Ghairi</button><button type="submit" class="ocd-btn ocd-btn-primary">Hifadhi</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Add/Edit Budget Item Modal ── -->
+<div class="ocd-modal" id="budgetItemModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--sm">
+    <div class="ocd-modal-header"><h3 id="budgetItemModalTitle">Ongeza Kipengele cha Bajeti</h3><button class="ocd-modal-close" data-close="budgetItemModal">&#10005;</button></div>
+    <form id="budgetItemForm" class="ocd-form">
+      <input type="hidden" name="row_name" id="budgetItemRowName">
+      <div class="ocd-modal-body">
+        <div class="ocd-form-row"><label class="ocd-label">Jamii</label>
+          <select class="ocd-input" name="category" id="budgetItemCat">
+            {% for cat in budget_categories %}<option value="{{ cat }}">{{ cat }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="ocd-form-row"><label class="ocd-label">Maelezo <span class="ocd-req">*</span></label><input class="ocd-input" type="text" name="description" id="budgetItemDesc" required></div>
+        <div class="ocd-form-row ocd-form-row--2">
+          <div><label class="ocd-label">Iliopangwa (TZS)</label><input class="ocd-input" type="number" name="budgeted_amount" id="budgetItemBudgeted" value="0" min="0"></div>
+          <div><label class="ocd-label">Halisi (TZS)</label><input class="ocd-input" type="number" name="actual_amount" id="budgetItemActual" value="0" min="0"></div>
+        </div>
+        <div class="ocd-form-row"><label class="ocd-label">Maelezo ya Ziada</label><textarea class="ocd-input ocd-textarea" name="notes" id="budgetItemNotes" rows="2"></textarea></div>
+      </div>
+      <div id="budgetItemAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
+      <div class="ocd-modal-actions"><button type="button" class="ocd-btn ocd-btn-ghost" data-close="budgetItemModal">Ghairi</button><button type="submit" class="ocd-btn ocd-btn-primary" id="budgetItemSaveBtn">Hifadhi</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  var OCCASION = {{ doc.name | tojson }};
+  var CSRF = {{ csrf_token | tojson }};
+  var BASE_URL = window.location.origin;
+
+  /* ── Sidebar ── */
+  var menuBtn = document.getElementById("ocdMenuBtn");
+  var closeBtn = document.getElementById("ocdSidebarClose");
+  var sidebar = document.getElementById("ocdSidebar");
+  var overlay = document.getElementById("ocdOverlay");
+  function openSidebar() { sidebar.classList.add("ocd-sidebar--open"); overlay.classList.add("ocd-overlay--visible"); }
+  function closeSidebar() { sidebar.classList.remove("ocd-sidebar--open"); overlay.classList.remove("ocd-overlay--visible"); }
+  menuBtn.addEventListener("click", openSidebar);
+  closeBtn.addEventListener("click", closeSidebar);
+  overlay.addEventListener("click", closeSidebar);
+
+  /* ── Tabs ── */
+  document.querySelectorAll(".ocd-tab").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".ocd-tab").forEach(function (b) { b.classList.remove("ocd-tab--active"); });
+      document.querySelectorAll(".ocd-tab-pane").forEach(function (p) { p.classList.remove("ocd-tab-pane--active"); });
+      btn.classList.add("ocd-tab--active");
+      document.getElementById("tab-" + btn.dataset.tab).classList.add("ocd-tab-pane--active");
+    });
+  });
+
+  /* ── Modal helpers ── */
+  function openModal(id) { document.getElementById(id).hidden = false; document.body.style.overflow = "hidden"; }
+  function closeModal(id) { document.getElementById(id).hidden = true; document.body.style.overflow = ""; }
+  document.querySelectorAll("[data-close]").forEach(function (btn) {
+    btn.addEventListener("click", function () { closeModal(btn.dataset.close); });
+  });
+
+  /* ── API helper ── */
+  function api(method, data, cb) {
+    var params = new URLSearchParams();
+    Object.keys(data).forEach(function (k) { if (data[k] !== null && data[k] !== undefined) params.append(k, data[k]); });
+    fetch("/api/method/" + method, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "X-Frappe-CSRF-Token": CSRF },
+      body: params,
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (r) { cb(null, r); })
+      .catch(function (e) { cb(e); });
+  }
+
+  function showAlert(el, msg, isErr) {
+    el.hidden = false;
+    el.textContent = msg;
+    el.className = "ocd-form-alert " + (isErr ? "ocd-form-alert--err" : "ocd-form-alert--ok");
+  }
+
+  function formData(form) {
+    var d = {};
+    new FormData(form).forEach(function (v, k) { d[k] = v; });
+    return d;
+  }
+
+  function bindForm(formId, alertId, method, saveBtnId, extraData, afterOk) {
+    var form = document.getElementById(formId);
+    var alertEl = document.getElementById(alertId);
+    var saveBtn = document.getElementById(saveBtnId);
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = "Inahifadhi…"; }
+      alertEl.hidden = true;
+      var data = Object.assign({ name: OCCASION }, formData(form), extraData || {});
+      api(method, data, function (err, res) {
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = "Hifadhi"; }
+        if (err || (res && res.exc)) {
+          var msg = "Hitilafu imetokea.";
+          try { msg = JSON.parse(JSON.parse(res._server_messages || "[]")[0] || "{}").message || msg; } catch(x) {}
+          showAlert(alertEl, msg, true);
+          return;
+        }
+        if (afterOk) afterOk(res);
+        else location.reload();
+      });
+    });
+  }
+
+  /* ── Edit Details ── */
+  var editDetailsBtn = document.getElementById("editDetailsBtn");
+  if (editDetailsBtn) editDetailsBtn.addEventListener("click", function () { openModal("editModal"); });
+  bindForm("editForm", "editAlert", "orion_card.api.dashboard.save_occasion_details", "editSaveBtn", {}, function () {
+    showAlert(document.getElementById("editAlert"), "Imehifadhiwa.", false);
+    setTimeout(function () { location.reload(); }, 700);
+  });
+
+  /* ── Edit Gate ── */
+  var editGateBtn = document.getElementById("editGateBtn");
+  if (editGateBtn) editGateBtn.addEventListener("click", function () { openModal("editGateModal"); });
+  var gateForm = document.getElementById("editGateForm");
+  if (gateForm) {
+    gateForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var cb = gateForm.querySelector("[name=allow_reentry]");
+      api("orion_card.api.dashboard.save_gate_settings", {
+        name: OCCASION,
+        allow_reentry: cb && cb.checked ? 1 : 0,
+        table_size: gateForm.querySelector("[name=table_size]").value,
+      }, function (err, res) {
+        if (err || res.exc) { showAlert(document.getElementById("gateAlert"), "Hitilafu.", true); return; }
+        location.reload();
+      });
+    });
+  }
+
+  /* ── Contributor Modal (add + edit) ── */
+  var addContribBtn = document.getElementById("addContributorBtn");
+  if (addContribBtn) {
+    addContribBtn.addEventListener("click", function () {
+      document.getElementById("contribModalTitle").textContent = "Ongeza Mchangiaji";
+      document.getElementById("contribRowName").value = "";
+      document.getElementById("contribName").value = "";
+      document.getElementById("contribPhone").value = "";
+      document.getElementById("contribCardType").value = "SINGLE";
+      document.getElementById("contribAlert").hidden = true;
+      openModal("contribModal");
+    });
+  }
+
+  /* ── Contributor search ── */
+  var contribSearchEl = document.getElementById("contribSearch");
+  var contribSearchClear = document.getElementById("contribSearchClear");
+  var contribsCountEl = document.getElementById("contribsCount");
+  var totalContribs = document.querySelectorAll("#contributorsBody tr[id^='row-']").length;
+  if (contribSearchEl) {
+    contribSearchEl.addEventListener("input", function () {
+      var q = contribSearchEl.value.toLowerCase().trim();
+      contribSearchClear.hidden = !q;
+      var rows = document.querySelectorAll("#contributorsBody tr[id^='row-']");
+      var visible = 0;
+      rows.forEach(function (row) {
+        var match = !q || row.textContent.toLowerCase().includes(q);
+        row.style.display = match ? "" : "none";
+        if (match) visible++;
+      });
+      if (contribsCountEl) contribsCountEl.textContent = q ? visible + "/" + totalContribs : totalContribs;
+      var noResults = document.getElementById("noSearchResults");
+      if (noResults) noResults.hidden = !q || visible > 0;
+    });
+    contribSearchClear.addEventListener("click", function () {
+      contribSearchEl.value = "";
+      contribSearchEl.dispatchEvent(new Event("input"));
+      contribSearchEl.focus();
+    });
+  }
+
+  document.querySelectorAll(".ocd-action-btn--edit").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.getElementById("contribModalTitle").textContent = "Hariri Mchangiaji";
+      document.getElementById("contribRowName").value = btn.dataset.row;
+      document.getElementById("contribName").value = btn.dataset.name;
+      document.getElementById("contribPhone").value = btn.dataset.phone;
+      document.getElementById("contribCardType").value = btn.dataset.cardtype;
+      document.getElementById("contribAlert").hidden = true;
+      openModal("contribModal");
+    });
+  });
+
+  var contribForm = document.getElementById("contribForm");
+  if (contribForm) {
+    contribForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var saveBtn = document.getElementById("contribSaveBtn");
+      saveBtn.disabled = true; saveBtn.textContent = "Inahifadhi…";
+      var alertEl = document.getElementById("contribAlert");
+      alertEl.hidden = true;
+      var d = formData(contribForm);
+      var isEdit = !!d.row_name;
+      var method = isEdit
+        ? "orion_card.api.dashboard.update_contributor"
+        : "orion_card.api.dashboard.add_contributor";
+      var payload = isEdit
+        ? { occasion: OCCASION, row_name: d.row_name, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type }
+        : { occasion: OCCASION, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type };
+      api(method, payload, function (err, res) {
+        saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
+        if (err || res.exc) { showAlert(alertEl, "Hitilafu imetokea.", true); return; }
+        location.reload();
+      });
+    });
+  }
+
+  /* ── Remove Contributor ── */
+  document.querySelectorAll(".ocd-action-btn--del").forEach(function (btn) {
+    if (!btn.classList.contains("ocd-budget-del")) {
+      btn.addEventListener("click", function () {
+        if (!confirm("Una uhakika wa kufuta mchangiaji huyu?")) return;
+        btn.disabled = true;
+        api("orion_card.api.dashboard.remove_contributor", { occasion: OCCASION, row_name: btn.dataset.row }, function (err) {
+          if (err) { btn.disabled = false; alert("Hitilafu."); return; }
+          var row = document.getElementById("row-" + btn.dataset.row);
+          if (row) row.remove();
+        });
+      });
+    }
+  });
+
+  /* ── Bulk actions ── */
+  function bulkAction(method, label, extraData) {
+    var result = document.getElementById("bulkResult");
+    if (result) { result.hidden = false; result.className = "ocd-bulk-result ocd-bulk-result--info"; result.textContent = label + "… Subiri."; }
+    api(method, Object.assign({ occasion: OCCASION }, extraData || {}), function (err, res) {
+      if (!result) return;
+      if (err) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu imetokea."; return; }
+      var m = res.message || res;
+      if (m && typeof m === "object") {
+        var ok = m.success || 0, fail = m.failed || 0;
+        var msg = ok + " zimetengenezwa/zimetumwa";
+        if (fail) msg += ", " + fail + " zimeshindwa";
+        if (m.credits_out) msg += " (Credits zimekwisha!)";
+        if (m.no_design) msg = "Hakuna muundo wa kadi bado. Pakia kwanza kwenye kichupo 'Kadi'.";
+        result.className = "ocd-bulk-result " + (fail && !ok ? "ocd-bulk-result--err" : "ocd-bulk-result--ok");
+        result.textContent = msg;
+      } else {
+        result.className = "ocd-bulk-result ocd-bulk-result--ok";
+        result.textContent = "Imekamilika.";
+      }
+    });
+  }
+
+  var btnGenCards = document.getElementById("btnGenCards");
+  if (btnGenCards) btnGenCards.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.generate_all_cards", "Inaunda kadi"); });
+
+  var btnSendWA = document.getElementById("btnSendWA");
+  if (btnSendWA) btnSendWA.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_all_whatsapp", "Inatuma WhatsApp"); });
+
+  var btnSendSMS = document.getElementById("btnSendSMS");
+  if (btnSendSMS) btnSendSMS.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_all_sms", "Inatuma SMS"); });
+
+  var btnRemind = document.getElementById("btnSendReminders");
+  if (btnRemind) btnRemind.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_reminders", "Inatuma vikumbusha"); });
+
+  /* Generate cards from card tab */
+  var btnGenCardsTab = document.getElementById("btnGenCardsTab");
+  if (btnGenCardsTab) {
+    btnGenCardsTab.addEventListener("click", function () {
+      var res = document.getElementById("genCardResult");
+      res.hidden = false; res.className = "ocd-bulk-result ocd-bulk-result--info"; res.textContent = "Inaunda kadi… Subiri.";
+      api("orion_card.api.dashboard.generate_all_cards", { occasion: OCCASION }, function (err, r) {
+        var m = (r || {}).message || {};
+        if (err || r.exc) { res.className = "ocd-bulk-result ocd-bulk-result--err"; res.textContent = "Hitilafu."; return; }
+        if (m.no_design) { res.className = "ocd-bulk-result ocd-bulk-result--err"; res.textContent = "Hakuna muundo wa kadi. Pakia muundo kwanza."; return; }
+        res.className = "ocd-bulk-result ocd-bulk-result--ok";
+        res.textContent = (m.success || 0) + " kadi zimeundwa" + (m.failed ? ", " + m.failed + " zimeshindwa" : "") + ".";
+      });
+    });
+  }
+
+  /* Import file */
+  var importFile = document.getElementById("importFile");
+  if (importFile) {
+    importFile.addEventListener("change", function () {
+      var file = importFile.files[0];
+      if (!file) return;
+      var fd = new FormData();
+      fd.append("file", file);
+      fd.append("is_private", "0");
+      fd.append("doctype", "Occasion");
+      fd.append("docname", OCCASION);
+      fd.append("csrf_token", CSRF);
+      var result = document.getElementById("bulkResult");
+      if (result) { result.hidden = false; result.className = "ocd-bulk-result ocd-bulk-result--info"; result.textContent = "Inapakia faili…"; }
+      fetch("/api/method/upload_file", { method: "POST", headers: { "X-Frappe-CSRF-Token": CSRF }, body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.message || !r.message.file_url) { if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Imeshindwa kupakia faili."; } return; }
+          api("orion_card.orioncard.doctype.occasion.occasion.import_contributors",
+            { doc: JSON.stringify({ doctype: "Occasion", name: OCCASION }), file_url: r.message.file_url },
+            function (err2, r2) {
+              if (!result) return;
+              if (err2 || r2.exc) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya import."; return; }
+              result.className = "ocd-bulk-result ocd-bulk-result--ok"; result.textContent = "Faili limeingizwa. Inapakia upya…";
+              setTimeout(function () { location.reload(); }, 1000);
+            }
+          );
+        })
+        .catch(function () { if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya mtandao."; } });
+      importFile.value = "";
+    });
+  }
+
+  /* ── Card design upload ── */
+  var designInput = document.getElementById("designFileInput");
+  if (designInput) {
+    designInput.addEventListener("change", function () {
+      var file = designInput.files[0];
+      if (!file) return;
+      var alertEl = document.getElementById("uploadAlert");
+      alertEl.hidden = false; alertEl.className = "ocd-form-alert ocd-form-alert--ok"; alertEl.textContent = "Inapakia…";
+      var fd = new FormData();
+      fd.append("file", file);
+      fd.append("is_private", "0");
+      fd.append("doctype", "Occasion");
+      fd.append("docname", OCCASION);
+      fd.append("fieldname", "card_design");
+      fd.append("csrf_token", CSRF);
+      fetch("/api/method/upload_file", { method: "POST", headers: { "X-Frappe-CSRF-Token": CSRF }, body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.message || !r.message.file_url) { showAlert(alertEl, "Imeshindwa kupakia picha.", true); return; }
+          var url = r.message.file_url;
+          api("orion_card.api.dashboard.save_card_design", { occasion: OCCASION, file_url: url }, function (err2) {
+            if (err2) { showAlert(alertEl, "Imepakia lakini imeshindwa kuhifadhi.", true); return; }
+            showAlert(alertEl, "Muundo umepakiwa na kuhifadhiwa.", false);
+            var img = document.getElementById("cardPreviewImg");
+            var ph  = document.getElementById("cardPlaceholder");
+            if (img) { img.src = url; }
+            else if (ph) { ph.innerHTML = '<img src="' + url + '" alt="Muundo" class="ocd-card-img" id="cardPreviewImg">'; }
+          });
+        })
+        .catch(function () { showAlert(alertEl, "Hitilafu ya mtandao.", true); });
+      designInput.value = "";
+    });
+  }
+
+  /* ── Budget settings ── */
+  var editBudgetBtn = document.getElementById("editBudgetSettingsBtn");
+  if (editBudgetBtn) editBudgetBtn.addEventListener("click", function () { openModal("budgetSettingsModal"); });
+  var budgetSettingsForm = document.getElementById("budgetSettingsForm");
+  if (budgetSettingsForm) {
+    budgetSettingsForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var d = formData(budgetSettingsForm);
+      api("orion_card.api.dashboard.save_budget_settings", {
+        occasion: OCCASION, total_budget: d.total_budget, contribution_deadline: d.contribution_deadline, payment_instructions: d.payment_instructions
+      }, function (err, res) {
+        if (err || res.exc) { showAlert(document.getElementById("budgetSettingsAlert"), "Hitilafu.", true); return; }
+        location.reload();
+      });
+    });
+  }
+
+  /* ── Budget items ── */
+  var addBudgetBtn = document.getElementById("addBudgetItemBtn");
+  if (addBudgetBtn) {
+    addBudgetBtn.addEventListener("click", function () {
+      document.getElementById("budgetItemModalTitle").textContent = "Ongeza Kipengele";
+      document.getElementById("budgetItemRowName").value = "";
+      document.getElementById("budgetItemDesc").value = "";
+      document.getElementById("budgetItemBudgeted").value = "0";
+      document.getElementById("budgetItemActual").value = "0";
+      document.getElementById("budgetItemNotes").value = "";
+      document.getElementById("budgetItemAlert").hidden = true;
+      openModal("budgetItemModal");
+    });
+  }
+
+  document.querySelectorAll(".ocd-budget-edit").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.getElementById("budgetItemModalTitle").textContent = "Hariri Kipengele";
+      document.getElementById("budgetItemRowName").value = btn.dataset.row;
+      document.getElementById("budgetItemCat").value = btn.dataset.cat || "";
+      document.getElementById("budgetItemDesc").value = btn.dataset.desc || "";
+      document.getElementById("budgetItemBudgeted").value = btn.dataset.budgeted || "0";
+      document.getElementById("budgetItemActual").value = btn.dataset.actual || "0";
+      document.getElementById("budgetItemNotes").value = btn.dataset.notes || "";
+      document.getElementById("budgetItemAlert").hidden = true;
+      openModal("budgetItemModal");
+    });
+  });
+
+  var budgetItemForm = document.getElementById("budgetItemForm");
+  if (budgetItemForm) {
+    budgetItemForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var saveBtn = document.getElementById("budgetItemSaveBtn");
+      saveBtn.disabled = true; saveBtn.textContent = "Inahifadhi…";
+      var d = formData(budgetItemForm);
+      var isEdit = !!d.row_name;
+      var method = isEdit ? "orion_card.api.dashboard.update_budget_item" : "orion_card.api.dashboard.add_budget_item";
+      var payload = { occasion: OCCASION, category: d.category, description: d.description, budgeted_amount: d.budgeted_amount, actual_amount: d.actual_amount, notes: d.notes };
+      if (isEdit) payload.row_name = d.row_name;
+      api(method, payload, function (err, res) {
+        saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
+        if (err || res.exc) { showAlert(document.getElementById("budgetItemAlert"), "Hitilafu.", true); return; }
+        location.reload();
+      });
+    });
+  }
+
+  document.querySelectorAll(".ocd-budget-del").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (!confirm("Futa kipengele hiki cha bajeti?")) return;
+      btn.disabled = true;
+      api("orion_card.api.dashboard.remove_budget_item", { occasion: OCCASION, row_name: btn.dataset.row }, function (err) {
+        if (err) { btn.disabled = false; alert("Hitilafu."); return; }
+        var row = document.getElementById("brow-" + btn.dataset.row);
+        if (row) row.remove();
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
