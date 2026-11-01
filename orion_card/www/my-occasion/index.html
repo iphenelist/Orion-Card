@@ -531,6 +531,32 @@
   </div>
 </div>
 
+<!-- ── Bulk Action Status Picker Modal ── -->
+<div class="ocd-modal" id="bulkActionModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--sm">
+    <div class="ocd-modal-header">
+      <h3 id="bulkActionTitle">Tuma Ujumbe</h3>
+      <button class="ocd-modal-close" data-close="bulkActionModal">&#10005;</button>
+    </div>
+    <div class="ocd-modal-body">
+      <p class="ocd-text-muted" style="margin:0 0 12px">Tuma kwa wachangiaji wenye hali ya malipo:</p>
+      <div class="ocd-check-group">
+        <label class="ocd-check-label"><input type="checkbox" id="bsFullyPaid" checked> Amelipa Kamili <span class="ocd-text-muted">(Fully Paid)</span></label>
+        <label class="ocd-check-label"><input type="checkbox" id="bsPartiallyPaid"> Amelipa Kidogo <span class="ocd-text-muted">(Partially Paid)</span></label>
+        <label class="ocd-check-label"><input type="checkbox" id="bsNotPaid"> Hajalipa <span class="ocd-text-muted">(Not Paid)</span></label>
+      </div>
+      <div id="bsResendRow" style="margin-top:14px;border-top:1px solid var(--oc-line);padding-top:12px">
+        <label class="ocd-check-label"><input type="checkbox" id="bsResend"> Tuma tena kwa waliokwisha pokea</label>
+      </div>
+      <p id="bsNoneWarn" class="ocd-text-warn" style="margin:10px 0 0;display:none">Chagua hali angalau moja.</p>
+    </div>
+    <div class="ocd-modal-actions">
+      <button type="button" class="ocd-btn ocd-btn-ghost" data-close="bulkActionModal">Ghairi</button>
+      <button type="button" class="ocd-btn ocd-btn-primary" id="bulkActionConfirmBtn">Endelea</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   var OCCASION = {{ doc.name | tojson }};
@@ -757,17 +783,59 @@
     });
   }
 
+  /* ── Bulk status picker modal ── */
+  var _bulkPending = null; // { method, label, hasResend }
+  var bsModal = document.getElementById("bulkActionModal");
+  var bsTitle = document.getElementById("bulkActionTitle");
+  var bsFullyPaid = document.getElementById("bsFullyPaid");
+  var bsPartiallyPaid = document.getElementById("bsPartiallyPaid");
+  var bsNotPaid = document.getElementById("bsNotPaid");
+  var bsResend = document.getElementById("bsResend");
+  var bsResendRow = document.getElementById("bsResendRow");
+  var bsNoneWarn = document.getElementById("bsNoneWarn");
+  var bsConfirmBtn = document.getElementById("bulkActionConfirmBtn");
+
+  function openBulkModal(method, label, hasResend) {
+    _bulkPending = { method: method, label: label };
+    if (bsTitle) bsTitle.textContent = label;
+    if (bsFullyPaid) bsFullyPaid.checked = true;
+    if (bsPartiallyPaid) bsPartiallyPaid.checked = false;
+    if (bsNotPaid) bsNotPaid.checked = false;
+    if (bsResend) bsResend.checked = false;
+    if (bsResendRow) bsResendRow.style.display = hasResend ? "" : "none";
+    if (bsNoneWarn) bsNoneWarn.style.display = "none";
+    if (bsModal) bsModal.hidden = false;
+  }
+
+  if (bsConfirmBtn) {
+    bsConfirmBtn.addEventListener("click", function () {
+      if (!_bulkPending) return;
+      var statuses = [];
+      if (bsFullyPaid && bsFullyPaid.checked) statuses.push("Fully Paid");
+      if (bsPartiallyPaid && bsPartiallyPaid.checked) statuses.push("Partially Paid");
+      if (bsNotPaid && bsNotPaid.checked) statuses.push("Not Paid");
+      if (!statuses.length) { if (bsNoneWarn) bsNoneWarn.style.display = ""; return; }
+      var extra = { statuses: JSON.stringify(statuses) };
+      if (bsResendRow && bsResendRow.style.display !== "none") {
+        extra.resend = (bsResend && bsResend.checked) ? 1 : 0;
+      }
+      if (bsModal) bsModal.hidden = true;
+      bulkAction(_bulkPending.method, _bulkPending.label, extra);
+      _bulkPending = null;
+    });
+  }
+
   var btnGenCards = document.getElementById("btnGenCards");
-  if (btnGenCards) btnGenCards.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.generate_all_cards", "Inaunda kadi"); });
+  if (btnGenCards) btnGenCards.addEventListener("click", function () { openBulkModal("orion_card.api.dashboard.generate_all_cards", "Tengeneza Kadi", false); });
 
   var btnSendWA = document.getElementById("btnSendWA");
-  if (btnSendWA) btnSendWA.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_all_whatsapp", "Inatuma WhatsApp"); });
+  if (btnSendWA) btnSendWA.addEventListener("click", function () { openBulkModal("orion_card.api.dashboard.send_all_whatsapp", "Tuma WhatsApp", true); });
 
   var btnSendSMS = document.getElementById("btnSendSMS");
-  if (btnSendSMS) btnSendSMS.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_all_sms", "Inatuma SMS"); });
+  if (btnSendSMS) btnSendSMS.addEventListener("click", function () { openBulkModal("orion_card.api.dashboard.send_all_sms", "Tuma SMS", true); });
 
   var btnRemind = document.getElementById("btnSendReminders");
-  if (btnRemind) btnRemind.addEventListener("click", function () { bulkAction("orion_card.api.dashboard.send_reminders", "Inatuma vikumbusha"); });
+  if (btnRemind) btnRemind.addEventListener("click", function () { openBulkModal("orion_card.api.dashboard.send_reminders", "Tuma Vikumbusha", false); });
 
   /* Generate cards from card tab */
   var btnGenCardsTab = document.getElementById("btnGenCardsTab");
