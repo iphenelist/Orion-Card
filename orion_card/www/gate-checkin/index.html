@@ -1,245 +1,535 @@
-{% extends "templates/web.html" %}
-
-{% block head_include %}
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gate Check-in — OrionCard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
-  :root {
-    --gold: #D4A017;
-    --gold-light: #F0C24B;
-    --bg: #0B0F19;
-    --panel: #151B2B;
-    --panel-2: #1C2438;
-    --border: #2A3350;
-    --text: #F3F4F6;
-    --muted: #8B93A7;
-    --green: #16a34a;
-    --red: #dc2626;
-    --orange: #ea580c;
-  }
+/* Gate page — dark theme on top of dashboard tokens */
+:root {
+  --gate-bg: #0b0f19;
+  --gate-panel: #151b2b;
+  --gate-panel-2: #1c2438;
+  --gate-border: #2a3350;
+  --gate-text: #f3f4f6;
+  --gate-muted: #8b93a7;
+  --gate-gold: #d4a017;
+  --gate-gold-lt: #f0c24b;
+  --gate-green: #16a34a;
+  --gate-red: #dc2626;
+  --gate-orange: #ea580c;
+}
 
-  * { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background: radial-gradient(circle at 50% 0%, #16203a 0%, var(--bg) 55%);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--text);
-  }
+body.gate-body {
+  background: radial-gradient(circle at 50% 0%, #16203a 0%, var(--gate-bg) 55%);
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--gate-text);
+  min-height: 100vh;
+  font-size: 14px;
+}
 
-  .gate-wrap { max-width: 440px; margin: 0 auto; padding: 28px 18px 40px; }
+/* ── Layout ── */
+.gate-wrap {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
 
-  .gate-header { text-align: center; margin-bottom: 22px; }
-  .gate-badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 52px; height: 52px; border-radius: 16px; margin-bottom: 12px;
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
-    font-size: 26px; box-shadow: 0 8px 24px rgba(212,160,23,.35);
-  }
-  .gate-header h1 {
-    font-size: 21px; font-weight: 800; margin: 0 0 4px; letter-spacing: -.01em;
-    background: linear-gradient(135deg, #fff, #c9cede);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .gate-header p { color: var(--muted); font-size: 13px; margin: 0; font-weight: 500; }
+/* ── Header ── */
+.gate-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.gate-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px; height: 54px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--gate-gold-lt), var(--gate-gold));
+  font-size: 26px;
+  box-shadow: 0 8px 24px rgba(212,160,23,.35);
+}
+.gate-header h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #fff, #c9cede);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 4px;
+}
+.gate-header p { color: var(--gate-muted); font-size: 12px; font-weight: 500; }
 
-  .stats-bar { display: flex; gap: 10px; margin-bottom: 18px; }
-  .stat-card {
-    flex: 1; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 14px; padding: 14px 8px; text-align: center;
-    transition: transform .15s ease;
-  }
-  .stat-num { font-size: 24px; font-weight: 800; color: var(--gold-light); line-height: 1; }
-  .stat-label { font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 600; letter-spacing: .02em; }
+/* ── Occasion chip ── */
+.gate-occasion-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gate-gold-lt);
+  margin: 0 auto 18px;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .card {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 18px; margin-bottom: 16px; overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  }
+/* ── Stats bar ── */
+.gate-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.gate-stat {
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 14px;
+  padding: 14px 8px;
+  text-align: center;
+}
+.gate-stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.gate-stat-num--green { color: var(--gate-gold-lt); }
+.gate-stat-num--red   { color: #f87171; }
+.gate-stat-num--orange{ color: #fb923c; }
+.gate-stat-label { font-size: 10px; color: var(--gate-muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
 
-  .result-box { border-radius: 18px; padding: 28px 22px; text-align: center; display: none; margin-bottom: 16px; animation: pop .25s ease; }
-  @keyframes pop { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
-  .result-box.green  { background: linear-gradient(160deg, #0e3a1e, #052e16); border: 1px solid var(--green); }
-  .result-box.red    { background: linear-gradient(160deg, #4a1010, #450a0a); border: 1px solid var(--red); }
-  .result-box.orange { background: linear-gradient(160deg, #522410, #431407); border: 1px solid var(--orange); }
-  .result-icon        { font-size: 40px; margin-bottom: 8px; }
-  .result-message    { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
-  .result-detail     { font-size: 14px; color: #d1d5db; margin: 3px 0; font-weight: 500; }
-  .result-badge      { display:inline-block; background: linear-gradient(135deg, var(--gold-light), var(--gold));
-                       color:#1a1300; font-weight: 700; padding:4px 16px; border-radius:20px; font-size:12px; margin-top:10px; }
-  .btn-scan-again    { width:100%; padding:13px; border-radius:10px; background: var(--panel-2);
-                       border: 1px solid var(--border); color:#fff; font-size:14px; font-weight: 600;
-                       cursor:pointer; margin-top:16px; transition: background .15s; }
-  .btn-scan-again:hover { background: #232c46; }
+/* ── Loading indicator ── */
+.gate-loading {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: var(--gate-panel-2);
+  border: 1px solid var(--gate-border);
+  color: var(--gate-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.gate-spinner {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(240,194,75,.25);
+  border-top-color: var(--gate-gold-lt);
+  animation: gate-spin .7s linear infinite;
+}
+@keyframes gate-spin { to { transform: rotate(360deg); } }
 
-  .scanner-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; border-bottom: 1px solid var(--border);
-  }
-  .scanner-header .title { font-size: 13px; font-weight: 700; color: var(--text); }
-  .live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background: var(--green); margin-right: 6px; box-shadow: 0 0 0 3px rgba(22,163,74,.2); }
+/* ── Scanner card ── */
+.gate-card {
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 18px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.gate-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--gate-border);
+}
+.gate-card-title { font-size: 12px; font-weight: 700; color: var(--gate-text); }
+.gate-live-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gate-green);
+  margin-right: 6px;
+  box-shadow: 0 0 0 3px rgba(22,163,74,.2);
+}
+#reader { width: 100% !important; border: none !important; }
 
-  #reader { width:100% !important; border: none !important; }
+.gate-insecure-notice { padding: 28px 20px; text-align: center; }
+.gate-insecure-icon { font-size: 36px; margin-bottom: 12px; }
+.gate-insecure-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.gate-insecure-sub { font-size: 12px; color: var(--gate-muted); line-height: 1.6; }
 
-  .capture-panel { padding: 26px 22px; text-align: center; }
-  .capture-icon {
-    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 16px;
-    background: var(--panel-2); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 32px;
-  }
-  .capture-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-  .capture-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 0; line-height: 1.5; }
+/* ── PIN entry ── */
+.gate-pin-section {
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.gate-pin-section label {
+  display: block;
+  color: var(--gate-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.gate-pin-section input {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid var(--gate-border);
+  background: var(--gate-bg);
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: .3em;
+  text-align: center;
+  font-weight: 700;
+  font-family: inherit;
+}
+.gate-pin-section input:focus { outline: none; border-color: var(--gate-gold); }
+.gate-pin-hint { font-size: 11px; color: var(--gate-muted); margin-top: 8px; line-height: 1.6; }
+.gate-pin-saved {
+  display: none;
+  text-align: center;
+  color: var(--gate-muted);
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 10px;
+}
+.gate-pin-saved a { color: var(--gate-gold-lt); cursor: pointer; text-decoration: underline; }
 
-  .manual-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 8px; }
-  .manual-wrap label { color: var(--muted); font-size: 12px; display: block; margin-bottom: 8px; font-weight: 600; }
-  .manual-wrap input {
-    width:100%; padding:13px; border-radius:10px; border:1px solid var(--border);
-    background: var(--bg); color:#fff; font-size:20px; letter-spacing:.25em;
-    text-align:center; box-sizing:border-box; font-weight: 700;
-  }
-  .manual-wrap input:focus { outline: none; border-color: var(--gold); }
-  .manual-wrap button {
-    width:100%; margin-top:10px; padding:13px; border-radius:10px;
-    background: var(--panel-2); border: 1px solid var(--border); color:#fff;
-    font-size:14px; font-weight: 700; cursor:pointer; transition: background .15s;
-  }
-  .manual-wrap button:hover { background: #232c46; }
-  .manual-wrap button:disabled { opacity: .55; cursor: not-allowed; }
+/* ── Manual code input ── */
+.gate-manual {
+  background: var(--gate-panel);
+  border: 1px solid var(--gate-border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.gate-manual label {
+  display: block;
+  color: var(--gate-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.gate-manual input {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid var(--gate-border);
+  background: var(--gate-bg);
+  color: #fff;
+  font-size: 20px;
+  letter-spacing: .25em;
+  text-align: center;
+  font-weight: 700;
+  font-family: inherit;
+}
+.gate-manual input:focus { outline: none; border-color: var(--gate-gold); }
+.gate-manual-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  border-radius: 10px;
+  background: var(--gate-panel-2);
+  border: 1px solid var(--gate-border);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.gate-manual-btn:hover { background: #232c46; }
+.gate-manual-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-  .scan-status {
-    display: none; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px; margin-bottom: 12px; border-radius: 12px;
-    background: var(--panel-2); border: 1px solid var(--border);
-    color: var(--muted); font-size: 13px; font-weight: 600;
-  }
-  .spinner {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 2px solid rgba(240,194,75,.25); border-top-color: var(--gold-light);
-    animation: spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Back link ── */
+.gate-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gate-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-bottom: 16px;
+  transition: color .15s;
+}
+.gate-back:hover { color: var(--gate-gold-lt); }
 
-  .pin-wrap { margin-bottom: 14px; display: none; }
-  .pin-wrap .pin-hint { color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.5; }
-  .pin-set { display:none; text-align:center; color: var(--muted); font-size: 12px; margin-bottom: 12px; }
-  .pin-set a { color: var(--gold-light); cursor: pointer; text-decoration: underline; }
+/* ══════════════════════════════════════════
+   Result Popup (fullscreen overlay)
+══════════════════════════════════════════ */
+.gate-result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  animation: gate-fade-in .18s ease;
+}
+.gate-result-overlay[hidden] { display: none !important; }
 
-  .result-countdown { font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; }
+@keyframes gate-fade-in { from { opacity: 0; } to { opacity: 1; } }
 
-  @keyframes shake {
-    10%, 90% { transform: translateX(-1px); }
-    20%, 80% { transform: translateX(2px); }
-    30%, 50%, 70% { transform: translateX(-4px); }
-    40%, 60% { transform: translateX(4px); }
-  }
-  .result-box.shake { animation: shake .4s ease; }
+.gate-result-popup {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 22px;
+  padding: 36px 24px 28px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  animation: gate-pop-in .22s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+}
+@keyframes gate-pop-in {
+  from { opacity: 0; transform: scale(.85) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.gate-result-popup--green  {
+  background: linear-gradient(160deg, #0d3b1e, #042d14);
+  border: 2px solid var(--gate-green);
+}
+.gate-result-popup--red    {
+  background: linear-gradient(160deg, #4a1010, #450a0a);
+  border: 2px solid var(--gate-red);
+}
+.gate-result-popup--orange {
+  background: linear-gradient(160deg, #522410, #3d1005);
+  border: 2px solid var(--gate-orange);
+}
+
+.gate-popup-icon {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 14px;
+  display: block;
+}
+.gate-popup-pulse--green { animation: gate-pulse-green 1.2s ease infinite; }
+.gate-popup-pulse--red   { animation: gate-pulse-red 0.4s ease 1; }
+@keyframes gate-pulse-green {
+  0%,100% { text-shadow: 0 0 0 rgba(22,163,74,0); }
+  50% { text-shadow: 0 0 24px rgba(22,163,74,.6); }
+}
+@keyframes gate-pulse-red {
+  10%,90% { transform: translateX(-2px); }
+  20%,80% { transform: translateX(3px); }
+  30%,50%,70% { transform: translateX(-4px); }
+  40%,60% { transform: translateX(4px); }
+}
+
+.gate-popup-message {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.gate-popup-detail {
+  font-size: 13px;
+  color: #d1d5db;
+  font-weight: 500;
+  margin: 3px 0;
+}
+.gate-popup-badge {
+  margin-top: 12px;
+}
+.gate-popup-badge span {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gate-gold-lt), var(--gate-gold));
+  color: #1a1300;
+  font-weight: 800;
+  padding: 5px 18px;
+  border-radius: 50px;
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+.gate-popup-countdown {
+  font-size: 12px;
+  color: var(--gate-muted);
+  margin-top: 12px;
+  font-weight: 600;
+}
+.gate-popup-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.gate-popup-btn:hover { background: rgba(255,255,255,.18); }
+
+/* Responsive tweaks */
+@media (max-width: 400px) {
+  .gate-wrap { padding: 16px 12px 40px; }
+  .gate-popup-message { font-size: 17px; }
+  .gate-popup-icon { font-size: 44px; }
+  .gate-result-popup { padding: 28px 18px 22px; }
+}
 </style>
-{% endblock %}
+</head>
+<body class="gate-body">
 
-{% block page_content %}
 <div class="gate-wrap">
+
+  <!-- Back link -->
+  {% if scan_occasion %}
+  <a class="gate-back" href="/my-occasion?name={{ scan_occasion }}">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
+    Rudi kwenye tukio
+  </a>
+  {% endif %}
+
+  <!-- Header -->
   <div class="gate-header">
     <div class="gate-badge">🎫</div>
-    <h1>{{ page_title }}</h1>
+    <h1>Geti la Tukio</h1>
     <p>Scan QR code kuthibitisha mgeni</p>
   </div>
 
-  <div class="manual-wrap pin-wrap" id="pinWrap">
+  {% if scan_occasion %}
+  <div class="gate-occasion-chip">
+    <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Z" clip-rule="evenodd"/></svg>
+    {{ scan_occasion }}
+  </div>
+  {% endif %}
+
+  <!-- PIN entry -->
+  <div class="gate-pin-section" id="pinWrap" style="display:none">
     <label for="pinInput">🔒 PIN ya geti / Gate PIN</label>
-    <input type="password" inputmode="numeric" id="pinInput" placeholder="••••••" maxlength="6" autocomplete="off"
-           onkeydown="if (event.key === 'Enter') savePin();" />
-    <button onclick="savePin()">Hifadhi PIN / Save PIN</button>
-    <div class="pin-hint">Muulize mwandaaji PIN ya tukio hili. Itakumbukwa kwenye simu hii. / Ask the organiser for this occasion's PIN. It is remembered on this phone.</div>
+    <input type="password" inputmode="numeric" id="pinInput" placeholder="••••••" maxlength="6"
+           autocomplete="off" onkeydown="if(event.key==='Enter') savePin();">
+    <div class="gate-pin-hint">Muulize mwandaaji PIN ya tukio hili. Itakumbukwa kwenye simu hii.</div>
+    <button class="gate-manual-btn" style="margin-top:12px" onclick="savePin()">Hifadhi PIN</button>
   </div>
-  <div class="pin-set" id="pinSet">🔒 PIN imehifadhiwa · <a onclick="forgetPin()">Badilisha PIN</a></div>
+  <div class="gate-pin-saved" id="pinSet">🔒 PIN imehifadhiwa · <a onclick="forgetPin()">Badilisha</a></div>
 
-  <div class="stats-bar">
-    <div class="stat-card">
-      <div class="stat-num" id="statValid">0</div>
-      <div class="stat-label">Walioingia</div>
+  <!-- Stats -->
+  <div class="gate-stats">
+    <div class="gate-stat">
+      <div class="gate-stat-num gate-stat-num--green" id="statValid">0</div>
+      <div class="gate-stat-label">Walioingia</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" style="color:#f87171" id="statInvalid">0</div>
-      <div class="stat-label">Batili</div>
+    <div class="gate-stat">
+      <div class="gate-stat-num gate-stat-num--red" id="statInvalid">0</div>
+      <div class="gate-stat-label">Batili</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" style="color:#fb923c" id="statDuplicate">0</div>
-      <div class="stat-label">Warudiaji</div>
+    <div class="gate-stat">
+      <div class="gate-stat-num gate-stat-num--orange" id="statDuplicate">0</div>
+      <div class="gate-stat-label">Warudiaji</div>
     </div>
-  </div>
-
-  <div class="scan-status" id="scanStatus"><span class="spinner"></span>Inachakata...</div>
-
-  <div class="result-box" id="resultBox">
-    <div class="result-icon" id="resultIcon"></div>
-    <div class="result-message" id="resultMessage"></div>
-    <div class="result-detail"  id="resultName"></div>
-    <div class="result-detail"  id="resultOccasion"></div>
-    <div class="result-detail"  id="resultPeople"></div>
-    <div id="resultBadge"></div>
-    <button class="btn-scan-again" onclick="resetScanner()">Scan Mgeni Mwingine</button>
-    <div class="result-countdown" id="resultCountdown"></div>
   </div>
 
-  <!-- Live camera scanner. Requires a secure context (https or localhost) -->
-  <div class="card" id="liveScannerCard">
-    <div class="scanner-header">
-      <span class="title"><span class="live-dot"></span>Kamera ya moja kwa moja</span>
+  <!-- Loading bar -->
+  <div class="gate-loading" id="scanStatus">
+    <span class="gate-spinner"></span>Inachakata...
+  </div>
+
+  <!-- Live camera scanner -->
+  <div class="gate-card" id="liveScannerCard">
+    <div class="gate-card-header">
+      <span class="gate-card-title"><span class="gate-live-dot"></span>Kamera ya moja kwa moja</span>
     </div>
     <div id="reader"></div>
   </div>
 
-  <div class="card" id="insecureNotice" style="display:none;">
-    <div class="capture-panel">
-      <div class="capture-icon">🔒</div>
-      <div class="capture-title">Kamera haipatikani</div>
-      <div class="capture-sub">Kamera ya moja kwa moja inahitaji muunganisho salama (https) au localhost. Fungua ukurasa huu kupitia <b>localhost</b> kwenye kifaa hiki, au tumia code kwa mkono hapa chini.</div>
+  <!-- No secure context notice -->
+  <div class="gate-card" id="insecureNotice" style="display:none">
+    <div class="gate-insecure-notice">
+      <div class="gate-insecure-icon">🔒</div>
+      <div class="gate-insecure-title">Kamera haipatikani</div>
+      <div class="gate-insecure-sub">Kamera inahitaji muunganisho salama (https) au localhost. Tumia code kwa mkono hapa chini.</div>
     </div>
   </div>
 
-  <div class="manual-wrap">
+  <!-- Manual code input -->
+  <div class="gate-manual">
     <label>Au ingiza code kwa mkono:</label>
     <input type="text" inputmode="numeric" id="manualCode" placeholder="000000" maxlength="10"
-           onkeydown="if (event.key === 'Enter') validateManual();" />
-    <button id="manualSubmitBtn" onclick="validateManual()">Thibitisha Code</button>
+           onkeydown="if(event.key==='Enter') validateManual();">
+    <button class="gate-manual-btn" id="manualSubmitBtn" onclick="validateManual()">Thibitisha Code</button>
+  </div>
+
+</div><!-- /.gate-wrap -->
+
+<!-- ══ Result Popup ══ -->
+<div class="gate-result-overlay" id="resultOverlay" hidden>
+  <div class="gate-result-popup" id="resultPopup">
+    <span class="gate-popup-icon" id="popupIcon">✅</span>
+    <div class="gate-popup-message" id="popupMessage"></div>
+    <div class="gate-popup-detail" id="popupName"></div>
+    <div class="gate-popup-detail" id="popupOccasion"></div>
+    <div class="gate-popup-detail" id="popupPeople"></div>
+    <div class="gate-popup-badge" id="popupBadge"></div>
+    <div class="gate-popup-countdown" id="popupCountdown"></div>
+    <button class="gate-popup-btn" onclick="resetScanner()">Scan Mgeni Mwingine</button>
   </div>
 </div>
 
 <script>
-let stats = { valid: 0, invalid: 0, duplicate: 0 };
-let scanner = null;
-let scanning = true;
-let requestInFlight = false;
-let countdownTimer = null;
-const secureContext = window.isSecureContext;
-const PAGE_OCCASION = {{ scan_occasion | tojson }};
-let pendingScan = null;  // a scan waiting for the PIN to be entered
+var stats = { valid: 0, invalid: 0, duplicate: 0 };
+var scanner = null;
+var scanning = true;
+var requestInFlight = false;
+var countdownTimer = null;
+var secureContext = window.isSecureContext;
+var PAGE_OCCASION = {{ scan_occasion | tojson }};
+var pendingScan = null;
 
-function pinKey(occasion) { return "ecard_gate_pin:" + (occasion || ""); }
-function getPin(occasion) {
-  try { return localStorage.getItem(pinKey(occasion)) || ""; } catch (e) { return ""; }
-}
-function setPin(occasion, pin) {
-  try { pin ? localStorage.setItem(pinKey(occasion), pin) : localStorage.removeItem(pinKey(occasion)); } catch (e) {}
-}
+function pinKey(o) { return "ecard_gate_pin:" + (o || ""); }
+function getPin(o) { try { return localStorage.getItem(pinKey(o)) || ""; } catch(e) { return ""; } }
+function setPin(o, p) { try { p ? localStorage.setItem(pinKey(o), p) : localStorage.removeItem(pinKey(o)); } catch(e) {} }
 function currentOccasion() { return (pendingScan && pendingScan.occasion) || PAGE_OCCASION; }
 
 function renderPinState() {
-  const occ = currentOccasion();
-  const hasPin = !!getPin(occ);
+  var occ = currentOccasion();
+  var hasPin = !!getPin(occ);
   document.getElementById("pinWrap").style.display = (occ && !hasPin) ? "block" : "none";
   document.getElementById("pinSet").style.display = (occ && hasPin) ? "block" : "none";
 }
 
 function savePin() {
-  const pin = document.getElementById("pinInput").value.trim();
-  if (!/^[0-9]{4,6}$/.test(pin)) { alert("PIN ni namba 6 / The PIN is 6 digits"); return; }
+  var pin = document.getElementById("pinInput").value.trim();
+  if (!/^[0-9]{4,6}$/.test(pin)) { alert("PIN ni namba 4-6 / PIN must be 4-6 digits"); return; }
   setPin(currentOccasion(), pin);
   document.getElementById("pinInput").value = "";
   renderPinState();
   if (pendingScan) {
-    const scan = pendingScan;
+    var scan = pendingScan;
     pendingScan = null;
     validateCode(scan.code, scan.occasion);
   }
@@ -254,7 +544,6 @@ function forgetPin() {
 function initScanner() {
   document.getElementById("liveScannerCard").style.display = secureContext ? "block" : "none";
   document.getElementById("insecureNotice").style.display = secureContext ? "none" : "block";
-
   if (secureContext) {
     scanner = new Html5QrcodeScanner("reader", {
       fps: 10,
@@ -262,20 +551,18 @@ function initScanner() {
       rememberLastUsedCamera: true,
       showTorchButtonIfSupported: true
     });
-    scanner.render(onScanSuccess, () => {});
+    scanner.render(function(text) {
+      if (!scanning) return;
+      scanning = false;
+      parseAndValidate(text);
+    }, function() {});
   }
 }
 
-function onScanSuccess(text) {
-  if (!scanning) return;
-  scanning = false;
-  parseAndValidate(text);
-}
-
 function parseAndValidate(text) {
-  let code = text, occasion = PAGE_OCCASION;
+  var code = text, occasion = PAGE_OCCASION;
   try {
-    const u = new URL(text);
+    var u = new URL(text);
     code = u.searchParams.get("code") || text;
     occasion = u.searchParams.get("occasion") || PAGE_OCCASION;
   } catch(e) {}
@@ -284,10 +571,10 @@ function parseAndValidate(text) {
 
 function validateManual() {
   if (requestInFlight) return;
-  const code = document.getElementById("manualCode").value.trim();
+  var code = document.getElementById("manualCode").value.trim();
   if (!code) { alert("Tafadhali ingiza code"); return; }
   if (!PAGE_OCCASION) {
-    alert("Ukurasa huu haujaunganishwa na tukio maalum. Tumia kiungo cha Gate Check-in cha tukio lako (kina ?occasion=... ) au scan QR code.");
+    alert("Ukurasa huu haujaunganishwa na tukio. Tumia kiungo cha Gate Check-in cha tukio lako.");
     return;
   }
   scanning = false;
@@ -310,56 +597,75 @@ function validateCode(code, occasionName) {
     },
     body: JSON.stringify({ guest_code: code, occasion_name: occasionName, pin: getPin(occasionName) })
   })
-  .then(r => r.json())
-  .then(data => {
-    const res = data.message || {};
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var res = data.message || {};
     if (res.status === "PIN Required") {
-      // Wrong or missing PIN: forget it, ask for it, and retry this scan after.
       setPin(occasionName, "");
-      pendingScan = { code, occasion: occasionName };
+      pendingScan = { code: code, occasion: occasionName };
       renderPinState();
       document.getElementById("pinInput").focus();
     }
     showResult(res);
   })
-  .catch(() => showResult({ valid: false, status: "Invalid", message: "❌ Hitilafu ya mtandao", color: "red" }))
-  .finally(() => setLoading(false));
+  .catch(function() {
+    showResult({ valid: false, status: "Invalid", message: "❌ Hitilafu ya mtandao", color: "red" });
+  })
+  .finally(function() { setLoading(false); });
 }
 
 function showResult(res) {
-  const box = document.getElementById("resultBox");
-  box.className = "result-box " + (res.color || "red");
-  box.style.display = "block";
-  document.getElementById("liveScannerCard").style.display = "none";
-  document.getElementById("insecureNotice").style.display = "none";
-  document.getElementById("resultIcon").textContent =
-    res.status === "Valid" ? "✅" : res.status === "Already Used" ? "⚠️" : res.status === "PIN Required" ? "🔒" : "❌";
-  document.getElementById("resultMessage").textContent = res.message || "";
-  document.getElementById("resultName").textContent = res.guest_name ? `Mgeni: ${res.guest_name}` : "";
-  document.getElementById("resultOccasion").textContent = res.occasion_name ? `Tukio: ${res.occasion_name}` : "";
-  const left = (res.admits || 0) - (res.entered || 0);
-  document.getElementById("resultPeople").textContent = res.admits > 1
-    ? `Watu: ${res.entered} kati ya ${res.admits} wameingia` + (left > 0 ? ` · bado ${left} / ${left} more can enter` : ` · kadi imejaa / card full`)
-    : "";
-  document.getElementById("resultBadge").innerHTML = res.card_type
-    ? `<span class="result-badge">${res.card_type}</span>` : "";
-  document.getElementById("resultCountdown").textContent = "";
+  var color = res.color || "red";
+  var overlay = document.getElementById("resultOverlay");
+  var popup = document.getElementById("resultPopup");
 
-  if (res.status === "Valid") {
+  /* set popup colour class */
+  popup.className = "gate-result-popup gate-result-popup--" + color;
+
+  /* icon */
+  var icon = document.getElementById("popupIcon");
+  icon.className = "gate-popup-icon";
+  if (color === "green") {
+    icon.textContent = "✅";
+    icon.classList.add("gate-popup-pulse--green");
+  } else if (color === "orange") {
+    icon.textContent = "⚠️";
+  } else if (res.status === "PIN Required") {
+    icon.textContent = "🔒";
+  } else {
+    icon.textContent = "❌";
+    icon.classList.add("gate-popup-pulse--red");
+  }
+
+  document.getElementById("popupMessage").textContent = res.message || "";
+  document.getElementById("popupName").textContent = res.guest_name ? "Mgeni: " + res.guest_name : "";
+  document.getElementById("popupOccasion").textContent = res.occasion_name ? "Tukio: " + res.occasion_name : "";
+
+  var left = (res.admits || 0) - (res.entered || 0);
+  document.getElementById("popupPeople").textContent = res.admits > 1
+    ? "Watu: " + res.entered + " / " + res.admits + " wameingia" + (left > 0 ? " · bado " + left : " · kadi imejaa")
+    : "";
+
+  document.getElementById("popupBadge").innerHTML = res.card_type
+    ? '<span>' + res.card_type + '</span>' : "";
+
+  document.getElementById("popupCountdown").textContent = "";
+
+  /* show overlay */
+  overlay.hidden = false;
+
+  /* sounds & counters */
+  if (color === "green") {
     stats.valid++;
     document.getElementById("statValid").textContent = stats.valid;
     playBeep(880, 150);
     startResetCountdown(3);
   } else {
-    box.classList.add("shake");
-    setTimeout(() => box.classList.remove("shake"), 400);
-    if (res.status === "PIN Required") {
-      playBeep(330, 200);
-    } else if (res.status === "Already Used") {
+    if (color === "orange") {
       stats.duplicate++;
       document.getElementById("statDuplicate").textContent = stats.duplicate;
       playBeep(440, 400);
-    } else {
+    } else if (res.status !== "PIN Required") {
       stats.invalid++;
       document.getElementById("statInvalid").textContent = stats.invalid;
       playBeep(220, 600);
@@ -368,49 +674,56 @@ function showResult(res) {
 }
 
 function startResetCountdown(seconds) {
-  let remaining = seconds;
-  const el = document.getElementById("resultCountdown");
-  el.textContent = `Inarudi kwa sekunde ${remaining}...`;
-  countdownTimer = setInterval(() => {
+  var remaining = seconds;
+  var el = document.getElementById("popupCountdown");
+  el.textContent = "Inarudi kwa sekunde " + remaining + "...";
+  countdownTimer = setInterval(function() {
     remaining--;
     if (remaining <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
       resetScanner();
     } else {
-      el.textContent = `Inarudi kwa sekunde ${remaining}...`;
+      el.textContent = "Inarudi kwa sekunde " + remaining + "...";
     }
   }, 1000);
 }
 
 function resetScanner() {
   if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
-  document.getElementById("resultBox").style.display = "none";
-  document.getElementById("resultCountdown").textContent = "";
+  document.getElementById("resultOverlay").hidden = true;
   document.getElementById("manualCode").value = "";
   scanning = true;
-  if (scanner) { try { scanner.clear(); } catch(e) {} }
+  if (scanner) { try { scanner.clear(); } catch(e) {} scanner = null; }
   initScanner();
 }
 
 function playBeep(freq, duration) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
     osc.connect(ctx.destination);
     osc.frequency.value = freq;
     osc.start();
-    setTimeout(() => { osc.stop(); ctx.close(); }, duration);
+    setTimeout(function() { osc.stop(); ctx.close(); }, duration);
   } catch(e) {}
 }
 
+/* close popup on overlay background click */
+document.getElementById("resultOverlay").addEventListener("click", function(e) {
+  if (e.target === this) resetScanner();
+});
+
 {% if auto_scan and scan_code %}
-window.addEventListener("load", () => {
-  setTimeout(() => validateCode({{ scan_code | tojson }}, {{ scan_occasion | tojson }}), 600);
+window.addEventListener("load", function() {
+  setTimeout(function() {
+    validateCode({{ scan_code | tojson }}, {{ scan_occasion | tojson }});
+  }, 600);
 });
 {% endif %}
 
 renderPinState();
 initScanner();
 </script>
-{% endblock %}
+</body>
+</html>
