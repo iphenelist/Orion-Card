@@ -100,10 +100,10 @@ body.ec-body {
 		radial-gradient(circle at 50% 50%, #fff 0 1.7px, transparent 2.2px),
 		radial-gradient(circle at 73% 34%, #fff 0 1.7px, transparent 2.2px);
 }
-.ec-nav-links { display: flex; gap: 24px; align-items: center; }
+.ec-nav-links { display: flex; gap: 24px; align-items: center; margin-left: auto; }
 .ec-nav-links a { text-decoration: none; font-size: .9375rem; color: var(--oc-muted); }
 .ec-nav-links a:hover { color: var(--oc-ink); }
-.ec-nav-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.ec-nav-actions { display: flex; gap: 8px; align-items: center; }
 .ec-lang { display: inline-flex; border: 1px solid var(--oc-line); border-radius: var(--oc-radius); padding: 2px; margin-right: 4px; }
 .ec-lang button { border: 0; background: transparent; font: 500 .8125rem var(--oc-font); padding: 5px 8px;
 	border-radius: 6px; color: var(--oc-muted); cursor: pointer; }
@@ -369,4 +369,211 @@ body.ec-body {
 
 .ec-check a, .ec-legal a, .ec-faq a { color: var(--ec-indigo); text-decoration: underline; text-underline-offset: 2px; }
 .ec-balance-label, .ec-balance-num, .ec-balance-used { display: block; }
+
+/* ---------------------------------------------------------------- hero gradient */
+.ec-hero--gradient { background: linear-gradient(160deg, #f0f3ff 0%, #ffffff 55%); }
+
+/* ---------------------------------------------------------------- mock browser window (hero) */
+.ec-mock-window {
+	margin: 64px auto 0; max-width: 1040px;
+	border: 1px solid var(--oc-line); border-radius: 14px; overflow: hidden;
+	box-shadow: 0 2px 4px rgba(22,24,29,.04), 0 16px 48px -16px rgba(22,24,29,.14);
+	background: #fff;
+}
+.ec-mock-titlebar {
+	display: flex; align-items: center; gap: 6px;
+	padding: 10px 14px; background: var(--oc-band); border-bottom: 1px solid var(--oc-line);
+}
+.ec-mock-dot {
+	width: 10px; height: 10px; border-radius: 50%; background: var(--oc-line); flex: none;
+}
+.ec-mock-dot:nth-child(1) { background: #f87171; }
+.ec-mock-dot:nth-child(2) { background: #fbbf24; }
+.ec-mock-dot:nth-child(3) { background: #4ade80; }
+.ec-mock-url {
+	margin-left: 10px; font-size: .75rem; color: var(--oc-muted);
+	background: #fff; border: 1px solid var(--oc-line); border-radius: 6px;
+	padding: 3px 10px; flex: 1; max-width: 320px;
+}
+.ec-mock-app { display: flex; min-height: 340px; }
+.ec-mock-sidebar {
+	width: 176px; flex: none; background: var(--oc-ink); padding: 16px 12px;
+	display: flex; flex-direction: column; gap: 20px;
+}
+.ec-mock-sidebar-logo {
+	display: flex; align-items: center; gap: 7px;
+	font: 650 .875rem/1 var(--oc-font); color: #fff; letter-spacing: -0.02em;
+}
+.ec-mock-sidebar .ec-logo-mark { background: #fff; }
+.ec-mock-sidebar .ec-logo-mark::before {
+	background:
+		radial-gradient(circle at 27% 66%, var(--oc-ink) 0 1.7px, transparent 2.2px),
+		radial-gradient(circle at 50% 50%, var(--oc-ink) 0 1.7px, transparent 2.2px),
+		radial-gradient(circle at 73% 34%, var(--oc-ink) 0 1.7px, transparent 2.2px);
+}
+.ec-mock-nav { display: flex; flex-direction: column; gap: 2px; }
+.ec-mock-nav-item {
+	padding: 7px 8px; border-radius: 6px; font-size: .6875rem; color: rgba(255,255,255,.6);
+	white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ec-mock-nav-item--active { background: rgba(255,255,255,.12); color: #fff; }
+.ec-mock-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.ec-mock-panel-header {
+	display: flex; align-items: center; gap: 10px; justify-content: space-between;
+	padding: 12px 16px; border-bottom: 1px solid var(--oc-line);
+	font: 600 .875rem/1 var(--oc-font); color: var(--oc-ink);
+}
+.ec-mock-tabs {
+	display: flex; gap: 0; border-bottom: 1px solid var(--oc-line);
+	background: var(--oc-band); padding: 0 12px;
+}
+.ec-mock-tab {
+	padding: 9px 12px; font-size: .75rem; color: var(--oc-muted);
+	border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.ec-mock-tab--active { color: var(--oc-ink); border-bottom-color: var(--oc-accent); font-weight: 600; }
+.ec-mock-tab span {
+	background: var(--oc-line); color: var(--oc-muted); font-size: .6875rem; font-weight: 600;
+	border-radius: 10px; padding: 1px 6px;
+}
+.ec-mock-tab--active span { background: var(--oc-accent); color: #fff; }
+
+/* mock rows (contributors / budget) */
+.ec-mock-rows { flex: 1; }
+.ec-mock-row {
+	display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+	border-bottom: 1px solid var(--oc-line); font-size: .75rem;
+}
+.ec-mock-avatar {
+	width: 26px; height: 26px; border-radius: 50%; background: var(--oc-accent);
+	color: #fff; font: 600 .625rem/26px var(--oc-font); text-align: center; flex: none;
+}
+.ec-mock-name { flex: 1; font-weight: 500; color: var(--oc-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ec-mock-phone { color: var(--oc-muted); white-space: nowrap; min-width: 80px; }
+
+/* mock badges */
+.ec-mock-badge {
+	display: inline-flex; align-items: center; height: 20px; padding: 0 7px;
+	border-radius: 10px; font: 600 .625rem var(--oc-font); white-space: nowrap;
+}
+.ec-mock-badge--active  { background: #dbeafe; color: #1d4ed8; }
+.ec-mock-badge--paid    { background: #dcfce7; color: #15803d; }
+.ec-mock-badge--partial { background: #fef9c3; color: #92400e; }
+.ec-mock-badge--sent    { background: #f0fdf4; color: #166534; }
+.ec-mock-badge--draft   { background: var(--oc-band); color: var(--oc-muted); }
+
+/* feature section panels */
+.ec-mock-feature {
+	border: 1px solid var(--oc-line); border-radius: var(--oc-radius-lg);
+	overflow: hidden; background: #fff;
+	box-shadow: 0 1px 3px rgba(22,24,29,.06), 0 8px 24px -12px rgba(22,24,29,.1);
+}
+.ec-mock-feature-header {
+	display: flex; align-items: center; justify-content: space-between;
+	padding: 12px 16px; border-bottom: 1px solid var(--oc-line);
+	font: 600 .8125rem/1 var(--oc-font); color: var(--oc-ink); background: var(--oc-band);
+}
+
+/* invitation card mockup */
+.ec-mock-card {
+	width: 100%; max-width: 260px; aspect-ratio: 3.5 / 2.5;
+	background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+	border-radius: 10px; padding: 16px 18px;
+	display: flex; flex-direction: column; justify-content: space-between;
+	box-shadow: 0 8px 24px -8px rgba(124,58,237,.45);
+	color: #fff;
+}
+.ec-mock-card-couple { font-size: .5625rem; opacity: .7; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+.ec-mock-card-names { font: 650 1rem/1.2 var(--oc-font); letter-spacing: -0.01em; }
+.ec-mock-card-date { font-size: .5625rem; opacity: .65; }
+.ec-mock-card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+.ec-mock-card-guest { font-size: .5625rem; opacity: .8; line-height: 1.4; }
+.ec-mock-card-guest small { display: block; opacity: .65; text-transform: uppercase; letter-spacing: .04em; }
+.ec-mock-qr-svg { flex: none; opacity: .9; }
+
+/* gate success panel */
+.ec-mock-gate {
+	border: 1px solid #bbf7d0; border-radius: var(--oc-radius-lg);
+	background: #f0fdf4; padding: 28px 24px; text-align: center;
+	box-shadow: 0 4px 16px -8px rgba(21,128,61,.2);
+}
+.ec-mock-gate-icon {
+	width: 56px; height: 56px; border-radius: 50%; background: #16a34a;
+	color: #fff; font-size: 1.5rem; line-height: 56px; margin: 0 auto 12px;
+}
+.ec-mock-gate-status { font: 650 1.25rem/1 var(--oc-font); color: #15803d; margin-bottom: 4px; }
+.ec-mock-gate-name { font-size: 1rem; font-weight: 500; color: var(--oc-ink); }
+.ec-mock-gate-detail { font-size: .8125rem; color: var(--oc-muted); margin-top: 4px; }
+.ec-mock-gate-badge {
+	display: inline-block; margin-top: 14px; background: #16a34a; color: #fff;
+	font: 600 .75rem var(--oc-font); padding: 4px 14px; border-radius: 20px;
+}
+
+/* phone frame content */
+.ec-phone { display: flex; flex-direction: column; }
+.ec-phone-content {
+	border-radius: 15px; overflow: hidden; height: 100%;
+	display: flex; flex-direction: column; background: #f9fafb;
+}
+.ec-phone--wa .ec-phone-content { background: #e5ddd5; }
+
+/* phone 1: WhatsApp */
+.ec-phone-wa-bar {
+	background: #075e54; color: #fff; font-size: .625rem; font-weight: 600;
+	padding: 10px 12px; flex: none;
+}
+.ec-phone-wa { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.ec-phone-wa-msg {
+	background: #fff; border-radius: 8px; padding: 8px 10px;
+	font-size: .625rem; line-height: 1.5; color: var(--oc-ink); max-width: 90%; align-self: flex-start;
+	box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.ec-phone-wa-card-thumb {
+	background: var(--oc-band); border-radius: 5px; padding: 6px 8px;
+	font-size: .5625rem; margin-bottom: 6px; color: var(--oc-muted); font-weight: 500;
+}
+.ec-phone-wa-link { color: #075e54; font-size: .5625rem; word-break: break-all; margin-top: 4px; display: block; }
+
+/* phone 2: invite page */
+.ec-phone-invite { background: #fff; }
+.ec-phone-invite-header {
+	background: var(--oc-ink); color: #fff; font-size: .625rem; font-weight: 600;
+	padding: 10px 12px; flex: none;
+}
+.ec-phone-invite-body {
+	flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; overflow: hidden;
+}
+.ec-phone-invite-card {
+	width: 100%; aspect-ratio: 3.5/2; border-radius: 6px;
+	background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+	margin-bottom: 4px; flex: none;
+}
+.ec-phone-invite-name { font: 600 .75rem/1 var(--oc-font); color: var(--oc-ink); }
+.ec-phone-invite-detail { font-size: .5625rem; color: var(--oc-muted); line-height: 1.4; }
+.ec-phone-invite-btns { display: flex; gap: 6px; margin-top: 6px; }
+.ec-phone-invite-btn {
+	flex: 1; padding: 6px 4px; border-radius: 6px; font-size: .5625rem; font-weight: 600;
+	text-align: center;
+}
+.ec-phone-invite-btn--confirm { background: var(--oc-ink); color: #fff; }
+.ec-phone-invite-btn--decline { background: var(--oc-band); color: var(--oc-muted); border: 1px solid var(--oc-line); }
+
+/* phone 3: gate */
+.ec-phone-gate {
+	flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+	gap: 6px; background: #f0fdf4; padding: 16px;
+}
+.ec-phone-gate-icon {
+	width: 40px; height: 40px; border-radius: 50%; background: #16a34a;
+	color: #fff; font-size: 1.125rem; line-height: 40px; text-align: center; margin-bottom: 4px;
+}
+.ec-phone-gate-ok { font: 650 .875rem/1 var(--oc-font); color: #15803d; }
+.ec-phone-gate-name { font-size: .6875rem; font-weight: 500; color: var(--oc-ink); }
+.ec-phone-gate-detail { font-size: .5625rem; color: var(--oc-muted); }
+
+@media (max-width: 700px) {
+	.ec-mock-window { margin-top: 40px; }
+	.ec-mock-sidebar { display: none; }
+	.ec-mock-tab:nth-child(n+4) { display: none; }
+}
 .ec-credits-back { text-align: center; margin: 28px auto 0; }

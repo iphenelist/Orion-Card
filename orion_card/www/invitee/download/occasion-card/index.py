@@ -33,6 +33,7 @@ def get_context(context):
     context.occasion = occasion
     context.page_title = f"Invitation – {guest['guest_name']}"
     context.no_cache = 1
+    context.csrf_token = frappe.sessions.get_csrf_token()
 
     if guest.get("card_image"):
         base = frappe.utils.get_url().rstrip("/")

@@ -48,6 +48,7 @@ def get_context(context):
 	) or {}
 	credits_balance = int((credit_row.get("sms_balance") or 0) + (credit_row.get("whatsapp_balance") or 0))
 
+	context.csrf_token = frappe.sessions.get_csrf_token()
 	context.title = "Matukio Yangu — OrionCard"
 	context.no_breadcrumbs = 1
 	context.user_full_name = user_doc.full_name or user_doc.first_name or user

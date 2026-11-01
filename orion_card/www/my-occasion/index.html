@@ -47,13 +47,10 @@
           <span class="ocd-user-email">{{ user_email }}</span>
         </div>
       </div>
-      <form method="POST" action="/api/method/logout" style="margin:0">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="ocd-logout">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Zm10.22 4.47a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H7.5a.75.75 0 0 1 0-1.5h6.69l-.97-.97a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
-          Toka
-        </button>
-      </form>
+      <a class="ocd-logout" href="/logout">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Zm10.22 4.47a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H7.5a.75.75 0 0 1 0-1.5h6.69l-.97-.97a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+        Toka
+      </a>
     </div>
   </aside>
 
@@ -578,12 +575,20 @@
   overlay.addEventListener("click", closeSidebar);
 
   /* ── Tabs ── */
+  var TAB_KEY = "ocd-tab-" + OCCASION;
+  function activateTab(name) {
+    var target = document.querySelector("[data-tab='" + name + "']");
+    if (!target) return;
+    document.querySelectorAll(".ocd-tab").forEach(function (b) { b.classList.remove("ocd-tab--active"); });
+    document.querySelectorAll(".ocd-tab-pane").forEach(function (p) { p.classList.remove("ocd-tab-pane--active"); });
+    target.classList.add("ocd-tab--active");
+    document.getElementById("tab-" + name).classList.add("ocd-tab-pane--active");
+  }
+  try { var _saved = sessionStorage.getItem(TAB_KEY); if (_saved) activateTab(_saved); } catch (_) {}
   document.querySelectorAll(".ocd-tab").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      document.querySelectorAll(".ocd-tab").forEach(function (b) { b.classList.remove("ocd-tab--active"); });
-      document.querySelectorAll(".ocd-tab-pane").forEach(function (p) { p.classList.remove("ocd-tab-pane--active"); });
-      btn.classList.add("ocd-tab--active");
-      document.getElementById("tab-" + btn.dataset.tab).classList.add("ocd-tab-pane--active");
+      activateTab(btn.dataset.tab);
+      try { sessionStorage.setItem(TAB_KEY, btn.dataset.tab); } catch (_) {}
     });
   });
 
@@ -642,12 +647,7 @@
       var data = Object.assign({ name: OCCASION }, formData(form), extraData || {});
       api(method, data, function (err, res) {
         if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = "Hifadhi"; }
-        if (err || (res && res.exc)) {
-          var msg = "Hitilafu imetokea.";
-          try { msg = JSON.parse(JSON.parse(res._server_messages || "[]")[0] || "{}").message || msg; } catch(x) {}
-          showAlert(alertEl, msg, true);
-          return;
-        }
+        if (err) { showAlert(alertEl, err.message || "Hitilafu imetokea.", true); return; }
         if (afterOk) afterOk(res);
         else location.reload();
       });
@@ -675,7 +675,7 @@
         allow_reentry: cb && cb.checked ? 1 : 0,
         table_size: gateForm.querySelector("[name=table_size]").value,
       }, function (err, res) {
-        if (err || res.exc) { showAlert(document.getElementById("gateAlert"), "Hitilafu.", true); return; }
+        if (err) { showAlert(document.getElementById("gateAlert"), err.message || "Hitilafu.", true); return; }
         location.reload();
       });
     });
@@ -944,7 +944,7 @@
       api("orion_card.api.dashboard.save_budget_settings", {
         occasion: OCCASION, total_budget: d.total_budget, contribution_deadline: d.contribution_deadline, payment_instructions: d.payment_instructions
       }, function (err, res) {
-        if (err || res.exc) { showAlert(document.getElementById("budgetSettingsAlert"), "Hitilafu.", true); return; }
+        if (err) { showAlert(document.getElementById("budgetSettingsAlert"), err.message || "Hitilafu.", true); return; }
         location.reload();
       });
     });
@@ -992,7 +992,7 @@
       if (isEdit) payload.row_name = d.row_name;
       api(method, payload, function (err, res) {
         saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
-        if (err || res.exc) { showAlert(document.getElementById("budgetItemAlert"), "Hitilafu.", true); return; }
+        if (err) { showAlert(document.getElementById("budgetItemAlert"), err.message || "Hitilafu.", true); return; }
         location.reload();
       });
     });

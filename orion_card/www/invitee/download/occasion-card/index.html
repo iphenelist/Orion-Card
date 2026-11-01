@@ -426,7 +426,7 @@ function sendRsvp(status) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Frappe-CSRF-Token": "{{ frappe.sessions.get_csrf_token() }}"
+      "X-Frappe-CSRF-Token": "{{ csrf_token }}"
     },
     body: JSON.stringify({ guest_code: RSVP_CODE, status })
   })

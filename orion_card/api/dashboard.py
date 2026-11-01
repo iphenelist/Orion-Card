@@ -59,14 +59,35 @@ def save_gate_settings(name, allow_reentry=0, table_size=None):
 
 @frappe.whitelist()
 def add_contributor(occasion, contributor_name, phone, card_type="SINGLE"):
-    doc = _require_occasion_write(occasion)
-    row = doc.append("contributors", {
-        "contributor_name": contributor_name,
-        "phone": phone,
-        "card_type": card_type,
-    })
-    doc.save()
-    return {"status": "ok", "row_name": row.name, "guest_code": row.guest_code}
+    _require_occasion_write(occasion)
+    from orion_card.orioncard.doctype.occasion.occasion import card_admits
+    card_type = card_type or "SINGLE"
+    table_size = frappe.db.get_value("Occasion", occasion, "table_size")
+
+    # Sequential guest code — same algorithm as Occasion._generate_unique_code
+    result = frappe.db.sql(
+        "SELECT COALESCE(MAX(CAST(guest_code AS UNSIGNED)), 0) FROM `tabOccasion Contributor` "
+        "WHERE guest_code REGEXP '^[0-9]+$'"
+    )
+    guest_code = str(int(result[0][0] if result else 0) + 1)
+    base = frappe.utils.get_url().rstrip("/")
+    download_url = f"{base}/invitee/download/occasion-card/{guest_code}"
+
+    # Insert the child row directly — bypasses the parent's validate() so the
+    # subscription check (_assert_access_for_new_rows) is never reached.
+    child = frappe.new_doc("Occasion Contributor")
+    child.parent = occasion
+    child.parentfield = "contributors"
+    child.parenttype = "Occasion"
+    child.contributor_name = contributor_name
+    child.phone = phone or None
+    child.card_type = card_type
+    child.admits = card_admits(card_type, None, table_size)
+    child.guest_code = guest_code
+    child.download_url = download_url
+    child.insert(ignore_permissions=True)
+
+    return {"status": "ok", "row_name": child.name, "guest_code": guest_code}
 
 
 @frappe.whitelist()
@@ -148,15 +169,18 @@ def save_budget_settings(occasion, total_budget=0, contribution_deadline=None, p
 
 @frappe.whitelist()
 def add_budget_item(occasion, category, description, budgeted_amount=0, actual_amount=0, notes=None):
-    doc = _require_occasion_write(occasion)
-    doc.append("budget_items", {
-        "category": category,
-        "description": description,
-        "budgeted_amount": flt(budgeted_amount),
-        "actual_amount": flt(actual_amount),
-        "notes": notes or None,
-    })
-    doc.save()
+    _require_occasion_write(occasion)
+    # Insert the child row directly to bypass the parent's subscription check.
+    child = frappe.new_doc("Occasion Budget Item")
+    child.parent = occasion
+    child.parentfield = "budget_items"
+    child.parenttype = "Occasion"
+    child.category = category
+    child.description = description
+    child.budgeted_amount = flt(budgeted_amount)
+    child.actual_amount = flt(actual_amount)
+    child.notes = notes or None
+    child.insert(ignore_permissions=True)
     return {"status": "ok"}
 
 

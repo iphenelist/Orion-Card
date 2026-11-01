@@ -10,6 +10,7 @@ from orion_card.orioncard.doctype.occasion.occasion import card_admits
 def get_context(context):
     context.page_title = "Occasion Gate Check-in"
     context.no_cache = 1
+    context.csrf_token = frappe.sessions.get_csrf_token()
     code = frappe.form_dict.get("code")
     occasion = frappe.form_dict.get("occasion")
     context.auto_scan = bool(code)
