@@ -574,8 +574,18 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded", "X-Frappe-CSRF-Token": CSRF },
       body: params,
     })
-      .then(function (r) { return r.json(); })
-      .then(function (r) { cb(null, r); })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (r) {
+        if (!r.ok || r.body.exc) {
+          var msg = "Hitilafu imetokea.";
+          try {
+            var msgs = JSON.parse(r.body._server_messages || "[]");
+            if (msgs.length) msg = (JSON.parse(msgs[0]) || {}).message || msg;
+          } catch (_) {}
+          return cb(new Error(msg));
+        }
+        cb(null, r.body);
+      })
       .catch(function (e) { cb(e); });
   }
 
@@ -713,7 +723,7 @@
         : { occasion: OCCASION, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type };
       api(method, payload, function (err, res) {
         saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
-        if (err || res.exc) { showAlert(alertEl, "Hitilafu imetokea.", true); return; }
+        if (err) { showAlert(alertEl, err.message || "Hitilafu imetokea.", true); return; }
         location.reload();
       });
     });
@@ -740,7 +750,7 @@
     if (result) { result.hidden = false; result.className = "ocd-bulk-result ocd-bulk-result--info"; result.textContent = label + "… Subiri."; }
     api(method, Object.assign({ occasion: OCCASION }, extraData || {}), function (err, res) {
       if (!result) return;
-      if (err) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu imetokea."; return; }
+      if (err) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = err.message || "Hitilafu imetokea."; return; }
       var m = res.message || res;
       if (m && typeof m === "object") {
         var ok = m.success || 0, fail = m.failed || 0;
