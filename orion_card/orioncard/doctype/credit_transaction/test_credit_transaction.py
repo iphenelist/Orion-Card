@@ -171,7 +171,7 @@ class IntegrationTestCreditTransaction(IntegrationTestCase):
 			frappe.set_user("Administrator")
 		# The password is chosen on the form: no set-password email, logged straight in.
 		self.assertEqual(res["status"], "ok")
-		self.assertEqual(res["redirect_to"], "/app/occasion")
+		self.assertEqual(res["redirect_to"], "/dashboard")
 		welcome.assert_not_called()
 		login_manager.login_as.assert_called_once_with(email)
 		from frappe.utils.password import check_password

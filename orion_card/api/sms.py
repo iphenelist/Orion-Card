@@ -114,6 +114,7 @@ def _send_rodsms(settings, phone: str, message: str) -> dict:
         "sender_id": sender_id,
         "recipient": recipient,
         "message": message,
+        "sms_type": "transactional",
     })
     return body.get("data") or {}
 

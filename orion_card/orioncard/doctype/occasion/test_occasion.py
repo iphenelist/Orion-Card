@@ -36,6 +36,7 @@ def make_occasion(owner=MANAGER, **kwargs):
 		"occasion_date": frappe.utils.add_days(frappe.utils.today(), 30),
 		"occasion_time": "Saa 12:00 jioni",
 		"venue_name": "Diamond Jubilee",
+		"card_design": "/files/dummy-design.jpg",
 		**kwargs,
 	})
 	doc.insert()
