@@ -9,32 +9,11 @@ class OrionCardSettings(Document):
 		return frappe.utils.get_url("/api/method/orion_card.api.payments.payment_callback")
 
 	def validate(self):
-		self._validate_packages()
-		self._validate_card_price_tiers()
-		for field in ("sms_credit_price", "whatsapp_credit_price", "price_per_guest_card"):
-			if (self.get(field) or 0) < 0:
-				frappe.throw(_("{0} cannot be negative.").format(self.meta.get_label(field)))
+		if (self.price_per_card or 0) < 0:
+			frappe.throw(_("Price per Card cannot be negative."))
 
 	def on_update(self):
 		frappe.clear_cache(doctype="OrionCard Settings")
-
-	def _validate_card_price_tiers(self):
-		from orion_card.utils.pricing import validate_tiers
-
-		if not self.card_price_tiers:
-			return
-		for warning in validate_tiers(self.card_price_tiers, self.sms_credit_price, self.whatsapp_credit_price):
-			frappe.msgprint(warning, title=_("Check card pricing"), indicator="orange")
-
-	def _validate_packages(self):
-		seen = set()
-		for row in self.credit_packages:
-			if row.credits <= 0:
-				frappe.throw(_("Row {0}: package credits must be more than 0.").format(row.idx))
-			key = (row.channel, row.label.strip().lower())
-			if key in seen:
-				frappe.throw(_("Row {0}: duplicate {1} package '{2}'.").format(row.idx, row.channel, row.label))
-			seen.add(key)
 
 	@frappe.whitelist()
 	def send_test_sms(self):
