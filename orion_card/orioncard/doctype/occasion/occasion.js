@@ -310,7 +310,7 @@ function show_bulk_result(res, done_label, error_title) {
         show_contact_dialog(res.contact, frappe.utils.escape_html(res.errors[res.errors.length - 1] || ""));
         return;
     }
-    if (res.errors.length) {
+    if (res.errors && res.errors.length) {
         frappe.msgprint({
             title: error_title,
             message: res.errors.map(frappe.utils.escape_html).join("<br>"),
@@ -346,6 +346,30 @@ function credit_line(channel, c, billing) {
         <b style="color:${short ? "var(--red-600, #d03b3b)" : "inherit"}">${c.available}</b></div>`;
 }
 
+function _track_bulk_send(frm, channel, total) {
+    let sent = 0;
+    frappe.show_alert({
+        message: __("Sending {0} messages in background…", [total]),
+        indicator: "blue"
+    }, 60);
+
+    frappe.realtime.on("bulk_send_progress", function handler(data) {
+        if (data.occasion !== frm.doc.name || data.channel !== channel) return;
+        sent = (data.success || 0) + (data.failed || 0);
+        if (!data.done) {
+            frappe.show_alert({
+                message: __("{0} / {1} {2} messages sent…", [sent, data.total || total, channel]),
+                indicator: "blue"
+            }, 60);
+            return;
+        }
+        frappe.realtime.off("bulk_send_progress", handler);
+        show_bulk_result(data, __("Sent"), __("{0} Errors", [channel]));
+        refresh_billing_status(frm);
+        frm.reload_doc();
+    });
+}
+
 function confirm_bulk_send(frm, channel, method) {
     with_saved(frm, () => {
         let d = null;
@@ -371,12 +395,18 @@ function confirm_bulk_send(frm, channel, method) {
                 const statuses = selected_statuses(d);
                 if (!statuses.length) return;
                 d.hide();
-                frappe.show_alert({ message: __("Sending..."), indicator: "blue" });
+                frappe.show_alert({ message: __("Queuing send..."), indicator: "blue" });
                 const args = { statuses, resend: d.get_value("resend") ? 1 : 0 };
-                frm.call({ method, doc: frm.doc, args, freeze: true, freeze_message: __("Sending...") }).then(res => {
-                    show_bulk_result(res.message, __("Sent"), __("{0} Errors", [channel]));
-                    refresh_billing_status(frm);
-                    frm.reload_doc();
+                frm.call({ method, doc: frm.doc, args }).then(res => {
+                    const result = res.message;
+                    if (result && result.queued) {
+                        _track_bulk_send(frm, channel, result.total);
+                    } else {
+                        // Immediate result (e.g. zero guests to send to)
+                        show_bulk_result(result, __("Sent"), __("{0} Errors", [channel]));
+                        refresh_billing_status(frm);
+                        frm.reload_doc();
+                    }
                 });
             }
         });

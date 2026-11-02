@@ -31,6 +31,21 @@ def channel_enabled(channel: str) -> bool:
 	return value is None or bool(cint(value))
 
 
+def _extract_gateway_id(channel: str, result: dict) -> str:
+	"""Pull the gateway-assigned message ID from the send response.
+
+	RodSMS returns data.id; WaSender returns messageId at the root.
+	Returns an empty string when not present so the field stays clean.
+	"""
+	if not isinstance(result, dict):
+		return ""
+	if channel == "SMS":
+		raw = result.get("id") or result.get("message_id") or ""
+	else:
+		raw = result.get("messageId") or result.get("id") or ""
+	return str(raw) if raw else ""
+
+
 def send_message(
 	occasion_doc,
 	channel: str,
@@ -56,27 +71,38 @@ def send_message(
 		result = _gateway_send(channel, phone, text, image_url=image_url)
 	except Exception as e:
 		credits.refund(payer, channel, needed, occasion=occasion_doc.name, remarks=f"Failed — {remarks}")
-		log_message(occasion_doc, channel, message_type, False, e, guest_code, contributor_id, 0)
+		log_message(
+			occasion_doc, channel, message_type, False, e,
+			guest_code, contributor_id, 0,
+			delivery_status="Failed",
+		)
 		raise
 
-	log_message(occasion_doc, channel, message_type, True, result, guest_code, contributor_id, needed)
+	gateway_id = _extract_gateway_id(channel, result)
+	log_message(
+		occasion_doc, channel, message_type, True, result,
+		guest_code, contributor_id, needed,
+		gateway_message_id=gateway_id,
+		delivery_status="Submitted",
+	)
 	return result
 
 
 def _gateway_send(channel, phone, text, image_url=None):
 	if channel == "SMS":
 		from orion_card.api.sms import send_sms
-
 		return send_sms(phone, text)
 	from orion_card.api.whatsapp import send_image, send_text
-
 	if image_url:
 		return send_image(phone, image_url, caption=text)
 	return send_text(phone, text)
 
 
-def log_message(occasion_doc, channel, message_type, success, response, guest_code=None,
-				contributor_id=None, credits_used=0):
+def log_message(
+	occasion_doc, channel, message_type, success, response,
+	guest_code=None, contributor_id=None, credits_used=0,
+	gateway_message_id="", delivery_status="Submitted",
+):
 	frappe.get_doc({
 		"doctype": "Occasion Guest Invite Log",
 		"occasion": occasion_doc.name,
@@ -88,7 +114,31 @@ def log_message(occasion_doc, channel, message_type, success, response, guest_co
 		"success": 1 if success else 0,
 		"credits_used": credits_used,
 		"response": str(response)[:140],
+		"gateway_message_id": gateway_message_id or "",
+		"delivery_status": delivery_status if success else "Failed",
 	}).insert(ignore_permissions=True)
+
+
+def update_delivery_status(gateway_message_id: str, new_status: str):
+	"""Called by delivery webhooks to mark an in-flight message as Delivered or Failed."""
+	if not gateway_message_id or new_status not in ("Delivered", "Failed", "Unknown"):
+		return
+	rows = frappe.db.get_all(
+		"Occasion Guest Invite Log",
+		filters={"gateway_message_id": gateway_message_id},
+		fields=["name"],
+		limit=1,
+	)
+	if not rows:
+		return
+	frappe.db.set_value(
+		"Occasion Guest Invite Log",
+		rows[0].name,
+		"delivery_status",
+		new_status,
+		update_modified=False,
+	)
+	frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -102,13 +152,11 @@ def estimate(occasion_name: str, channel: str, purpose: str = "Invitation", stat
 
 	if purpose == "Invitation":
 		from orion_card.api import sms, whatsapp
-
 		builders = {"SMS": sms.build_invitation_message, "WhatsApp": whatsapp.build_invitation_message}
 		pending = {ch: occasion.guests_to_invite(ch, statuses, resend) for ch in channels}
 		texts = {ch: [builders[ch](occasion, g) for g in pending[ch]] for ch in channels}
 	else:
 		from orion_card.api.reminders import build_reminder_message, select_contributors
-
 		statuses = frappe.parse_json(statuses) if statuses else None
 		texts = {
 			ch: [build_reminder_message(occasion, c, ch) for c in select_contributors(occasion, statuses, channel=ch)]
