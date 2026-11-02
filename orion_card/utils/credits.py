@@ -40,13 +40,13 @@ class InsufficientCreditsError(frappe.ValidationError):
 
 
 def billing_enabled() -> bool:
-	return bool(cint(frappe.db.get_single_value("OrionCard Settings", "enable_credit_billing")))
+	# Cards are sold at a flat price; messages are included — no per-message credits.
+	return False
 
 
 def purchase_enabled() -> bool:
-	"""Customers may buy credits themselves at /credits. When off, they contact
-	OrionCard and a System Manager adds credits on their Message Credit Account."""
-	return bool(cint(frappe.db.get_single_value("OrionCard Settings", "allow_credit_purchase")))
+	# Credit purchases removed; customers buy cards, not message credits.
+	return False
 
 
 def support_contact() -> dict:
