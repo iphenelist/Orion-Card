@@ -5,7 +5,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "category",
+  "particular",
   "description",
   "budgeted_amount",
   "actual_amount",
@@ -14,11 +14,10 @@
  "fields": [
   {
    "columns": 2,
-   "fieldname": "category",
-   "fieldtype": "Select",
+   "fieldname": "particular",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Category",
-   "options": "Ukumbi\nChakula\nVinywaji\nMapambo\nMuziki / DJ\nPicha & Video\nUsafiri\nMavazi\nKeki\nMC\nNyingine",
+   "label": "Particular",
    "reqd": 1
   },
   {

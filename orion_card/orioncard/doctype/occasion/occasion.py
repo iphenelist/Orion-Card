@@ -164,72 +164,9 @@ class Occasion(Document):
         self.outstanding_pledges = sum(flt(c.balance) for c in self.contributors)
         self.funding_gap = flt(self.total_budget) - flt(self.total_collected)
 
-    @frappe.whitelist()
-    def import_contributors(self, file_url: str):
-        """Add contributors from an uploaded Excel/CSV that follows the template.
-        Matches existing contributors by phone first, then by name (case-insensitive)
-        for rows without a phone, so re-importing the same file doesn't create duplicates."""
-        self.check_permission("write")
-        rows = _read_spreadsheet(file_url, self)
-        if not rows:
-            frappe.throw(_("The file is empty."))
-
-        header = [str(h or "").strip().lower() for h in rows[0]]
-        col = {key: _find_column(header, aliases) for key, aliases in IMPORT_COLUMNS.items()}
-        if col["name"] is None:
-            frappe.throw(_("The file must have a 'Name' column. Download the template to see the expected columns."))
-
-        by_phone = {normalize_phone(c.phone): c for c in self.contributors if c.phone}
-        by_name = {c.contributor_name.strip().lower(): c for c in self.contributors}
-        added, updated, skipped = 0, 0, []
-        for line_no, row in enumerate(rows[1:], start=2):
-            value = lambda key: (row[col[key]] if col[key] is not None and col[key] < len(row) else None)  # noqa: E731
-            name = str(value("name") or "").strip()
-            if not name:
-                if any(cell not in (None, "") for cell in row):
-                    skipped.append(_("Row {0}: missing name").format(line_no))
-                continue
-            phone = str(value("phone") or "").strip()
-            if phone.endswith(".0"):  # Excel turns 0712... into 712345678.0
-                phone = phone[:-2]
-            try:
-                pledged = flt(value("pledged") or 0)
-                paid_so_far = flt(value("paid") or 0)
-            except Exception:
-                skipped.append(_("Row {0}: amounts must be numbers").format(line_no))
-                continue
-            card_type = str(value("card_type") or "SINGLE").strip().upper()
-            if card_type not in CARD_TYPES:
-                card_type = "SINGLE"
-
-            existing = by_phone.get(normalize_phone(phone)) if phone else by_name.get(name.lower())
-            if existing:
-                existing.contributor_name = name
-                if phone and not existing.phone:
-                    existing.phone = phone
-                    by_phone[normalize_phone(phone)] = existing
-                if pledged:
-                    existing.pledged_amount = pledged
-                if paid_so_far:
-                    existing.paid_amount = paid_so_far
-                existing.card_type = card_type
-                updated += 1
-                continue
-
-            contributor = self.append("contributors", {
-                "contributor_name": name,
-                "phone": phone,
-                "pledged_amount": pledged,
-                "paid_amount": max(paid_so_far, 0),
-                "card_type": card_type,
-            })
-            if phone:
-                by_phone[normalize_phone(phone)] = contributor
-            by_name[name.lower()] = contributor
-            added += 1
-
-        self.save()
-        return {"added": added, "updated": updated, "skipped": skipped}
+    # import_contributors and import_budget_items are standalone @frappe.whitelist()
+    # functions below the class — Frappe cannot inject `self` for class methods
+    # called directly via /api/method/.
 
     # ------------------------------------------------------------ subscription & sending
 
@@ -548,6 +485,15 @@ IMPORT_COLUMNS = {
 }
 TEMPLATE_HEADER = ["Name", "Phone", "Pledge", "Card Type", "Paid so far"]
 
+BUDGET_TEMPLATE_HEADER = ["Particular", "Description", "Budgeted Amount", "Actual Spent", "Notes"]
+BUDGET_COLUMNS = {
+    "particular":  ("particular", "category", "item", "kipengele", "particulars"),
+    "description": ("description", "maelezo", "details", "desc"),
+    "budgeted":    ("budgeted amount", "budgeted", "budget", "planned", "bajeti"),
+    "actual":      ("actual spent", "actual", "spent", "kilichotumika", "actual amount"),
+    "notes":       ("notes", "maelezo ya ziada", "remarks", "note"),
+}
+
 
 def _find_column(header, aliases):
     for i, h in enumerate(header):
@@ -602,3 +548,157 @@ def export_contributors(occasion: str):
             flt(c.paid_amount), flt(c.balance), c.payment_status, c.guest_code or "",
         ])
     build_xlsx_response(data, frappe.scrub(f"{doc.name} contributors"))
+
+
+@frappe.whitelist()
+def download_budget_template():
+    from frappe.utils.xlsxutils import build_xlsx_response
+
+    build_xlsx_response(
+        [BUDGET_TEMPLATE_HEADER, ["Ukumbi", "Pango la chumba kikubwa", 500000, 480000, ""]],
+        "budget_template",
+    )
+
+
+@frappe.whitelist()
+def import_contributors(occasion: str, file_url: str):
+    """Add contributors from an uploaded Excel/CSV. Standalone so Frappe can call it via API."""
+    doc = frappe.get_doc("Occasion", occasion)
+    doc.check_permission("write")
+    rows = _read_spreadsheet(file_url, doc)
+    if not rows:
+        frappe.throw(_("The file is empty."))
+
+    header = [str(h or "").strip().lower() for h in rows[0]]
+    col = {key: _find_column(header, aliases) for key, aliases in IMPORT_COLUMNS.items()}
+    if col["name"] is None:
+        frappe.throw(_("The file must have a 'Name' column. Download the template to see the expected columns."))
+
+    by_phone = {normalize_phone(c.phone): c for c in doc.contributors if c.phone}
+    by_name = {c.contributor_name.strip().lower(): c for c in doc.contributors}
+    added, updated, skipped = 0, 0, []
+    for line_no, row in enumerate(rows[1:], start=2):
+        value = lambda key: (row[col[key]] if col[key] is not None and col[key] < len(row) else None)  # noqa: E731
+        name = str(value("name") or "").strip()
+        if not name:
+            if any(cell not in (None, "") for cell in row):
+                skipped.append(_("Row {0}: missing name").format(line_no))
+            continue
+        phone = str(value("phone") or "").strip()
+        if phone.endswith(".0"):
+            phone = phone[:-2]
+        try:
+            pledged = flt(value("pledged") or 0)
+            paid_so_far = flt(value("paid") or 0)
+        except Exception:
+            skipped.append(_("Row {0}: amounts must be numbers").format(line_no))
+            continue
+        card_type = str(value("card_type") or "SINGLE").strip().upper()
+        if card_type not in CARD_TYPES:
+            card_type = "SINGLE"
+
+        existing = by_phone.get(normalize_phone(phone)) if phone else by_name.get(name.lower())
+        if existing:
+            existing.contributor_name = name
+            if phone and not existing.phone:
+                existing.phone = phone
+                by_phone[normalize_phone(phone)] = existing
+            if pledged:
+                existing.pledged_amount = pledged
+            if paid_so_far:
+                existing.paid_amount = paid_so_far
+            existing.card_type = card_type
+            updated += 1
+            continue
+
+        contributor = doc.append("contributors", {
+            "contributor_name": name,
+            "phone": phone,
+            "pledged_amount": pledged,
+            "paid_amount": max(paid_so_far, 0),
+            "card_type": card_type,
+        })
+        if phone:
+            by_phone[normalize_phone(phone)] = contributor
+        by_name[name.lower()] = contributor
+        added += 1
+
+    doc.save()
+    return {"added": added, "updated": updated, "skipped": skipped}
+
+
+@frappe.whitelist()
+def import_budget_items(occasion: str, file_url: str):
+    """Add / update budget items from an uploaded Excel/CSV. Standalone so Frappe can call it via API."""
+    doc = frappe.get_doc("Occasion", occasion)
+    doc.check_permission("write")
+    rows = _read_spreadsheet(file_url, doc)
+    if not rows:
+        frappe.throw(_("The file is empty."))
+
+    header = [str(h or "").strip().lower() for h in rows[0]]
+    col = {key: _find_column(header, aliases) for key, aliases in BUDGET_COLUMNS.items()}
+    if col["particular"] is None:
+        frappe.throw(_("The file must have a 'Particular' column. Download the template to see the expected columns."))
+
+    by_particular = {(item.particular or "").strip().lower(): item for item in doc.budget_items}
+    added, updated, skipped = 0, 0, []
+    for line_no, row in enumerate(rows[1:], start=2):
+        value = lambda key: (row[col[key]] if col[key] is not None and col[key] < len(row) else None)  # noqa: E731
+        particular = str(value("particular") or "").strip()
+        if not particular:
+            if any(cell not in (None, "") for cell in row):
+                skipped.append(_("Row {0}: missing particular").format(line_no))
+            continue
+        try:
+            budgeted = flt(value("budgeted") or 0)
+            actual = flt(value("actual") or 0)
+        except Exception:
+            skipped.append(_("Row {0}: amounts must be numbers").format(line_no))
+            continue
+        description = str(value("description") or "").strip()
+        notes = str(value("notes") or "").strip()
+
+        existing = by_particular.get(particular.lower())
+        if existing:
+            existing.description = description or existing.description
+            if budgeted:
+                existing.budgeted_amount = budgeted
+            if actual:
+                existing.actual_amount = actual
+            existing.notes = notes or existing.notes
+            updated += 1
+            continue
+
+        item = doc.append("budget_items", {
+            "particular": particular,
+            "description": description,
+            "budgeted_amount": max(budgeted, 0),
+            "actual_amount": max(actual, 0),
+            "notes": notes,
+        })
+        by_particular[particular.lower()] = item
+        added += 1
+
+    # Back-fill particular for rows created before the field was mandatory
+    for item in doc.budget_items:
+        if not (item.particular or "").strip():
+            item.particular = (item.description or item.notes or "—")[:140]
+
+    doc.save()
+    return {"added": added, "updated": updated, "skipped": skipped}
+
+
+@frappe.whitelist()
+def export_budget_items(occasion: str):
+    from frappe.utils.xlsxutils import build_xlsx_response
+
+    doc = frappe.get_doc("Occasion", occasion)
+    doc.check_permission("read")
+    data = [["Particular", "Description", "Budgeted Amount", "Actual Spent", "Notes"]]
+    for item in doc.budget_items:
+        data.append([
+            item.particular, item.description or "",
+            flt(item.budgeted_amount), flt(item.actual_amount), item.notes or "",
+        ])
+    build_xlsx_response(data, frappe.scrub(f"{doc.name} budget"))

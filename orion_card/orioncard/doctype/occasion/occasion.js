@@ -187,6 +187,44 @@ frappe.ui.form.on("Occasion", {
         );
     },
 
+    import_budget_btn(frm) {
+        with_saved(frm, () => {
+            const d = new frappe.ui.Dialog({
+                title: __("Import Budget Items"),
+                fields: [
+                    {
+                        fieldtype: "HTML",
+                        options: `<p>${__("Columns: Particular, Description, Budgeted Amount, Actual Spent, Notes. Existing items are matched by Particular and updated, not duplicated.")}</p>
+                            <p><a href="/api/method/orion_card.orioncard.doctype.occasion.occasion.download_budget_template">${__("Download the Excel template")}</a></p>`
+                    },
+                    { fieldname: "file", fieldtype: "Attach", label: __("Excel / CSV file"), reqd: 1 }
+                ],
+                primary_action_label: __("Import"),
+                primary_action(values) {
+                    frm.call({ method: "import_budget_items", doc: frm.doc, args: { file_url: values.file }, freeze: true })
+                        .then(r => {
+                            d.hide();
+                            const res = r.message;
+                            let msg = __("Added: {0}, Updated: {1}", [res.added, res.updated]);
+                            if (res.skipped.length) {
+                                msg += "<br><br>" + __("Skipped:") + "<br>" + res.skipped.map(frappe.utils.escape_html).join("<br>");
+                            }
+                            frappe.msgprint({ title: __("Import finished"), message: msg, indicator: res.skipped.length ? "orange" : "green" });
+                            frm.reload_doc();
+                        });
+                }
+            });
+            d.show();
+        });
+    },
+
+    export_budget_btn(frm) {
+        if (frm.is_new()) return;
+        window.open(
+            `/api/method/orion_card.orioncard.doctype.occasion.occasion.export_budget_items?occasion=${encodeURIComponent(frm.doc.name)}`
+        );
+    },
+
     send_reminders_btn(frm) {
         open_reminder_dialog(frm);
     }

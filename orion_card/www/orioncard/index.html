@@ -1,53 +1,86 @@
 {% extends "templates/orioncard_site_base.html" %}
 
 {% block ec_content %}
-{# ------------------------------------------------------------------ HERO #}
-<section class="ec-hero ec-hero--clean">
+{# ---- HERO ---- #}
+<section class="ec-hero-dark">
 	<div class="ec-wrap">
-		<p class="ec-hero-eyebrow" data-i18n="hero.eyebrow">Matukio ya Tanzania</p>
-		<h1 data-i18n="hero.title">Michango, kadi na wageni wa sherehe yako, <span class="ec-accent">bila Excel.</span></h1>
-		<p class="ec-lede" data-i18n="hero.lede">Rekodi kila ahadi na malipo, tuma kadi za mwaliko zenye QR code kwa SMS na WhatsApp, kisha pokea wageni getini kwa kuskani simu.</p>
-		<div class="ec-hero-ctas">
-			<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
-			<a class="ec-btn ec-btn-ghost ec-btn-lg" href="#bei" data-i18n="cta.calc">Kokotoa bei yako</a>
+		<div class="ec-hero-split">
+			<div class="ec-hero-copy">
+				<p class="ec-hero-tag-pill" data-i18n="hero.tag">Matukio ya Tanzania</p>
+				<h1 data-i18n="hero.title">Michango, kadi na wageni wa sherehe yako, <span class="ec-lime">bila Excel.</span></h1>
+				<p class="ec-lede" data-i18n="hero.lede">Rekodi kila ahadi na malipo, tuma kadi za mwaliko zenye QR code kwa SMS na WhatsApp, kisha pokea wageni getini kwa kuskani simu.</p>
+				<div class="ec-hero-ctas-dark">
+					<a class="ec-btn-lime" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
+					<a class="ec-btn-outline-dark" href="#bei" data-i18n="cta.calc">Kokotoa bei yako</a>
+				</div>
+				<p class="ec-hero-note-dark" data-i18n="hero.note2">Kuanza ni bure. Lipa kwa Mixx, Airtel au HaloPesa.</p>
+			</div>
+			<div class="ec-hero-visual">
+				<img class="ec-hero-photo" src="https://images.unsplash.com/photo-1772127822562-a898d9f5733c?w=900&q=80&auto=format&fit=crop" alt="Sherehe ya harusi" loading="eager">
+				<div class="ec-hero-badge">
+					<strong>500+</strong>
+					<span data-i18n="stats.events_label">Matukio yaliyopangwa</span>
+				</div>
+				<div class="ec-hero-badge2">
+					<strong>QR ✓</strong>
+					<span data-i18n="stats.gate_label">Ukaguzi wa getini</span>
+				</div>
+			</div>
 		</div>
-		<p class="ec-hero-note" data-i18n="hero.note2">Kuanza ni bure. Lipa kwa Mixx, Airtel au HaloPesa.</p>
 	</div>
 </section>
 
 
-
-{# ------------------------------------------------------------------ STEPS #}
+{# ---- HOW IT WORKS ---- #}
 <section class="ec-section ec-section--ruled" id="jinsi">
 	<div class="ec-wrap">
 		<div class="ec-section-head">
+			<p class="ec-eyebrow" data-i18n="section.how">Mchakato</p>
 			<h2 data-i18n="how.title">Kutoka kikao cha kamati hadi mlangoni</h2>
 			<p class="ec-lede" data-i18n="how.lede">Hatua nne, kwenye simu au kompyuta.</p>
 		</div>
-		<ol class="ec-steps">
-			<li>
+		<div class="ec-steps-dark">
+			<div class="ec-step-card">
+				<p class="ec-step-num">01</p>
+				<div class="ec-step-icon-wrap">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+				</div>
 				<h3 data-i18n="how.s1.t">Jisajili</h3>
 				<p data-i18n="how.s1.d">Fungua akaunti kwa barua pepe, kisha unda tukio lako.</p>
-			</li>
-			<li>
+			</div>
+			<div class="ec-step-card">
+				<p class="ec-step-num">02</p>
+				<div class="ec-step-icon-wrap">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+				</div>
 				<h3 data-i18n="how.s2.t">Panga michango na bajeti</h3>
-				<p data-i18n="how.s2.d">Andika wachangiaji na ahadi zao, kisha weka walicholipa. Hali ya malipo inajihesabu yenyewe.</p>
-			</li>
-			<li>
+				<p data-i18n="how.s2.d">Andika wachangiaji na ahadi zao, kisha weka walicholipa.</p>
+			</div>
+			<div class="ec-step-card">
+				<p class="ec-step-num">03</p>
+				<div class="ec-step-icon-wrap">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9l9 6 9-6"/></svg>
+				</div>
 				<h3 data-i18n="how.s3.t">Tuma kadi</h3>
-				<p data-i18n="how.s3.d">Kila mgeni anapata kadi yenye jina lake na QR code kwa SMS au WhatsApp. Wewe unachagua nani apate.</p>
-			</li>
-			<li>
+				<p data-i18n="how.s3.d">Kila mgeni anapata kadi yenye jina lake na QR code kwa SMS au WhatsApp.</p>
+			</div>
+			<div class="ec-step-card">
+				<p class="ec-step-num">04</p>
+				<div class="ec-step-icon-wrap">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+				</div>
 				<h3 data-i18n="how.s4.t">Pokea wageni getini</h3>
 				<p data-i18n="how.s4.d">Mlinzi anaskani QR kwa simu. Kadi moja inaingia mara moja tu.</p>
-			</li>
-		</ol>
+			</div>
+		</div>
 	</div>
 </section>
 
-{# ------------------------------------------------------------------ FEATURES #}
+{# ---- FEATURES ---- #}
 <section class="ec-section" id="vipengele">
 	<div class="ec-wrap">
+
+		{# Feature 1: Contributions #}
 		<div class="ec-feature">
 			<div class="ec-feature-copy">
 				<h2 data-i18n="feat.money.t">Michango na bajeti kwenye ukurasa mmoja</h2>
@@ -58,145 +91,129 @@
 					<li data-i18n="feat.money.l3">Tuma vikumbusho vya michango kwa SMS au WhatsApp</li>
 				</ul>
 			</div>
-			<div class="ec-mock-feature">
-				<div class="ec-mock-feature-header">
-					Wachangiaji
-					<span class="ec-mock-badge ec-mock-badge--sent">120 Wote</span>
-				</div>
-				<div class="ec-mock-rows">
-					<div class="ec-mock-row">
-						<span class="ec-mock-avatar">AM</span>
-						<span class="ec-mock-name">Ali Mrisho</span>
-						<span class="ec-mock-phone">300,000</span>
-						<span class="ec-mock-badge ec-mock-badge--paid">Amalipa</span>
-					</div>
-					<div class="ec-mock-row">
-						<span class="ec-mock-avatar">BK</span>
-						<span class="ec-mock-name">Baraka Kilosa</span>
-						<span class="ec-mock-phone">150,000</span>
-						<span class="ec-mock-badge ec-mock-badge--partial">Kiasi</span>
-					</div>
-					<div class="ec-mock-row">
-						<span class="ec-mock-avatar">CM</span>
-						<span class="ec-mock-name">Celia Mramba</span>
-						<span class="ec-mock-phone">500,000</span>
-						<span class="ec-mock-badge ec-mock-badge--paid">Amalipa</span>
-					</div>
-					<div class="ec-mock-row">
-						<span class="ec-mock-avatar">DN</span>
-						<span class="ec-mock-name">Daudi Nguli</span>
-						<span class="ec-mock-phone">0</span>
-						<span class="ec-mock-badge ec-mock-badge--draft">Hajalipa</span>
-					</div>
-				</div>
-				<div style="padding:12px 16px;border-top:1px solid var(--oc-line);background:var(--oc-band);display:flex;gap:8px;align-items:center;">
-					<span style="font-size:.75rem;color:var(--oc-muted);">Jumla:</span>
-					<strong style="font-size:.875rem;color:var(--oc-ink);">TZS 950,000</strong>
-					<span style="margin-left:auto;font-size:.75rem;color:var(--oc-muted);">Waliobaki: 2</span>
-				</div>
+			<div class="ec-feat-panel">
+				<svg viewBox="0 0 480 428" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;" aria-hidden="true">
+					<defs><linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#a3e635"/></linearGradient></defs>
+					<rect width="480" height="428" fill="#131621"/>
+					<rect x="0" y="0" width="480" height="56" fill="#1c2030"/>
+					<text x="24" y="21" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.35)" letter-spacing="0.6">HARUSI · AMINA &amp; BARAKA · 2026</text>
+					<text x="24" y="42" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#f0f2f8">Michango ya Wachangiaji</text>
+					<rect x="356" y="17" width="100" height="22" rx="11" fill="rgba(163,230,53,0.12)"/>
+					<circle cx="370" cy="28" r="4" fill="#a3e635"/>
+					<text x="380" y="33" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#a3e635">8 WOTE</text>
+					<rect x="16" y="68" width="138" height="58" rx="10" fill="rgba(163,230,53,0.05)" stroke="rgba(163,230,53,0.12)" stroke-width="1"/>
+					<text x="28" y="87" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">ZILIKUSANYWA</text>
+					<text x="28" y="112" font-family="Inter,sans-serif" font-size="20" font-weight="700" fill="#a3e635" letter-spacing="-0.8">950,000</text>
+					<rect x="168" y="68" width="138" height="58" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+					<text x="180" y="87" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">PENGO LA BAJETI</text>
+					<text x="180" y="112" font-family="Inter,sans-serif" font-size="20" font-weight="700" fill="#f0f2f8" letter-spacing="-0.8">450,000</text>
+					<rect x="320" y="68" width="140" height="58" rx="10" fill="rgba(234,179,8,0.05)" stroke="rgba(234,179,8,0.15)" stroke-width="1"/>
+					<text x="332" y="87" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">HAWAJALIPA</text>
+					<text x="332" y="107" font-family="Inter,sans-serif" font-size="20" font-weight="700" fill="#facc15" letter-spacing="-0.8">4</text>
+					<text x="356" y="107" font-family="Inter,sans-serif" font-size="12" fill="rgba(255,255,255,0.3)"> kati 8</text>
+					<text x="24" y="152" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.35)" letter-spacing="0.5">MAENDELEO YA UKUSANYAJI</text>
+					<text x="456" y="152" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#a3e635" text-anchor="end">67%</text>
+					<rect x="24" y="160" width="432" height="8" rx="4" fill="rgba(255,255,255,0.06)"/>
+					<rect x="24" y="160" width="290" height="8" rx="4" fill="url(#progGrad)"/>
+					<text x="24" y="182" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#a3e635">TZS 950,000</text>
+					<text x="155" y="182" font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.3)"> / 1,400,000 lengwa</text>
+					<line x1="0" y1="196" x2="480" y2="196" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+					<text x="66" y="213" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.28)" letter-spacing="0.5">MCHANGIAJI</text>
+					<text x="296" y="213" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.28)" letter-spacing="0.5">ALICHOLIPA</text>
+					<text x="396" y="213" font-family="Inter,sans-serif" font-size="9" fill="rgba(255,255,255,0.28)" letter-spacing="0.5" text-anchor="middle">HALI</text>
+					<line x1="0" y1="220" x2="480" y2="220" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+					<circle cx="38" cy="240" r="13" fill="#2563eb"/>
+					<text x="38" y="245" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle">AM</text>
+					<text x="62" y="237" font-family="Inter,sans-serif" font-size="12" font-weight="500" fill="#f0f2f8">Ali Mrisho</text>
+					<text x="62" y="250" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.3)">Ahadi 300,000</text>
+					<text x="296" y="243" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#f0f2f8">300,000</text>
+					<rect x="358" y="231" width="76" height="20" rx="10" fill="rgba(34,197,94,0.15)"/>
+					<text x="396" y="246" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#4ade80" text-anchor="middle">● Amalipa</text>
+					<line x1="0" y1="262" x2="480" y2="262" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+					<circle cx="38" cy="282" r="13" fill="#7c3aed"/>
+					<text x="38" y="287" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle">BK</text>
+					<text x="62" y="279" font-family="Inter,sans-serif" font-size="12" font-weight="500" fill="#f0f2f8">Baraka Kilosa</text>
+					<text x="62" y="292" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.3)">Ahadi 200,000</text>
+					<text x="296" y="285" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#f0f2f8">150,000</text>
+					<rect x="358" y="273" width="76" height="20" rx="10" fill="rgba(234,179,8,0.15)"/>
+					<text x="396" y="288" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#facc15" text-anchor="middle">● Kiasi</text>
+					<line x1="0" y1="304" x2="480" y2="304" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+					<circle cx="38" cy="324" r="13" fill="#059669"/>
+					<text x="38" y="329" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle">CM</text>
+					<text x="62" y="321" font-family="Inter,sans-serif" font-size="12" font-weight="500" fill="#f0f2f8">Celia Mramba</text>
+					<text x="62" y="334" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.3)">Ahadi 500,000</text>
+					<text x="296" y="327" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#f0f2f8">500,000</text>
+					<rect x="358" y="315" width="76" height="20" rx="10" fill="rgba(34,197,94,0.15)"/>
+					<text x="396" y="330" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#4ade80" text-anchor="middle">● Amalipa</text>
+					<line x1="0" y1="346" x2="480" y2="346" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+					<circle cx="38" cy="366" r="13" fill="#4b5563"/>
+					<text x="38" y="371" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle">DS</text>
+					<text x="62" y="363" font-family="Inter,sans-serif" font-size="12" font-weight="500" fill="#f0f2f8">Daud Semunye</text>
+					<text x="62" y="376" font-family="Inter,sans-serif" font-size="10" fill="rgba(255,255,255,0.3)">Ahadi 200,000</text>
+					<text x="296" y="369" font-family="Inter,sans-serif" font-size="12" fill="rgba(255,255,255,0.25)">—</text>
+					<rect x="358" y="357" width="76" height="20" rx="10" fill="rgba(239,68,68,0.12)"/>
+					<text x="396" y="372" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#f87171" text-anchor="middle">● Hajalipa</text>
+					<rect x="0" y="388" width="480" height="40" fill="rgba(255,255,255,0.02)"/>
+					<line x1="0" y1="388" x2="480" y2="388" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+					<text x="24" y="413" font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">Jumla:</text>
+					<text x="72" y="413" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#f0f2f8">TZS 950,000</text>
+					<rect x="270" y="396" width="186" height="24" rx="12" fill="rgba(163,230,53,0.1)" stroke="rgba(163,230,53,0.2)" stroke-width="1"/>
+					<text x="363" y="413" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#a3e635" text-anchor="middle">↗ Tuma vikumbusho (4)</text>
+				</svg>
 			</div>
 		</div>
 
-		<div class="ec-feature ec-feature-flip">
-			<div class="ec-feature-copy">
-				<h2 data-i18n="feat.card.t">Kadi yako ya Canva, na jina la kila mgeni</h2>
-				<p class="ec-lede" data-i18n="feat.card.d">Pakia muundo wa kadi uliotengeneza. OrionCard inaongeza jina, aina ya kadi na QR code ya kila mgeni.</p>
-				<ul class="ec-list">
-					<li data-i18n="feat.card.l1">Tuma kwa SMS, au picha ya kadi yenyewe kwenye WhatsApp</li>
-					<li data-i18n="feat.card.l2">Chagua wanaopata kadi: waliokamilisha tu, au hata waliolipa sehemu</li>
-					<li data-i18n="feat.card.l3">Mgeni anathibitisha kuja kupitia link ya kadi yake</li>
-				</ul>
-			</div>
-			<div class="ec-mock-feature" style="background:var(--oc-band);padding:32px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;">
-				<div class="ec-mock-card">
-					<div style="position:relative;z-index:1;">
-						<div class="ec-mock-card-couple">Harusi · Amina &amp; Baraka · 2026</div>
-						<div class="ec-mock-card-names">Fatuma Hassan</div>
-						<div class="ec-mock-card-date" style="margin-top:4px;">KADI: SINGLE</div>
-					</div>
-					<div class="ec-mock-card-bottom" style="position:relative;z-index:1;">
-						<div class="ec-mock-card-guest">
-							<small>Mgeni</small>
-							Fatuma Hassan
-						</div>
-						<svg class="ec-mock-qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" width="48" height="48" aria-hidden="true">
-							<rect x="1" y="1" width="7" height="7" rx="1" fill="none" stroke="white" stroke-width="1"/>
-							<rect x="3" y="3" width="3" height="3" fill="white"/>
-							<rect x="13" y="1" width="7" height="7" rx="1" fill="none" stroke="white" stroke-width="1"/>
-							<rect x="15" y="3" width="3" height="3" fill="white"/>
-							<rect x="1" y="13" width="7" height="7" rx="1" fill="none" stroke="white" stroke-width="1"/>
-							<rect x="3" y="15" width="3" height="3" fill="white"/>
-							<rect x="9" y="1" width="1" height="1" fill="white"/><rect x="11" y="1" width="1" height="1" fill="white"/>
-							<rect x="9" y="3" width="1" height="1" fill="white"/><rect x="11" y="5" width="1" height="1" fill="white"/>
-							<rect x="9" y="9" width="3" height="1" fill="white"/><rect x="13" y="9" width="3" height="1" fill="white"/>
-							<rect x="17" y="9" width="3" height="1" fill="white"/>
-							<rect x="9" y="11" width="1" height="1" fill="white"/><rect x="13" y="11" width="1" height="1" fill="white"/>
-							<rect x="9" y="13" width="3" height="1" fill="white"/><rect x="15" y="13" width="1" height="1" fill="white"/>
-							<rect x="9" y="15" width="1" height="1" fill="white"/><rect x="13" y="15" width="3" height="1" fill="white"/>
-							<rect x="9" y="17" width="3" height="1" fill="white"/><rect x="15" y="17" width="1" height="1" fill="white"/>
-							<rect x="9" y="19" width="1" height="1" fill="white"/><rect x="13" y="19" width="3" height="1" fill="white"/>
-						</svg>
-					</div>
-				</div>
-				<div style="text-align:center;font-size:.8125rem;color:var(--oc-muted);">Muundo wako + jina lake + QR code yake</div>
-			</div>
-		</div>
 
-		<div class="ec-feature">
-			<div class="ec-feature-copy">
-				<h2 data-i18n="gate.title">Getini, kila kadi inaingia mara moja</h2>
-				<p class="ec-lede" data-i18n="gate.lede">Walinzi wanafungua ukurasa wa geti kwenye simu zao na kuskani. Kadi iliyokwisha tumika inaonekana papo hapo.</p>
-				<ul class="ec-list">
-					<li data-i18n="gate.t1">Inafanya kazi kwenye simu yoyote yenye kamera</li>
-					<li data-i18n="gate.t2">PIN ya geti inazuia mtu yeyote asiye mlinzi</li>
-					<li data-i18n="gate.t3">Ona wageni wangapi wameshafika, wakati wowote</li>
-				</ul>
-			</div>
-			<div class="ec-mock-gate">
-				<div class="ec-mock-gate-icon">✓</div>
-				<div class="ec-mock-gate-status">Karibu!</div>
-				<div class="ec-mock-gate-name">Fatuma Hassan</div>
-				<div class="ec-mock-gate-detail">KADI: DOUBLE · 1 / 2 wameingia</div>
-				<div class="ec-mock-gate-badge">✓ Kadi Halali</div>
-				<div style="margin-top:20px;padding-top:20px;border-top:1px solid #bbf7d0;display:flex;justify-content:center;gap:32px;font-size:.8125rem;color:var(--oc-muted);">
-					<div style="text-align:center;"><strong style="display:block;color:#15803d;font-size:1.25rem;">87</strong>Wameingia</div>
-					<div style="text-align:center;"><strong style="display:block;color:var(--oc-ink);font-size:1.25rem;">120</strong>Wote</div>
-					<div style="text-align:center;"><strong style="display:block;color:#7c5600;font-size:1.25rem;">33</strong>Wanangoja</div>
-				</div>
-			</div>
-		</div>
 	</div>
 </section>
 
-
-{# ------------------------------------------------------------------ MORE #}
-<section class="ec-section">
+{# ---- MORE FEATURES ---- #}
+<section class="ec-section ec-section--ruled">
 	<div class="ec-wrap">
 		<div class="ec-section-head">
+			<p class="ec-eyebrow" data-i18n="section.more">Zaidi</p>
 			<h2 data-i18n="more.title">Pia kwenye OrionCard</h2>
 		</div>
-		<div class="ec-grid">
-			<div>
+		<div class="ec-icon-grid">
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+				</div>
 				<h3 data-i18n="more.types.t">Kadi za DOUBLE, VIP na TABLE</h3>
 				<p data-i18n="more.types.d">Kadi moja inaweza kuingiza watu wawili, au meza nzima kwa idadi unayoweka.</p>
 			</div>
-			<div>
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+				</div>
 				<h3 data-i18n="also.auto.t">Vikumbusho vya michango</h3>
 				<p data-i18n="also.auto.d">Wakumbushe wenye salio kwa SMS au WhatsApp kwa kubonyeza mara moja.</p>
 			</div>
-			<div>
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+				</div>
 				<h3 data-i18n="also.excel.t">Pakua kwa Excel</h3>
 				<p data-i18n="also.excel.d">Pakua michango yote kwa ajili ya kamati.</p>
 			</div>
-			<div>
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+				</div>
 				<h3 data-i18n="more.pay.t">Lipa kwa pesa ya simu</h3>
 				<p data-i18n="more.pay.d">Mixx by Yas, Airtel Money na HaloPesa. Unathibitisha kwa PIN kwenye simu yako.</p>
 			</div>
-			<div>
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+				</div>
 				<h3 data-i18n="more.receipt.t">Risiti kwa kila malipo</h3>
 				<p data-i18n="more.receipt.d">Risiti ya kadi na credits inakuja kwa WhatsApp na barua pepe.</p>
 			</div>
-			<div>
+			<div class="ec-icon-card">
+				<div class="ec-icon-card-icon">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+				</div>
 				<h3 data-i18n="also.privacy.t">Taarifa zako ni zako</h3>
 				<p data-i18n="also.privacy.d">Ni wewe tu unayeona tukio lako. Hatuuzi taarifa za wageni.</p>
 			</div>
@@ -204,14 +221,16 @@
 	</div>
 </section>
 
-{# ------------------------------------------------------------------ PRICING #}
+{# ---- PRICING ---- #}
 <section class="ec-section ec-section--ruled" id="bei">
 	<div class="ec-wrap">
 		<div class="ec-section-head">
+			<p class="ec-eyebrow" data-i18n="section.pricing">Bei</p>
 			<h2 data-i18n="price.title2">Bei ya wazi, kwa idadi ya wageni wako</h2>
 			<p class="ec-lede" data-i18n="price.lede2">Kuunda tukio, bajeti na michango ni bure. Unalipia kadi za wageni tu.</p>
 		</div>
 
+		{% if pricing_set %}
 		<div class="ec-calc">
 			<div class="ec-calc-input">
 				<label for="calcGuests" data-i18n="calc.label">Una wageni wangapi?</label>
@@ -242,6 +261,12 @@
 				<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="calc.cta">Anza sasa</a>
 			</div>
 		</div>
+		{% else %}
+		<div class="ec-calc-contact">
+			<p data-i18n="calc.contact_lede">Bei zinapatikana kwa ombi. Wasiliana nasi kupata bei kulingana na idadi ya wageni wako.</p>
+			<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="calc.cta">Anza sasa</a>
+		</div>
+		{% endif %}
 
 		<div class="ec-howpay">
 			<h3 data-i18n="pay.title">Jinsi ya kulipa</h3>
@@ -282,18 +307,23 @@
 	</div>
 </section>
 
+
+{# ---- CTA ---- #}
 <section class="ec-section ec-band ec-cta">
 	<div class="ec-wrap">
 		<h2 data-i18n="cta.title">Anza kupanga sherehe yako leo</h2>
 		<p data-i18n="cta.lede">Kufungua akaunti ni bure. Unalipia kadi na credits unapozihitaji tu.</p>
-		<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
+		<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+			<a class="ec-btn ec-btn-primary ec-btn-lg" href="/signup" data-i18n="cta.signup">Jisajili bure</a>
+		</div>
 	</div>
 </section>
 
-{# ------------------------------------------------------------------ FAQ #}
+{# ---- FAQ ---- #}
 <section class="ec-section" id="maswali">
 	<div class="ec-wrap ec-faq-wrap">
 		<div>
+			<p class="ec-eyebrow" data-i18n="section.faq">Maswali</p>
 			<h2 data-i18n="faq.title">Maswali yanayoulizwa mara nyingi</h2>
 		</div>
 		<div class="ec-faq">
@@ -307,7 +337,7 @@
 			</details>
 			<details>
 				<summary data-i18n="faq.q2">Ujumbe usipofika inakuwaje?</summary>
-				<p data-i18n="faq.a2">Ujumbe uliokataliwa na mtoa huduma haukatwi credits. Ujumbe uliokubaliwa unategemea mitandao ya simu, kwa hiyo hatuwezi kudhamini kuwa kila mmoja utasomwa.</p>
+				<p data-i18n="faq.a2">Ujumbe uliokabiuliwa na mtoa huduma haukatwi credits. Ujumbe uliokubaliwa unategemea mitandao ya simu, kwa hiyo hatuwezi kudhamini kuwa kila mmoja utasomwa.</p>
 			</details>
 			<details>
 				<summary data-i18n="faq.q3">Kwa nini SMS ndefu inatumia credits zaidi ya moja?</summary>
@@ -332,6 +362,7 @@
 		</div>
 	</div>
 </section>
+
 {% endblock %}
 
 {% block ec_script %}
@@ -342,7 +373,6 @@
 	const fmt = (n) => Math.round(n).toLocaleString("en-US");
 	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-	// ---------------------------------------------------------------- price calculator
 	function tierFor(card) {
 		return TIERS.find((t) => card >= t.from_card && (!t.to_card || card <= t.to_card)) || TIERS[TIERS.length - 1];
 	}
@@ -381,17 +411,18 @@
 		}).join("");
 		animateTotal(total);
 	}
-	$("calcGuests").addEventListener("input", () => {
-		$("calcRange").value = Math.min(500, parseInt($("calcGuests").value, 10) || 1);
+	if ($("calcGuests")) {
+		$("calcGuests").addEventListener("input", () => {
+			$("calcRange").value = Math.min(500, parseInt($("calcGuests").value, 10) || 1);
+			renderCalc();
+		});
+		$("calcRange").addEventListener("input", () => {
+			$("calcGuests").value = $("calcRange").value;
+			renderCalc();
+		});
+		document.addEventListener("ec:lang", renderCalc);
 		renderCalc();
-	});
-	$("calcRange").addEventListener("input", () => {
-		$("calcGuests").value = $("calcRange").value;
-		renderCalc();
-	});
-	document.addEventListener("ec:lang", renderCalc);
-	renderCalc();
-
+	}
 })();
 </script>
 {% endblock %}
