@@ -10,7 +10,7 @@ def get_context(context):
 	price_per_card = flt(settings.price_per_card)
 
 	context.title = "OrionCard — Kadi za mwaliko, michango na wageni"
-	context.body_class = "ec-body"
+	context.body_class = "ec-body ec-body--dark"
 	context.no_breadcrumbs = 1
 	context.ec_business_name = settings.business_legal_name
 	context.money = lambda v: fmt_money(flt(v), precision=0, currency=currency)

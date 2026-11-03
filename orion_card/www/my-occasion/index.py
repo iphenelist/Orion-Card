@@ -4,9 +4,6 @@ from frappe.utils import flt
 
 no_cache = 1
 
-BUDGET_CATEGORIES = ["Chakula", "Vinywaji", "Muziki/Burudani", "Usafiri", "Mavazi", "Mapambo", "Picha/Video", "Ukumbi", "Kadi/Mwaliko", "Mengineyo"]
-
-
 def get_context(context):
 	if frappe.session.user == "Guest":
 		frappe.local.flags.redirect_location = "/login?redirect-to=/dashboard"
@@ -53,7 +50,6 @@ def get_context(context):
 	context.doc = doc
 	context.can_edit = frappe.has_permission("Occasion", "write", doc=doc.name)
 	context.csrf_token = frappe.sessions.get_csrf_token()
-	context.budget_categories = BUDGET_CATEGORIES
 	context.stats = {
 		"total": len(contribs),
 		"rsvp_accepted": rsvp_accepted,

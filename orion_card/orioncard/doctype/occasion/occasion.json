@@ -58,6 +58,8 @@
   "funding_gap",
   "budget_items_section",
   "budget_items",
+  "import_budget_btn",
+  "export_budget_btn",
   "contributors_section",
   "contribution_deadline",
   "col_break_contrib",
@@ -71,11 +73,10 @@
   "send_reminders_btn",
   "guest_actions_section",
   "custom_sms_message",
-  "generate_cards_btn",
   "col_break_guest_actions",
-  "send_whatsapp_btn",
-  "col_break_guest_actions_2",
+  "generate_cards_btn",
   "send_sms_btn",
+  "send_whatsapp_btn",
   "reminders_section",
   "reminder_template",
   "ocassion_statistics_tab",
@@ -107,7 +108,7 @@
    "reqd": 1
   },
   {
-   "description": "e.g. Saa 10:00 jioni, or 4:00 PM — sent exactly as typed",
+   "description": "e.g. Saa 10:00 jioni, or 4:00 PM \u2014 sent exactly as typed",
    "fieldname": "occasion_time",
    "fieldtype": "Data",
    "label": "Occasion Time",
@@ -129,7 +130,7 @@
    "label": "Venue Address"
   },
   {
-   "description": "Paste a Google Maps link — shown as View Location button",
+   "description": "Paste a Google Maps link \u2014 shown as View Location button",
    "fieldname": "venue_location",
    "fieldtype": "Data",
    "label": "Venue Google Maps URL"
@@ -302,7 +303,7 @@
   {
    "fieldname": "open_gate_checkin_btn",
    "fieldtype": "Button",
-   "label": "🚪 Open Gate Check-in Link"
+   "label": "\ud83d\udeaa Open Gate Check-in Link"
   },
   {
    "fieldname": "budget_tab",
@@ -355,7 +356,7 @@
   {
    "fieldname": "funding_gap",
    "fieldtype": "Currency",
-   "label": "Funding Gap (Budget − Collected)",
+   "label": "Funding Gap (Budget \u2212 Collected)",
    "read_only": 1
   },
   {
@@ -368,6 +369,16 @@
    "fieldtype": "Table",
    "label": "Budget Items",
    "options": "Occasion Budget Item"
+  },
+  {
+   "fieldname": "import_budget_btn",
+   "fieldtype": "Button",
+   "label": "Import Budget (Excel/CSV)"
+  },
+  {
+   "fieldname": "export_budget_btn",
+   "fieldtype": "Button",
+   "label": "Export Budget (Excel)"
   },
   {
    "description": "Everyone on this list is a guest: they get an invitation card and are checked in at the gate. Update Paid Amount as money comes in.",
@@ -424,17 +435,17 @@
    "label": "Send Contribution Reminders"
   },
   {
+   "description": "Each guest can get the invitation 2 times by SMS and 2 times by WhatsApp.",
    "fieldname": "guest_actions_section",
    "fieldtype": "Section Break",
-   "label": "Invitation Cards",
-   "description": "Each guest can get the invitation 2 times by SMS and 2 times by WhatsApp."
+   "label": "Invitation Cards"
   },
   {
+   "default": "Habari {guest},\nUmealikwa kwenye {occasion}.\nTarehe: {date}\nUkumbi: {venue}\nAnwani: {address}\nMahali: {location}\nKadi: {card_type}, Namba: {number}\nPakua kadi yako: {link}\n{sender}",
+   "description": "Badilisha ujumbe huu au acha jinsi ulivyo. Placeholders: {guest}, {occasion}, {date}, {venue}, {address}, {location}, {card_type}, {number}, {link}, {sender}",
    "fieldname": "custom_sms_message",
    "fieldtype": "Small Text",
-   "label": "Custom SMS Message",
-   "default": "Habari {guest},\nUmealikwa kwenye {occasion}.\nTarehe: {date}\nUkumbi: {venue}\nAnwani: {address}\nMahali: {location}\nKadi: {card_type}, Namba: {number}\nPakua kadi yako: {link}\n{sender}",
-   "description": "Badilisha ujumbe huu au acha jinsi ulivyo. Placeholders: {guest}, {occasion}, {date}, {venue}, {address}, {location}, {card_type}, {number}, {link}, {sender}"
+   "label": "Custom SMS Message"
   },
   {
    "fieldname": "generate_cards_btn",
@@ -449,10 +460,6 @@
    "fieldname": "send_whatsapp_btn",
    "fieldtype": "Button",
    "label": "Send Cards by WhatsApp"
-  },
-  {
-   "fieldname": "col_break_guest_actions_2",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "send_sms_btn",
@@ -490,7 +497,7 @@
  "image_field": "card_design",
  "links": [],
  "make_attachments_public": 1,
- "modified": "2026-10-21 16:00:00.000000",
+ "modified": "2026-11-03 09:29:10.968409",
  "modified_by": "Administrator",
  "module": "OrionCard",
  "name": "Occasion",
