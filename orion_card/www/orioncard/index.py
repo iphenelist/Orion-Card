@@ -14,8 +14,7 @@ def get_context(context):
 	context.no_breadcrumbs = 1
 	context.ec_business_name = settings.business_legal_name
 	context.money = lambda v: fmt_money(flt(v), precision=0, currency=currency)
-	context.pricing_set = price_per_card > 0
-	context.card_tiers = [{"from_card": 1, "to_card": 0, "price": price_per_card}] if price_per_card else []
+	context.card_tiers = [{"from_card": 1, "to_card": 0, "price": price_per_card}]
 	context.top_up_percent = 0
 	context.sms_price = 0
 	context.whatsapp_price = 0

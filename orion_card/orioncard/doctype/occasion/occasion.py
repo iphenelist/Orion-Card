@@ -326,52 +326,43 @@ class Occasion(Document):
         most = message_limit(INVITATION) if cint(resend) else 1
         return [c for c in self.select_guests(statuses) if c.phone and counts.get(c.guest_code, 0) < most]
 
-    def _send_all(self, channel: str, send_fn, statuses=None, resend=False) -> dict:
-        import random
-        import time
+    def _enqueue_bulk_send(self, channel: str, statuses=None, resend=0) -> dict:
+        """Queue a bulk invitation send to the long-running worker and return immediately.
 
-        from orion_card.utils.credits import InsufficientCreditsError, support_contact
-
+        The browser subscribes to realtime event 'bulk_send_progress' for live
+        updates, and can call orion_card.jobs.bulk_send.get_status to recover
+        state after a page reload.
+        """
         self.check_permission("write")
         self.assert_can_send()
-        results = {"success": 0, "failed": 0, "errors": [], "credits_out": False}
+
         guests = self.guests_to_invite(channel, statuses, resend)
-        for i, contributor in enumerate(guests):
-            try:
-                if not contributor.card_image and self.card_design:
-                    self.issue_card(contributor)
-                send_fn(self, contributor)
-                results["success"] += 1
-            except InsufficientCreditsError as e:
-                results["failed"] += 1
-                results["errors"].append(str(e))
-                results["credits_out"] = True
-                break
-            except Exception as e:
-                results["failed"] += 1
-                results["errors"].append(f"{contributor.contributor_name}: {e}")
-            # Pace both channels: WaSender account-protection requires ≥5 s between
-            # WhatsApp messages; RodSMS enforces 60 req/min so 1 s is enough there.
-            if i < len(guests) - 1:
-                delay = random.uniform(5.0, 7.0) if channel == "WhatsApp" else 1.0
-                time.sleep(delay)
-        if results["credits_out"]:
-            results["contact"] = support_contact()
-        return results
+        total = len(guests)
+        if not total:
+            return {"queued": False, "total": 0, "success": 0, "failed": 0, "errors": [], "done": True}
+
+        frappe.enqueue(
+            "orion_card.jobs.bulk_send.run_bulk_send",
+            queue="long",
+            timeout=7200,
+            occasion_name=self.name,
+            channel=channel,
+            statuses=statuses,
+            resend=cint(resend),
+            launched_by=frappe.session.user,
+            sms_fallback=(channel == "WhatsApp"),
+        )
+        return {"queued": True, "total": total, "channel": channel}
 
     @frappe.whitelist()
     def send_all_whatsapp(self, statuses=None, resend=0):
-        """Send WhatsApp invitations to the selected contributors not invited yet
-        (with `resend`, also again to those under the per-guest limit)."""
-        from orion_card.api.whatsapp import send_invitation
-        return self._send_all("WhatsApp", send_invitation, statuses, resend)
+        """Queue WhatsApp invitations to all eligible guests and return immediately."""
+        return self._enqueue_bulk_send("WhatsApp", statuses, resend)
 
     @frappe.whitelist()
     def send_all_sms(self, statuses=None, resend=0):
-        """Send SMS invitations to the selected contributors not invited yet
-        (with `resend`, also again to those under the per-guest limit)."""
-        from orion_card.api.sms import send_invitation
-        return self._send_all("SMS", send_invitation, statuses, resend)
+        """Queue SMS invitations to all eligible guests and return immediately."""
+        return self._enqueue_bulk_send("SMS", statuses, resend)
 
     @frappe.whitelist()
     def get_invited_count(self) -> int:

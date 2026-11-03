@@ -12,6 +12,8 @@
   "col_break_1",
   "sent_at",
   "success",
+  "gateway_message_id",
+  "delivery_status",
   "credits_used",
   "response"
  ],
@@ -60,6 +62,22 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Success",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gateway_message_id",
+   "fieldtype": "Data",
+   "label": "Gateway Message ID",
+   "read_only": 1
+  },
+  {
+   "default": "Submitted",
+   "fieldname": "delivery_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Delivery Status",
+   "options": "Submitted\nDelivered\nFailed\nUnknown",
    "read_only": 1
   },
   {
@@ -112,5 +130,5 @@
  "states": [],
  "title_field": "guest_code",
  "track_changes": 0,
- "modified": "2026-10-14 22:05:00.965194"
+ "modified": "2026-11-02 10:00:00.000000"
 }
