@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
-<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css?v={{ asset_version('css/orioncard_site.css') }}">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css?v={{ asset_version('css/orioncard_dashboard.css') }}">
 </head>
 <body class="ocd-body">
 
@@ -33,10 +33,6 @@
       <a class="ocd-nav-item" href="/new-occasion">
         <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
         Tukio Jipya
-      </a>
-      <a class="ocd-nav-item" href="/credits">
-        <svg class="ocd-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H2V4Zm0 3h16v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7Zm3 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm3 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/></svg>
-        Nunua Credits
       </a>
     </nav>
     <div class="ocd-sidebar-footer">
@@ -65,6 +61,10 @@
         </div>
       </div>
       <div class="ocd-topbar-right">
+        <button class="ocd-theme-toggle" id="themeToggle" title="Badilisha mandhari" aria-label="Badilisha mandhari">
+          <svg id="themeIconSun" viewBox="0 0 20 20" fill="currentColor" hidden><path d="M10 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm4.22 2.22a1 1 0 0 1 1.42 1.42l-.71.7a1 1 0 1 1-1.41-1.41l.7-.71ZM18 9a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2h1Zm-2.22 5.56a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 1 1 1.42-1.42l.7.71ZM11 17a1 1 0 1 1-2 0v-1a1 1 0 1 1 2 0v1Zm-5.56-2.22a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7ZM3 11a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2H3Zm2.22-5.56.7.71A1 1 0 1 1 4.51 7.56l-.71-.7a1 1 0 0 1 1.42-1.42ZM10 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+          <svg id="themeIconMoon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 0 1 6.707 2.707a8.001 8.001 0 1 0 10.586 10.586Z"/></svg>
+        </button>
         {% if doc.status == "Active" %}<span class="ocd-badge ocd-badge--active">Hai</span>
         {% elif doc.status == "Completed" %}<span class="ocd-badge ocd-badge--done">Imekamilika</span>
         {% else %}<span class="ocd-badge ocd-badge--draft">Rasimu</span>{% endif %}
@@ -81,13 +81,47 @@
       <button class="ocd-tab" data-tab="contributors">Wachangiaji <span class="ocd-tab-count">{{ doc.contributors | length }}</span></button>
       <button class="ocd-tab" data-tab="budget">Bajeti</button>
       <button class="ocd-tab" data-tab="card">Kadi</button>
-      <button class="ocd-tab" data-tab="stats">Takwimu</button>
     </div>
 
     <!-- ══ Tab: Maelezo ══ -->
     <div id="tab-details" class="ocd-tab-pane ocd-tab-pane--active">
+      <!-- Stats cards — top -->
+      <div class="ocd-details-stats-grid" style="margin-top:16px;">
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">RSVP</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekubali</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.rsvp_accepted / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_accepted }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekataa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--red" style="width:{{ ((stats.rsvp_declined / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_declined }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajajibu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.rsvp_pending / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_pending }}</span></div>
+          </div>
+        </div>
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Hali ya Malipo</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Imelipwa Yote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.pay_full / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_full }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Sehemu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--amber" style="width:{{ ((stats.pay_part / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_part }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajalipa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.pay_none / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_none }}</span></div>
+          </div>
+        </div>
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Kadi na Geti</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Kadi Zimeundwa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:{{ ((stats.cards_generated / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.cards_generated }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Wameingia Getini</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--purple" style="width:{{ ((stats.checked_in / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.checked_in }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">Wageni Wote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:100%"></span></span><span class="ocd-stats-num">{{ stats.total }}</span></div>
+          </div>
+        </div>
+        <div class="ocd-stats-card">
+          <h3 class="ocd-stats-card-title">Credits Zilizobaki</h3>
+          <div class="ocd-stats-rows">
+            <div class="ocd-stats-row"><span class="ocd-stats-label">SMS</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.sms_balance }}</span></div>
+            <div class="ocd-stats-row"><span class="ocd-stats-label">WhatsApp</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.wa_balance }}</span></div>
+          </div>
+          <button type="button" class="ocd-btn ocd-btn-ghost" id="openCreditsModalBtn" style="margin-top:12px;font-size:12px">Nunua Credits</button>
+        </div>
+      </div>
       <!-- Basic details -->
-      <div class="ocd-panel" style="margin-top:16px;">
+      <div class="ocd-panel" style="margin-top:12px;">
         <div class="ocd-panel-header">
           <h2 class="ocd-panel-title">Maelezo ya Tukio</h2>
           {% if can_edit %}<button class="ocd-btn ocd-btn-ghost" id="editDetailsBtn">Hariri</button>{% endif %}
@@ -278,25 +312,40 @@
       <div class="ocd-panel" style="margin-top:12px;">
         <div class="ocd-panel-header">
           <h2 class="ocd-panel-title">Vipengele vya Bajeti</h2>
-          {% if can_edit %}<button class="ocd-btn ocd-btn-primary" id="addBudgetItemBtn">+ Ongeza</button>{% endif %}
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            {% if can_edit %}<button class="ocd-btn ocd-btn-primary" id="addBudgetItemBtn">+ Ongeza</button>{% endif %}
+            <a class="ocd-btn ocd-btn-action ocd-btn--export" style="font-size:13px;padding:6px 12px;"
+               href="/api/method/orion_card.orioncard.doctype.occasion.occasion.export_budget_items?occasion={{ doc.name | urlencode }}">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+              Pakua Excel
+            </a>
+            {% if can_edit %}
+            <label class="ocd-btn ocd-btn-action ocd-btn--import" style="font-size:13px;padding:6px 12px;" title="Pakia faili la Excel/CSV">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"/></svg>
+              Pakia Excel
+              <input type="file" id="importBudgetFile" accept=".xlsx,.xls,.csv" style="display:none">
+            </label>
+            {% endif %}
+          </div>
         </div>
+        <div id="budgetImportResult" class="ocd-bulk-result" hidden style="margin:0 0 8px"></div>
         {% if doc.budget_items %}
         <div class="ocd-table-wrap">
           <table class="ocd-table" id="budgetTable">
             <thead>
-              <tr><th>Jamii</th><th>Maelezo</th><th>Iliopangwa (TZS)</th><th>Halisi (TZS)</th>{% if can_edit %}<th class="ocd-th-actions">Vitendo</th>{% endif %}</tr>
+              <tr><th>Kipengele</th><th>Maelezo</th><th>Iliopangwa (TZS)</th><th>Halisi (TZS)</th>{% if can_edit %}<th class="ocd-th-actions">Vitendo</th>{% endif %}</tr>
             </thead>
             <tbody id="budgetBody">
               {% for b in doc.budget_items %}
               <tr id="brow-{{ b.name }}">
-                <td><span class="ocd-badge ocd-badge--draft">{{ b.category or "—" }}</span></td>
+                <td><span class="ocd-badge ocd-badge--draft">{{ b.particular or "—" }}</span></td>
                 <td>{{ b.description or "—" }}</td>
                 <td class="ocd-num">{{ "{:,.0f}".format(b.budgeted_amount or 0) }}</td>
                 <td class="ocd-num">{{ "{:,.0f}".format(b.actual_amount or 0) }}</td>
                 {% if can_edit %}
                 <td class="ocd-td-actions">
                   <button class="ocd-action-btn ocd-budget-edit" data-row="{{ b.name }}"
-                    data-cat="{{ b.category }}" data-desc="{{ b.description }}"
+                    data-particular="{{ b.particular }}" data-desc="{{ b.description }}"
                     data-budgeted="{{ b.budgeted_amount or 0 }}" data-actual="{{ b.actual_amount or 0 }}"
                     data-notes="{{ b.notes or '' }}">
                     <svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/></svg>
@@ -365,48 +414,6 @@
           <div class="ocd-detail-item"><span class="ocd-detail-label">Rangi ya Jina</span><span class="ocd-detail-value">{% if doc.name_color %}<span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:{{ doc.name_color }};vertical-align:middle;margin-right:6px"></span>{{ doc.name_color }}{% else %}—{% endif %}</span></div>
           <div class="ocd-detail-item"><span class="ocd-detail-label">Fonti ya Jina</span><span class="ocd-detail-value">{{ doc.name_font or "Default" }}</span></div>
           <div class="ocd-detail-item"><span class="ocd-detail-label">Ukubwa wa Fonti</span><span class="ocd-detail-value">{{ doc.name_font_size or "—" }}</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ Tab: Takwimu ══ -->
-    <div id="tab-stats" class="ocd-tab-pane">
-      <div class="ocd-stat-row" style="margin-top:16px;">
-        <!-- RSVP -->
-        <div class="ocd-stats-card">
-          <h3 class="ocd-stats-card-title">RSVP</h3>
-          <div class="ocd-stats-rows">
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekubali</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.rsvp_accepted / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_accepted }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Amekataa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--red" style="width:{{ ((stats.rsvp_declined / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_declined }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajajibu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.rsvp_pending / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.rsvp_pending }}</span></div>
-          </div>
-        </div>
-        <!-- Payment -->
-        <div class="ocd-stats-card">
-          <h3 class="ocd-stats-card-title">Hali ya Malipo</h3>
-          <div class="ocd-stats-rows">
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Imelipwa Yote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--green" style="width:{{ ((stats.pay_full / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_full }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Sehemu</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--amber" style="width:{{ ((stats.pay_part / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_part }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Hajalipa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--gray" style="width:{{ ((stats.pay_none / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.pay_none }}</span></div>
-          </div>
-        </div>
-        <!-- Cards & check-in -->
-        <div class="ocd-stats-card">
-          <h3 class="ocd-stats-card-title">Kadi na Geti</h3>
-          <div class="ocd-stats-rows">
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Kadi Zimeundwa</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:{{ ((stats.cards_generated / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.cards_generated }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Wameingia Getini</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--purple" style="width:{{ ((stats.checked_in / stats.total * 100) | int) if stats.total else 0 }}%"></span></span><span class="ocd-stats-num">{{ stats.checked_in }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">Wageni Wote</span><span class="ocd-stats-bar-wrap"><span class="ocd-stats-bar ocd-bar--blue" style="width:100%"></span></span><span class="ocd-stats-num">{{ stats.total }}</span></div>
-          </div>
-        </div>
-        <!-- Credits -->
-        <div class="ocd-stats-card">
-          <h3 class="ocd-stats-card-title">Credits Zilizobaki</h3>
-          <div class="ocd-stats-rows">
-            <div class="ocd-stats-row"><span class="ocd-stats-label">SMS</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.sms_balance }}</span></div>
-            <div class="ocd-stats-row"><span class="ocd-stats-label">WhatsApp</span><span class="ocd-stats-bar-wrap"></span><span class="ocd-stats-num ocd-num-big">{{ stats.wa_balance }}</span></div>
-          </div>
-          <a href="/credits" class="ocd-btn ocd-btn-ghost" style="margin-top:12px;font-size:12px">Nunua Credits</a>
         </div>
       </div>
     </div>
@@ -513,12 +520,10 @@
     <form id="budgetItemForm" class="ocd-form">
       <input type="hidden" name="row_name" id="budgetItemRowName">
       <div class="ocd-modal-body">
-        <div class="ocd-form-row"><label class="ocd-label">Jamii</label>
-          <select class="ocd-input" name="category" id="budgetItemCat">
-            {% for cat in budget_categories %}<option value="{{ cat }}">{{ cat }}</option>{% endfor %}
-          </select>
+        <div class="ocd-form-row"><label class="ocd-label">Kipengele <span class="ocd-req">*</span></label>
+          <input class="ocd-input" type="text" name="particular" id="budgetItemParticular" placeholder="mf. Ukumbi, Chakula, Muziki…" required>
         </div>
-        <div class="ocd-form-row"><label class="ocd-label">Maelezo <span class="ocd-req">*</span></label><input class="ocd-input" type="text" name="description" id="budgetItemDesc" required></div>
+        <div class="ocd-form-row"><label class="ocd-label">Maelezo</label><input class="ocd-input" type="text" name="description" id="budgetItemDesc"></div>
         <div class="ocd-form-row ocd-form-row--2">
           <div><label class="ocd-label">Iliopangwa (TZS)</label><input class="ocd-input" type="number" name="budgeted_amount" id="budgetItemBudgeted" value="0" min="0"></div>
           <div><label class="ocd-label">Halisi (TZS)</label><input class="ocd-input" type="number" name="actual_amount" id="budgetItemActual" value="0" min="0"></div>
@@ -557,6 +562,83 @@
   </div>
 </div>
 
+<!-- ── Credits Purchase Modal ── -->
+<div class="ocd-modal" id="creditsModal" role="dialog" aria-modal="true" hidden>
+  <div class="ocd-modal-box ocd-modal-box--credits">
+    <div class="ocd-modal-header">
+      <h3>Nunua Credits</h3>
+      <button class="ocd-modal-close" data-close="creditsModal">&#10005;</button>
+    </div>
+    <div class="ocd-modal-body" id="creditsModalBody">
+      <div id="creditsLoading" style="text-align:center;padding:32px 0;color:var(--oc-muted,#5e6470)">Inapakia…</div>
+      <div id="creditsContent" hidden>
+        <!-- Channel selector -->
+        <div class="ec-balances" id="cmBalances" role="group" aria-label="Channel" style="margin-bottom:16px">
+          <button type="button" class="ec-balance ec-ch-sms" id="cmBtnSMS" data-channel="SMS" aria-pressed="true">
+            <div class="ec-balance-top">
+              <span class="ec-balance-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5v-13Zm2.3.6 6.7 5.2 6.7-5.2H5.3Zm13.7 1.8-6.4 5a1 1 0 0 1-1.2 0L5 7.9V18.5c0 .3.2.5.5.5h13c.3 0 .5-.2.5-.5V7.9Z"/></svg>
+              </span>
+              <span>
+                <span class="ec-balance-label">Credits ulizonazo</span>
+                <span class="ec-balance-num" id="cmBalSMS">—</span>
+              </span>
+            </div>
+            <div class="ec-balance-buy"><span><b>Nunua SMS credits</b><small id="cmPriceSMS"></small></span><span class="ec-radio" aria-hidden="true"></span></div>
+          </button>
+          <button type="button" class="ec-balance ec-ch-wa" id="cmBtnWA" data-channel="WhatsApp" aria-pressed="false">
+            <div class="ec-balance-top">
+              <span class="ec-balance-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.7 4.3 3.8 1.6.7 2.2.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.5-.3Z"/></svg>
+              </span>
+              <span>
+                <span class="ec-balance-label">Credits ulizonazo</span>
+                <span class="ec-balance-num" id="cmBalWA">—</span>
+              </span>
+            </div>
+            <div class="ec-balance-buy"><span><b>Nunua WhatsApp credits</b><small id="cmPriceWA"></small></span><span class="ec-radio" aria-hidden="true"></span></div>
+          </button>
+        </div>
+        <!-- Packages -->
+        <div style="margin-bottom:12px">
+          <div class="ocd-label" id="cmPackageLabel" style="margin-bottom:8px;font-weight:600">Chagua kifurushi cha SMS</div>
+          <div class="ec-packages-grid" id="cmPackageGrid" role="group"></div>
+        </div>
+        <!-- Custom qty -->
+        <div class="ec-custom ec-field" style="margin-bottom:12px">
+          <label class="ec-sr" for="cmCustomQty">Idadi nyingine</label>
+          <input type="number" id="cmCustomQty" min="10" step="1" inputmode="numeric" placeholder="Au weka idadi yako, mf. 150">
+        </div>
+        <!-- Total + proceed -->
+        <div class="ec-total" style="margin-bottom:0">
+          <div>
+            <div class="ec-total-label">Jumla ya kulipa</div>
+            <div class="ec-total-amount"><span id="cmCurrency">TZS</span> <b id="cmTotalAmount">0</b></div>
+          </div>
+          <button type="button" class="ec-btn ec-btn-primary" id="cmProceedBtn" disabled>Endelea kulipa</button>
+        </div>
+        <!-- Pay panel -->
+        <div class="ec-pay ec-panel" id="cmPayPanel" hidden style="margin-top:12px">
+          <div class="ec-alert" id="cmPayAlert" role="status" aria-live="polite"></div>
+          <div id="cmPayForm">
+            <div class="ec-field" id="cmPhoneField">
+              <label for="cmPayPhone">Namba ya pesa ya simu (Mixx, Airtel, HaloPesa)</label>
+              <input type="tel" id="cmPayPhone" placeholder="07XX XXX XXX" inputmode="tel" autocomplete="tel">
+              <div class="ec-help">Utapokea ombi la kuweka PIN kwenye simu hii.</div>
+            </div>
+            <div class="ec-alert ec-alert-info is-shown" id="cmManualNote" hidden>Malipo ya mtandaoni hayajawashwa bado. Ukiendelea, utapata maelekezo ya kulipa na credits zitaongezwa malipo yakithibitishwa.</div>
+            <label class="ec-check">
+              <input type="checkbox" id="cmAccept">
+              <span>Nakubali kuwa credits hazirudishwi wala kubadilishwa kuwa pesa, na zinatumika kwa mujibu wa <a href="/terms" target="_blank">Vigezo na Masharti</a>.</span>
+            </label>
+            <button type="button" class="ec-btn ec-btn-primary" id="cmPayBtn" style="width:100%;margin-top:8px">Lipa sasa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   var OCCASION = {{ doc.name | tojson }};
@@ -573,6 +655,24 @@
   menuBtn.addEventListener("click", openSidebar);
   closeBtn.addEventListener("click", closeSidebar);
   overlay.addEventListener("click", closeSidebar);
+
+  /* ── Theme toggle ── */
+  (function () {
+    var saved = localStorage.getItem("ocd-theme") || "dark";
+    var sun = document.getElementById("themeIconSun");
+    var moon = document.getElementById("themeIconMoon");
+    function applyTheme(t) {
+      document.body.classList.toggle("ocd-body--dark", t === "dark");
+      sun.hidden = t === "dark";
+      moon.hidden = t !== "dark";
+    }
+    applyTheme(saved);
+    document.getElementById("themeToggle").addEventListener("click", function () {
+      var next = document.body.classList.contains("ocd-body--dark") ? "light" : "dark";
+      localStorage.setItem("ocd-theme", next);
+      applyTheme(next);
+    });
+  })();
 
   /* ── Tabs ── */
   var TAB_KEY = "ocd-tab-" + OCCASION;
@@ -884,8 +984,8 @@
         .then(function (r) { return r.json(); })
         .then(function (r) {
           if (!r.message || !r.message.file_url) { if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Imeshindwa kupakia faili."; } return; }
-          api("orion_card.orioncard.doctype.occasion.occasion.import_contributors",
-            { doc: JSON.stringify({ doctype: "Occasion", name: OCCASION }), file_url: r.message.file_url },
+          api("orion_card.api.dashboard.import_contributors",
+            { occasion: OCCASION, file_url: r.message.file_url },
             function (err2, r2) {
               if (!result) return;
               if (err2 || r2.exc) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya import."; return; }
@@ -896,6 +996,44 @@
         })
         .catch(function () { if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya mtandao."; } });
       importFile.value = "";
+    });
+  }
+
+  /* Import budget file */
+  var importBudgetFile = document.getElementById("importBudgetFile");
+  if (importBudgetFile) {
+    importBudgetFile.addEventListener("change", function () {
+      var file = importBudgetFile.files[0];
+      if (!file) return;
+      var fd = new FormData();
+      fd.append("file", file);
+      fd.append("is_private", "0");
+      fd.append("doctype", "Occasion");
+      fd.append("docname", OCCASION);
+      fd.append("csrf_token", CSRF);
+      var result = document.getElementById("budgetImportResult");
+      if (result) { result.hidden = false; result.className = "ocd-bulk-result ocd-bulk-result--info"; result.textContent = "Inapakia faili…"; }
+      fetch("/api/method/upload_file", { method: "POST", headers: { "X-Frappe-CSRF-Token": CSRF }, body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.message || !r.message.file_url) {
+            if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Imeshindwa kupakia faili."; }
+            return;
+          }
+          api("orion_card.api.dashboard.import_budget_items",
+            { occasion: OCCASION, file_url: r.message.file_url },
+            function (err2, r2) {
+              if (!result) return;
+              if (err2 || r2.exc) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya import."; return; }
+              var msg = r2.message;
+              result.className = "ocd-bulk-result ocd-bulk-result--ok";
+              result.textContent = "Imeongeza " + msg.added + ", imesasisha " + msg.updated + ". Inapakia upya…";
+              setTimeout(function () { location.reload(); }, 1200);
+            }
+          );
+        })
+        .catch(function () { if (result) { result.className = "ocd-bulk-result ocd-bulk-result--err"; result.textContent = "Hitilafu ya mtandao."; } });
+      importBudgetFile.value = "";
     });
   }
 
@@ -956,6 +1094,7 @@
     addBudgetBtn.addEventListener("click", function () {
       document.getElementById("budgetItemModalTitle").textContent = "Ongeza Kipengele";
       document.getElementById("budgetItemRowName").value = "";
+      document.getElementById("budgetItemParticular").value = "";
       document.getElementById("budgetItemDesc").value = "";
       document.getElementById("budgetItemBudgeted").value = "0";
       document.getElementById("budgetItemActual").value = "0";
@@ -969,7 +1108,7 @@
     btn.addEventListener("click", function () {
       document.getElementById("budgetItemModalTitle").textContent = "Hariri Kipengele";
       document.getElementById("budgetItemRowName").value = btn.dataset.row;
-      document.getElementById("budgetItemCat").value = btn.dataset.cat || "";
+      document.getElementById("budgetItemParticular").value = btn.dataset.particular || "";
       document.getElementById("budgetItemDesc").value = btn.dataset.desc || "";
       document.getElementById("budgetItemBudgeted").value = btn.dataset.budgeted || "0";
       document.getElementById("budgetItemActual").value = btn.dataset.actual || "0";
@@ -988,7 +1127,7 @@
       var d = formData(budgetItemForm);
       var isEdit = !!d.row_name;
       var method = isEdit ? "orion_card.api.dashboard.update_budget_item" : "orion_card.api.dashboard.add_budget_item";
-      var payload = { occasion: OCCASION, category: d.category, description: d.description, budgeted_amount: d.budgeted_amount, actual_amount: d.actual_amount, notes: d.notes };
+      var payload = { occasion: OCCASION, particular: d.particular, description: d.description, budgeted_amount: d.budgeted_amount, actual_amount: d.actual_amount, notes: d.notes };
       if (isEdit) payload.row_name = d.row_name;
       api(method, payload, function (err, res) {
         saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
@@ -1010,6 +1149,189 @@
     });
   });
 
+})();
+</script>
+
+<script>
+/* ── Credits Modal ── */
+(function () {
+  var cmData = null;
+  var cmState = { channel: "SMS", credits: 0, pkg: null };
+  var fmt = function (n) { return Math.round(n).toLocaleString("en-US"); };
+
+  function $(id) { return document.getElementById(id); }
+
+  function cmRenderPackages() {
+    var grid = $("cmPackageGrid");
+    grid.innerHTML = "";
+    var pkgs = (cmData.packages[cmState.channel] || []);
+    pkgs.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "ec-package";
+      b.setAttribute("aria-pressed", String(cmState.pkg === p.label));
+      b.innerHTML = "<div class='ec-package-label'></div><div class='ec-package-credits'></div><div class='ec-package-price'></div>";
+      b.children[0].textContent = p.label;
+      b.children[1].textContent = fmt(p.credits) + " Credits";
+      b.children[2].textContent = cmData.currency + " " + fmt(p.amount);
+      b.addEventListener("click", function () {
+        cmState.pkg = p.label;
+        cmState.credits = p.credits;
+        $("cmCustomQty").value = p.credits;
+        cmRenderPackages();
+        cmRenderTotal();
+      });
+      grid.appendChild(b);
+    });
+  }
+
+  function cmRenderTotal() {
+    var amount = cmState.credits * (cmData.prices[cmState.channel] || 0);
+    $("cmTotalAmount").textContent = fmt(amount);
+    var valid = cmState.credits > 0 && (cmState.pkg || cmState.credits >= (cmData.min_custom || 10));
+    $("cmProceedBtn").disabled = !valid;
+  }
+
+  function cmSelectChannel(ch) {
+    cmState.channel = ch;
+    cmState.credits = 0;
+    cmState.pkg = null;
+    $("cmBtnSMS").setAttribute("aria-pressed", String(ch === "SMS"));
+    $("cmBtnWA").setAttribute("aria-pressed", String(ch === "WhatsApp"));
+    $("cmPackageLabel").textContent = ch === "SMS" ? "Chagua kifurushi cha SMS" : "Chagua kifurushi cha WhatsApp";
+    $("cmCustomQty").value = "";
+    $("cmPayPanel").hidden = true;
+    cmRenderPackages();
+    cmRenderTotal();
+  }
+
+  function cmPayAlert(kind, text) {
+    var el = $("cmPayAlert");
+    el.className = "ec-alert is-shown ec-alert-" + kind;
+    el.textContent = text;
+  }
+
+  function cmPoll(purchase, attempt) {
+    if (attempt > 45) { cmPayAlert("info", "Malipo yanachukua muda. Kumbukumbu: " + purchase); return; }
+    setTimeout(function () {
+      fetch("/api/method/orion_card.api.payments.get_purchase_status?purchase=" + encodeURIComponent(purchase), {
+        headers: { "X-Frappe-CSRF-Token": "{{ csrf_token }}" }
+      }).then(function (r) { return r.json(); }).then(function (r) {
+        var s = r.message || {};
+        if (s.status === "Paid") {
+          if (s.balances) {
+            $("cmBalSMS").textContent = s.balances.sms_balance;
+            $("cmBalWA").textContent = s.balances.whatsapp_balance;
+          }
+          cmPayAlert("ok", "Credits " + fmt(s.credits) + " za " + s.channel + " zimeongezwa!");
+          return;
+        }
+        if (s.status === "Failed" || s.status === "Cancelled") {
+          cmPayAlert("err", "Malipo yameshindwa. Jaribu tena.");
+          $("cmPayForm").style.display = "";
+          return;
+        }
+        cmPoll(purchase, attempt + 1);
+      }).catch(function () { cmPoll(purchase, attempt + 1); });
+    }, 4000);
+  }
+
+  function cmOpenModal() {
+    $("creditsModal").hidden = false;
+    document.body.style.overflow = "hidden";
+    $("creditsLoading").hidden = false;
+    $("creditsContent").hidden = true;
+
+    if (cmData) {
+      $("creditsLoading").hidden = true;
+      $("creditsContent").hidden = false;
+      $("cmPayPanel").hidden = true;
+      cmSelectChannel("SMS");
+      return;
+    }
+
+    fetch("/api/method/orion_card.api.payments.get_credit_page_data", {
+      headers: { "X-Frappe-CSRF-Token": "{{ csrf_token }}" }
+    }).then(function (r) { return r.json(); }).then(function (r) {
+      cmData = r.message || r;
+      $("cmCurrency").textContent = cmData.currency || "TZS";
+      $("cmPriceSMS").textContent = "1 credit = " + cmData.currency + " " + fmt(cmData.prices.SMS);
+      $("cmPriceWA").textContent = "1 credit = " + cmData.currency + " " + fmt(cmData.prices.WhatsApp);
+      $("cmBalSMS").textContent = (cmData.balances || {}).sms_balance || 0;
+      $("cmBalWA").textContent = (cmData.balances || {}).whatsapp_balance || 0;
+      $("cmCustomQty").min = cmData.min_custom || 10;
+      if (!cmData.online_payment) {
+        $("cmPhoneField").hidden = true;
+        $("cmManualNote").hidden = false;
+      }
+      $("creditsLoading").hidden = true;
+      $("creditsContent").hidden = false;
+      cmSelectChannel("SMS");
+    }).catch(function (err) {
+      $("creditsLoading").textContent = "Hitilafu. Jaribu tena.";
+    });
+  }
+
+  document.getElementById("openCreditsModalBtn").addEventListener("click", cmOpenModal);
+
+  document.getElementById("cmBtnSMS").addEventListener("click", function () { cmSelectChannel("SMS"); });
+  document.getElementById("cmBtnWA").addEventListener("click", function () { cmSelectChannel("WhatsApp"); });
+
+  document.getElementById("cmCustomQty").addEventListener("input", function (e) {
+    cmState.credits = Math.max(0, parseInt(e.target.value, 10) || 0);
+    var match = (cmData.packages[cmState.channel] || []).find(function (p) { return p.credits === cmState.credits; });
+    cmState.pkg = match ? match.label : null;
+    cmRenderPackages();
+    cmRenderTotal();
+  });
+
+  document.getElementById("cmProceedBtn").addEventListener("click", function () {
+    $("cmPayPanel").hidden = false;
+    $("cmPayForm").style.display = "";
+    $("cmPayAlert").className = "ec-alert";
+    $("cmPayPanel").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  document.getElementById("cmPayBtn").addEventListener("click", function () {
+    if (!$("cmAccept").checked) { cmPayAlert("err", "Tafadhali kubali masharti ya matumizi."); return; }
+    var phoneEl = $("cmPayPhone");
+    if (phoneEl && !phoneEl.hidden && (phoneEl.closest && !phoneEl.closest("[hidden]")) && phoneEl.value.replace(/\D/g, "").length < 9) {
+      cmPayAlert("err", "Weka namba ya simu sahihi."); return;
+    }
+    $("cmPayBtn").disabled = true;
+    var body = new URLSearchParams();
+    body.append("channel", cmState.channel);
+    body.append("credit_count", cmState.credits);
+    body.append("package", cmState.pkg || "");
+    body.append("phone", phoneEl ? phoneEl.value.trim() : "");
+    body.append("accept_terms", "1");
+    fetch("/api/method/orion_card.api.payments.create_purchase", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "X-Frappe-CSRF-Token": "{{ csrf_token }}" },
+      body: body
+    }).then(function (r) { return r.json(); }).then(function (r) {
+      var msg = r.message || {};
+      if (r.exc || msg.error) {
+        var errText = "";
+        try { errText = JSON.parse(r._server_messages || "[]")[0] || ""; errText = JSON.parse(errText).message || errText; } catch (x) {}
+        cmPayAlert("err", errText || "Hitilafu. Jaribu tena.");
+        $("cmPayBtn").disabled = false;
+        return;
+      }
+      $("cmPayForm").style.display = "none";
+      if (msg.manual) {
+        cmPayAlert("info", "Kumbukumbu: " + msg.purchase + "\n\n" + msg.message);
+        $("cmPayAlert").style.whiteSpace = "pre-line";
+      } else {
+        cmPayAlert("info", msg.message);
+        cmPoll(msg.purchase, 0);
+      }
+      $("cmPayBtn").disabled = false;
+    }).catch(function () {
+      cmPayAlert("err", "Hitilafu ya mtandao. Jaribu tena.");
+      $("cmPayBtn").disabled = false;
+    });
+  });
 })();
 </script>
 </body>

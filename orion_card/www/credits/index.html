@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css">
-<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_site.css?v={{ asset_version('css/orioncard_site.css') }}">
+<link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css?v={{ asset_version('css/orioncard_dashboard.css') }}">
 </head>
 <body class="ocd-body">
 
@@ -57,6 +57,12 @@
           <a class="ocd-breadcrumb" href="/dashboard">← Matukio yangu</a>
           <h1 class="ocd-page-title" data-i18n="credits.title">Nunua Credits</h1>
         </div>
+      </div>
+      <div class="ocd-topbar-right">
+        <button class="ocd-theme-toggle" id="themeToggle" title="Badilisha mandhari" aria-label="Badilisha mandhari">
+          <svg id="themeIconSun" viewBox="0 0 20 20" fill="currentColor" hidden><path d="M10 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm4.22 2.22a1 1 0 0 1 1.42 1.42l-.71.7a1 1 0 1 1-1.41-1.41l.7-.71ZM18 9a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2h1Zm-2.22 5.56a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 1 1 1.42-1.42l.7.71ZM11 17a1 1 0 1 1-2 0v-1a1 1 0 1 1 2 0v1Zm-5.56-2.22a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7ZM3 11a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2H3Zm2.22-5.56.7.71A1 1 0 1 1 4.51 7.56l-.71-.7a1 1 0 0 1 1.42-1.42ZM10 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+          <svg id="themeIconMoon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 0 1 6.707 2.707a8.001 8.001 0 1 0 10.586 10.586Z"/></svg>
+        </button>
       </div>
     </header>
 
@@ -212,6 +218,24 @@
   menuBtn.addEventListener("click", openSidebar);
   closeBtn.addEventListener("click", closeSidebar);
   overlay.addEventListener("click", closeSidebar);
+
+  /* ── Theme toggle ── */
+  (function () {
+    var saved = localStorage.getItem("ocd-theme") || "dark";
+    var sun = document.getElementById("themeIconSun");
+    var moon = document.getElementById("themeIconMoon");
+    function applyTheme(t) {
+      document.body.classList.toggle("ocd-body--dark", t === "dark");
+      sun.hidden = t === "dark";
+      moon.hidden = t !== "dark";
+    }
+    applyTheme(saved);
+    document.getElementById("themeToggle").addEventListener("click", function () {
+      var next = document.body.classList.contains("ocd-body--dark") ? "light" : "dark";
+      localStorage.setItem("ocd-theme", next);
+      applyTheme(next);
+    });
+  })();
 })();
 </script>
 <script>
