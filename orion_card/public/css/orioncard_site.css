@@ -918,3 +918,250 @@ body.ec-body--dark .ec-footer p { color: rgba(255,255,255,.4); }
 body.ec-body--dark .ec-footer nav a:hover { color: #fff; }
 body.ec-body--dark .ec-footer-legal { border-color: rgba(255,255,255,.07); color: rgba(255,255,255,.3); }
 body.ec-body--dark .ec-footer-social a:hover { color: #a3e635; }
+
+/* ================================================================
+   ANIMATIONS & UI/UX ENHANCEMENTS
+   ================================================================ */
+
+/* ── Keyframes ── */
+@keyframes ec-fadein-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ec-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes ec-slidein-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes ec-slidein-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes ec-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes ec-bob2 {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%       { transform: translateY(-6px) rotate(2deg); }
+}
+@keyframes ec-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes ec-pulse-ring {
+  0%   { transform: scale(1); opacity: .5; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes ec-progress-fill {
+  from { width: 0; }
+  to   { width: 60%; }
+}
+@keyframes ec-count-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ── Reduced motion: kill all ── */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], .ec-hero-badge, .ec-hero-badge2,
+  .ec-step-card, .ec-icon-card, .ec-feature-copy, .ec-feat-panel,
+  .ec-cta, .ec-section-head { animation: none !important; transition: none !important; }
+}
+
+/* ── Scroll-reveal base ── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1);
+}
+[data-reveal="left"]  { transform: translateX(-36px); }
+[data-reveal="right"] { transform: translateX(36px); }
+[data-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translate(0) !important;
+}
+
+/* stagger delays via --delay custom prop set inline */
+[data-reveal][style*="--d:"] { transition-delay: var(--d, 0s); }
+
+/* ── Hero enhancements ── */
+.ec-hero-dark {
+  position: relative;
+  overflow: hidden;
+}
+.ec-hero-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 70% 30%, rgba(163,230,53,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 20% 80%, rgba(47,79,208,.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ec-hero-copy h1 {
+  animation: ec-fadein-up .7s cubic-bezier(.22,1,.36,1) both;
+}
+.ec-hero-copy .ec-hero-tag-pill {
+  animation: ec-fadein-up .6s cubic-bezier(.22,1,.36,1) both;
+}
+.ec-hero-copy .ec-lede {
+  animation: ec-fadein-up .7s .12s cubic-bezier(.22,1,.36,1) both;
+}
+.ec-hero-ctas-dark {
+  animation: ec-fadein-up .7s .22s cubic-bezier(.22,1,.36,1) both;
+}
+.ec-hero-note-dark {
+  animation: ec-fadein .8s .35s both;
+}
+.ec-hero-visual {
+  animation: ec-fadein .8s .18s both;
+}
+
+/* Hero photo hover lift */
+.ec-hero-photo {
+  transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s;
+}
+.ec-hero-visual:hover .ec-hero-photo {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 32px 80px rgba(0,0,0,.45);
+}
+
+/* Floating badges */
+.ec-hero-badge {
+  animation: ec-bob 3.5s ease-in-out infinite;
+}
+.ec-hero-badge2 {
+  animation: ec-bob2 4s 1s ease-in-out infinite;
+}
+
+/* Shimmer on headline accent */
+.ec-lime {
+  background: linear-gradient(
+    100deg,
+    #a3e635 0%, #d9f99d 40%, #a3e635 60%, #bef264 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ec-shimmer 3.5s linear infinite;
+}
+
+/* ── Step cards stagger ── */
+.ec-step-card {
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s;
+}
+.ec-step-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.2);
+}
+
+/* ── Icon cards hover ── */
+.ec-icon-card {
+  transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s, border-color .3s;
+}
+.ec-icon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.15);
+  border-color: rgba(163,230,53,.25);
+}
+.ec-icon-card-icon {
+  transition: transform .3s cubic-bezier(.22,1,.36,1), background .3s;
+}
+.ec-icon-card:hover .ec-icon-card-icon {
+  transform: scale(1.12);
+  background: rgba(163,230,53,.15);
+}
+
+/* ── CTA button pulse ── */
+.ec-btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+.ec-btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.15);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.ec-btn-primary:hover::after { opacity: 1; }
+
+/* CTA section button glow */
+.ec-cta .ec-btn-primary {
+  box-shadow: 0 0 0 0 rgba(47,79,208,.4);
+  transition: box-shadow .3s, transform .2s;
+}
+.ec-cta .ec-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(47,79,208,.35);
+}
+
+/* ── FAQ smooth open/close ── */
+.ec-faq details p {
+  overflow: hidden;
+  animation: ec-fadein-up .3s cubic-bezier(.22,1,.36,1) both;
+}
+.ec-faq summary {
+  transition: color .2s;
+}
+.ec-faq summary:hover { color: var(--oc-accent); }
+
+/* ── Feature panel entrance ── */
+.ec-feat-panel svg {
+  transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s;
+  border-radius: 14px;
+}
+.ec-feat-panel:hover svg {
+  transform: perspective(800px) rotateY(-3deg) translateY(-4px);
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+}
+
+/* ── Nav scroll shrink ── */
+.ec-nav.is-scrolled .ec-wrap {
+  min-height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.ec-nav .ec-wrap {
+  transition: min-height .25s, background .25s, box-shadow .25s;
+}
+
+/* ── Section heads ── */
+.ec-eyebrow {
+  position: relative;
+  display: inline-block;
+}
+.ec-eyebrow::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--oc-accent), transparent);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .5s .2s cubic-bezier(.22,1,.36,1);
+}
+[data-reveal].is-visible .ec-eyebrow::after,
+.ec-section-head.is-visible .ec-eyebrow::after {
+  transform: scaleX(1);
+}
+
+/* ── Stat counter badge pop ── */
+.ec-hero-badge.did-pop strong,
+.ec-hero-badge2.did-pop strong {
+  animation: ec-count-pop .4s cubic-bezier(.22,1,.36,1);
+}
+
+/* ── Progress bar live animation ── */
+.ec-feat-panel.is-visible rect[fill="url(#progGrad)"] {
+  animation: ec-progress-fill 1.4s .4s cubic-bezier(.22,1,.36,1) both;
+}
