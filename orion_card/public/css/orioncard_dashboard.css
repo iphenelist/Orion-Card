@@ -1094,6 +1094,10 @@
 /* ── Delete action button variant ── */
 .ocd-action-btn--del:hover { background: #ef4444; border-color: #ef4444; color: #fff; }
 
+/* ── Individual send button variants ── */
+.ocd-action-btn--wa:hover  { background: #25d366; border-color: #25d366; color: #fff; }
+.ocd-action-btn--sms:hover { background: #2563eb; border-color: #2563eb; color: #fff; }
+
 /* ── Tab panel margins reset ── */
 #tab-details .ocd-panel,
 #tab-contributors .ocd-panel { margin-left: 0; margin-right: 0; }
@@ -1488,6 +1492,8 @@ body.ocd-body--dark .ocd-action-btn--del:hover {
   border-color: #ef4444;
   color: #fff;
 }
+body.ocd-body--dark .ocd-action-btn--wa:hover  { background: #25d366; border-color: #25d366; color: #fff; }
+body.ocd-body--dark .ocd-action-btn--sms:hover { background: #2563eb; border-color: #2563eb; color: #fff; }
 
 /* ── Bulk action row ── */
 body.ocd-body--dark .ocd-btn-action {

@@ -250,6 +250,20 @@
                     data-cardtype="{{ c.card_type or 'SINGLE' }}" title="Hariri">
                     <svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/></svg>
                   </button>
+                  {% if c.guest_code %}
+                  <button class="ocd-action-btn ocd-action-btn--wa ocd-send-wa"
+                    data-row="{{ c.name }}" data-guestcode="{{ c.guest_code }}"
+                    data-name="{{ c.contributor_name }}" data-phone="{{ c.phone or '' }}"
+                    title="Tuma WhatsApp">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.7 4.3 3.8 1.6.7 2.2.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.5-.3Z" transform="scale(0.833) translate(1,1)"/></svg>
+                  </button>
+                  <button class="ocd-action-btn ocd-action-btn--sms ocd-send-sms"
+                    data-row="{{ c.name }}" data-guestcode="{{ c.guest_code }}"
+                    data-name="{{ c.contributor_name }}" data-phone="{{ c.phone or '' }}"
+                    title="Tuma SMS">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293l-2.414 2.414A.5.5 0 0 1 .5 17.207V5Z" clip-rule="evenodd"/></svg>
+                  </button>
+                  {% endif %}
                   <button class="ocd-action-btn ocd-action-btn--del" data-row="{{ c.name }}" title="Futa">
                     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg>
                   </button>
@@ -871,6 +885,40 @@
         });
       });
     }
+  });
+
+  /* ── Individual send (WhatsApp / SMS) ── */
+  function sendSingle(method, channel, btn) {
+    var name = btn.dataset.name || "?";
+    var phone = btn.dataset.phone || "";
+    var guestCode = btn.dataset.guestcode;
+    var label = channel + " → " + name + (phone ? " (" + phone + ")" : "");
+    if (!confirm("Tuma " + label + "?")) return;
+    btn.disabled = true;
+    api(method, { occasion_name: OCCASION, guest_code: guestCode }, function (err, res) {
+      btn.disabled = false;
+      if (err) { alert("Hitilafu: " + (err.message || "Imeshindwa.")); return; }
+      var row = document.getElementById("row-" + btn.dataset.row);
+      if (row) {
+        var flash = document.createElement("span");
+        flash.textContent = " ✓";
+        flash.style.cssText = "color:var(--oc-green,#16a34a);font-weight:600;font-size:12px";
+        btn.parentNode.appendChild(flash);
+        setTimeout(function () { flash.remove(); }, 3000);
+      }
+    });
+  }
+
+  document.querySelectorAll(".ocd-send-wa").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      sendSingle("orion_card.api.whatsapp.send_single", "WhatsApp", btn);
+    });
+  });
+
+  document.querySelectorAll(".ocd-send-sms").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      sendSingle("orion_card.api.sms.send_single", "SMS", btn);
+    });
   });
 
   /* ── Bulk actions ── */
