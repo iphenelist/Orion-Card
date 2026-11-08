@@ -1484,6 +1484,20 @@
   cursor: not-allowed;
 }
 
+/* ── Occasion name link ── */
+.ocd-occ-name-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: fit-content;
+}
+.ocd-occ-name-link:hover .ocd-occ-name {
+  color: #6c5ce7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ── Occasions list card thumbnail ── */
 .ocd-th-preview {
   width: 72px;

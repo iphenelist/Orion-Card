@@ -181,8 +181,10 @@
                 {% endif %}
               </td>
               <td class="ocd-td-name">
-                <span class="ocd-occ-name">{{ occ.couple_names or occ.name }}</span>
-                <span class="ocd-occ-id">{{ occ.name }}</span>
+                <a class="ocd-occ-name-link" href="/my-occasion?name={{ occ.name | urlencode }}">
+                  <span class="ocd-occ-name">{{ occ.couple_names or occ.name }}</span>
+                  <span class="ocd-occ-id">{{ occ.name }}</span>
+                </a>
               </td>
               <td>
                 {% if occ.occasion_date %}
