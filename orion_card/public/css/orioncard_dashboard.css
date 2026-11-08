@@ -1484,6 +1484,66 @@
   cursor: not-allowed;
 }
 
+/* ── Occasions list card thumbnail ── */
+.ocd-th-preview {
+  width: 72px;
+  padding-right: 0 !important;
+}
+.ocd-td-preview {
+  width: 72px;
+  padding: 8px 8px 8px 16px !important;
+  vertical-align: middle;
+}
+.ocd-card-thumb-link {
+  display: block;
+  position: relative;
+  width: 56px;
+  height: 76px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+  transition: box-shadow .15s, transform .15s;
+}
+.ocd-card-thumb-link:hover {
+  box-shadow: 0 6px 18px rgba(108,92,231,.35), 0 0 0 2px #6c5ce7;
+  transform: scale(1.05);
+}
+.ocd-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ocd-card-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(108,92,231,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.ocd-card-thumb-link:hover .ocd-card-thumb-overlay { opacity: 1; }
+
+.ocd-card-thumb-empty {
+  width: 56px;
+  height: 76px;
+  border-radius: 6px;
+  border: 1.5px dashed var(--oc-line, #e4e6ea);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--oc-muted, #9ca3af);
+  background: var(--oc-band, #f9fafb);
+}
+
+@media (max-width: 600px) {
+  .ocd-th-preview, .ocd-td-preview { display: none; }
+}
+
 /* ── Table row fade-in ── */
 @keyframes ocd-row-in {
   from { opacity: 0; transform: translateX(-6px); }

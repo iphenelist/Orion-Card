@@ -13,7 +13,7 @@ def get_context(context):
 
 	occasions = frappe.get_list(
 		"Occasion",
-		fields=["name", "couple_names", "occasion_date", "occasion_time", "venue_name", "status"],
+		fields=["name", "couple_names", "occasion_date", "occasion_time", "venue_name", "status", "card_design"],
 		order_by="occasion_date desc",
 		ignore_permissions=False,
 	)

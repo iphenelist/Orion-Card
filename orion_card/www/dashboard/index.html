@@ -153,6 +153,7 @@
         <table class="ocd-table">
           <thead>
             <tr>
+              <th class="ocd-th-preview" aria-label="Kadi"></th>
               <th>Jina la Tukio</th>
               <th>Tarehe</th>
               <th>Mahali</th>
@@ -163,6 +164,22 @@
           <tbody>
             {% for occ in occasions %}
             <tr>
+              <td class="ocd-td-preview">
+                {% if occ.card_design %}
+                <a href="/my-occasion?name={{ occ.name | urlencode }}" class="ocd-card-thumb-link" title="Angalia kadi ya {{ occ.couple_names or occ.name }}">
+                  <img class="ocd-card-thumb" src="{{ occ.card_design }}" alt="Kadi ya {{ occ.couple_names or occ.name }}" loading="lazy">
+                  <span class="ocd-card-thumb-overlay">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/></svg>
+                  </span>
+                </a>
+                {% else %}
+                <div class="ocd-card-thumb-empty" title="Hakuna kadi bado">
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+                    <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v4A1.5 1.5 0 0 0 2.5 10h15A1.5 1.5 0 0 0 19 8.5v-4A1.5 1.5 0 0 0 17.5 3h-15ZM1 13.5A1.5 1.5 0 0 1 2.5 12h15a1.5 1.5 0 0 1 1.5 1.5v.5H1v-.5ZM1 16h18v.5A1.5 1.5 0 0 1 17.5 18h-15A1.5 1.5 0 0 1 1 16.5V16Z"/>
+                  </svg>
+                </div>
+                {% endif %}
+              </td>
               <td class="ocd-td-name">
                 <span class="ocd-occ-name">{{ occ.couple_names or occ.name }}</span>
                 <span class="ocd-occ-id">{{ occ.name }}</span>
