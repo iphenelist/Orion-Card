@@ -695,9 +695,23 @@
     });
   });
 
-  /* ── Modal helpers ── */
-  function openModal(id) { document.getElementById(id).hidden = false; document.body.style.overflow = "hidden"; }
-  function closeModal(id) { document.getElementById(id).hidden = true; document.body.style.overflow = ""; }
+  /* ── Modal helpers (animated) ── */
+  function openModal(id) {
+    var el = document.getElementById(id);
+    el.hidden = false;
+    el.classList.remove("ocd-modal--closing");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(id) {
+    var el = document.getElementById(id);
+    el.classList.add("ocd-modal--closing");
+    el.addEventListener("animationend", function handler() {
+      el.removeEventListener("animationend", handler);
+      el.hidden = true;
+      el.classList.remove("ocd-modal--closing");
+    });
+    document.body.style.overflow = "";
+  }
   document.querySelectorAll("[data-close]").forEach(function (btn) {
     btn.addEventListener("click", function () { closeModal(btn.dataset.close); });
   });
@@ -800,25 +814,91 @@
     });
   }
 
-  /* ── Contributor search ── */
+  /* ── Contributor search + pagination ── */
+  var PAGE_SIZE = 50;
+  var currentPage = 1;
   var contribSearchEl = document.getElementById("contribSearch");
   var contribSearchClear = document.getElementById("contribSearchClear");
   var contribsCountEl = document.getElementById("contribsCount");
-  var totalContribs = document.querySelectorAll("#contributorsBody tr[id^='row-']").length;
+  var allRows = Array.prototype.slice.call(document.querySelectorAll("#contributorsBody tr[id^='row-']"));
+  var totalContribs = allRows.length;
+
+  function getFilteredRows() {
+    var q = contribSearchEl ? contribSearchEl.value.toLowerCase().trim() : "";
+    return q ? allRows.filter(function (r) { return r.textContent.toLowerCase().includes(q); }) : allRows;
+  }
+
+  function renderPage(page) {
+    var filtered = getFilteredRows();
+    var total = filtered.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, page), totalPages);
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var end = start + PAGE_SIZE;
+
+    // Show/hide rows
+    allRows.forEach(function (r) { r.style.display = "none"; r.classList.remove("ocd-row-enter"); });
+    filtered.forEach(function (r, i) {
+      if (i >= start && i < end) {
+        r.style.display = "";
+        // stagger animation
+        r.classList.add("ocd-row-enter");
+        r.style.animationDelay = (i - start) * 12 + "ms";
+      }
+    });
+
+    var noResults = document.getElementById("noSearchResults");
+    if (noResults) noResults.hidden = total > 0;
+    if (contribsCountEl) contribsCountEl.textContent = total + (total < totalContribs ? "/" + totalContribs : "");
+
+    // Build/update pagination bar
+    var tableWrap = document.getElementById("contributorsTable");
+    var panel = tableWrap ? tableWrap.closest(".ocd-panel") : null;
+    var bar = document.getElementById("contribPaginationBar");
+    if (!bar && panel) {
+      bar = document.createElement("div");
+      bar.id = "contribPaginationBar";
+      bar.className = "ocd-pagination";
+      panel.appendChild(bar);
+    }
+    if (bar) {
+      if (totalContribs <= PAGE_SIZE && total <= PAGE_SIZE) {
+        bar.hidden = true;
+      } else {
+        bar.hidden = false;
+        var showing = Math.min(end, total) - start;
+        var info = "Inaonyesha " + (start + 1) + "–" + Math.min(end, total) + " kati ya " + total;
+        // page buttons: prev, up to 5 page numbers, next
+        var btns = "";
+        btns += '<button class="ocd-page-btn" id="cpPrev" ' + (currentPage === 1 ? "disabled" : "") + '>&#8249;</button>';
+        var pStart = Math.max(1, currentPage - 2);
+        var pEnd = Math.min(totalPages, pStart + 4);
+        pStart = Math.max(1, pEnd - 4);
+        for (var p = pStart; p <= pEnd; p++) {
+          btns += '<button class="ocd-page-btn' + (p === currentPage ? " ocd-page-btn--active" : "") + '" data-page="' + p + '">' + p + '</button>';
+        }
+        btns += '<button class="ocd-page-btn" id="cpNext" ' + (currentPage === totalPages ? "disabled" : "") + '>&#8250;</button>';
+        bar.innerHTML = '<span class="ocd-pagination-info">' + info + '</span><div class="ocd-pagination-btns">' + btns + '</div>';
+
+        bar.querySelectorAll("[data-page]").forEach(function (b) {
+          b.addEventListener("click", function () { renderPage(parseInt(b.dataset.page)); });
+        });
+        var prev = document.getElementById("cpPrev");
+        var next = document.getElementById("cpNext");
+        if (prev) prev.addEventListener("click", function () { renderPage(currentPage - 1); });
+        if (next) next.addEventListener("click", function () { renderPage(currentPage + 1); });
+      }
+    }
+  }
+
+  if (allRows.length) renderPage(1);
+
   if (contribSearchEl) {
     contribSearchEl.addEventListener("input", function () {
       var q = contribSearchEl.value.toLowerCase().trim();
       contribSearchClear.hidden = !q;
-      var rows = document.querySelectorAll("#contributorsBody tr[id^='row-']");
-      var visible = 0;
-      rows.forEach(function (row) {
-        var match = !q || row.textContent.toLowerCase().includes(q);
-        row.style.display = match ? "" : "none";
-        if (match) visible++;
-      });
-      if (contribsCountEl) contribsCountEl.textContent = q ? visible + "/" + totalContribs : totalContribs;
-      var noResults = document.getElementById("noSearchResults");
-      if (noResults) noResults.hidden = !q || visible > 0;
+      currentPage = 1;
+      renderPage(1);
     });
     contribSearchClear.addEventListener("click", function () {
       contribSearchEl.value = "";

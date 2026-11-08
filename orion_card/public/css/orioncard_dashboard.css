@@ -113,22 +113,52 @@
   text-decoration: none;
   font-size: 13.5px;
   font-weight: 500;
-  transition: background .15s, color .15s;
+  transition: background .18s, color .18s, transform .15s, box-shadow .18s;
+  position: relative;
+  overflow: hidden;
+}
+
+.ocd-nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #6c5ce7;
+  transform: scaleY(0);
+  transition: transform .18s cubic-bezier(.4,0,.2,1);
 }
 
 .ocd-nav-item:hover {
   background: var(--ocd-sidebar-hover-bg);
   color: #6c5ce7;
+  transform: translateX(2px);
+}
+
+.ocd-nav-item:hover::before {
+  transform: scaleY(1);
 }
 
 .ocd-nav-active {
   background: var(--ocd-sidebar-active-bg);
   color: var(--ocd-sidebar-active-fg);
+  box-shadow: 0 4px 14px rgba(108,92,231,.35);
+}
+
+.ocd-nav-active::before {
+  transform: scaleY(0);
 }
 
 .ocd-nav-active:hover {
   background: var(--ocd-sidebar-active-bg);
   color: var(--ocd-sidebar-active-fg);
+  transform: none;
+}
+
+.ocd-nav-active:hover::before {
+  transform: scaleY(0);
 }
 
 .ocd-nav-icon {
@@ -136,6 +166,12 @@
   height: 18px;
   flex-shrink: 0;
   opacity: .8;
+  transition: transform .18s, opacity .18s;
+}
+
+.ocd-nav-item:hover .ocd-nav-icon {
+  transform: scale(1.15);
+  opacity: 1;
 }
 
 /* ── Sidebar footer (user) ── */
@@ -318,9 +354,11 @@
   text-decoration: none;
   cursor: pointer;
   border: none;
-  transition: background .15s, box-shadow .15s;
+  transition: background .15s, box-shadow .15s, transform .12s;
   white-space: nowrap;
 }
+
+.ocd-btn:active { transform: scale(.97); }
 
 .ocd-btn svg {
   width: 16px;
@@ -331,11 +369,14 @@
 .ocd-btn-primary {
   background: #6c5ce7;
   color: #fff;
+  box-shadow: 0 4px 14px rgba(108,92,231,.35);
 }
 
 .ocd-btn-primary:hover {
   background: #5b4bd4;
   color: #fff;
+  box-shadow: 0 6px 20px rgba(108,92,231,.45);
+  transform: translateY(-1px);
 }
 
 .ocd-btn-ghost {
@@ -480,8 +521,13 @@
   border-bottom: none;
 }
 
+.ocd-table tbody tr {
+  transition: background .15s, box-shadow .15s;
+}
+
 .ocd-table tbody tr:hover {
-  background: #fafbfc;
+  background: #f5f3ff;
+  box-shadow: inset 3px 0 0 #6c5ce7;
 }
 
 .ocd-td-name {
@@ -540,9 +586,11 @@
   color: var(--oc-text, #2b2f36);
   background: var(--oc-band, #f5f6f8);
   border: 1px solid var(--oc-line, #e4e6ea);
-  transition: background .12s, color .12s;
+  transition: background .15s, color .15s, transform .12s, box-shadow .15s, border-color .15s;
   margin-left: 6px;
 }
+
+.ocd-action-btn:active { transform: scale(.95); }
 
 .ocd-action-btn svg {
   width: 14px;
@@ -949,6 +997,12 @@
 
 .ocd-mono { font-family: monospace; font-size: 13px; }
 
+/* ── Modal animations ── */
+@keyframes ocd-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ocd-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ocd-modal-in  { from { opacity: 0; transform: scale(.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes ocd-modal-out { from { opacity: 1; transform: scale(1)   translateY(0);    } to { opacity: 0; transform: scale(.92) translateY(10px); } }
+
 /* ── Modal ── */
 .ocd-modal {
   position: fixed;
@@ -959,9 +1013,15 @@
   justify-content: center;
   background: rgba(0,0,0,.45);
   padding: 16px;
+  animation: ocd-backdrop-in .2s ease both;
 }
 
 .ocd-modal[hidden] { display: none; }
+
+.ocd-modal.ocd-modal--closing {
+  animation: ocd-backdrop-out .18s ease both;
+  pointer-events: none;
+}
 
 .ocd-modal-box {
   background: var(--oc-paper, #fff);
@@ -971,6 +1031,11 @@
   max-width: 560px;
   max-height: calc(100vh - 32px);
   overflow-y: auto;
+  animation: ocd-modal-in .22s cubic-bezier(.34,1.4,.64,1) both;
+}
+
+.ocd-modal.ocd-modal--closing .ocd-modal-box {
+  animation: ocd-modal-out .18s ease both;
 }
 
 .ocd-modal-box--sm { max-width: 420px; }
@@ -1334,6 +1399,98 @@
 }
 @media (max-width: 520px) {
   .ocd-credits-channels .ec-balances { grid-template-columns: 1fr; }
+}
+
+/* ── Stat tile hover lift ── */
+.ocd-stat-tile {
+  transition: transform .18s, box-shadow .18s;
+}
+.ocd-stat-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(108,92,231,.13);
+}
+
+/* ── Tab content fade ── */
+.ocd-tab-pane {
+  animation: ocd-tab-in .2s ease both;
+}
+@keyframes ocd-tab-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Bulk action buttons lift ── */
+.ocd-btn-action {
+  transition: background .12s, border-color .12s, color .12s, transform .12s, box-shadow .12s;
+}
+.ocd-btn-action:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,.08); }
+.ocd-btn-action:active { transform: scale(.97); }
+
+/* ── Pagination ── */
+.ocd-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid var(--oc-line, #e8edf2);
+  background: var(--oc-band, #f0f2f8);
+  border-radius: 0 0 var(--ocd-radius) var(--ocd-radius);
+  font-size: 13px;
+  color: var(--oc-muted, #9ca3af);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ocd-pagination-info { font-weight: 500; }
+
+.ocd-pagination-btns { display: flex; gap: 4px; align-items: center; }
+
+.ocd-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1.5px solid var(--oc-line, #e8edf2);
+  background: #fff;
+  color: var(--oc-text, #4a5568);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .12s;
+  font-family: inherit;
+}
+
+.ocd-page-btn:hover:not(:disabled) {
+  background: #6c5ce7;
+  border-color: #6c5ce7;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.ocd-page-btn:active:not(:disabled) { transform: scale(.95); }
+
+.ocd-page-btn--active {
+  background: #6c5ce7;
+  border-color: #6c5ce7;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(108,92,231,.3);
+}
+
+.ocd-page-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+/* ── Table row fade-in ── */
+@keyframes ocd-row-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.ocd-row-enter {
+  animation: ocd-row-in .18s ease both;
 }
 
 /* no dark mode */
