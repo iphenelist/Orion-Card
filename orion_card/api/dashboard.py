@@ -114,9 +114,11 @@ def save_gate_settings(name, allow_reentry=0, table_size=None):
 # ── Contributors ────────────────────────────────────────────────────────────
 
 @frappe.whitelist()
-def add_contributor(occasion, contributor_name, phone, card_type="SINGLE"):
+def add_contributor(occasion, contributor_name, phone, card_type="SINGLE",
+                    pledged_amount=0, paid_amount=0):
     _require_occasion_write(occasion)
     from orion_card.orioncard.doctype.occasion.occasion import card_admits
+    from frappe.utils import flt
     card_type = card_type or "SINGLE"
     table_size = frappe.db.get_value("Occasion", occasion, "table_size")
 
@@ -128,6 +130,16 @@ def add_contributor(occasion, contributor_name, phone, card_type="SINGLE"):
     guest_code = str(int(result[0][0] if result else 0) + 1)
     base = frappe.utils.get_url().rstrip("/")
     download_url = f"{base}/invitee/download/occasion-card/{guest_code}"
+
+    pledged = flt(pledged_amount)
+    paid = max(flt(paid_amount), 0)
+    balance = max(pledged - paid, 0)
+    if paid <= 0:
+        payment_status = "Not Paid"
+    elif paid >= pledged:
+        payment_status = "Fully Paid"
+    else:
+        payment_status = "Partially Paid"
 
     # Insert the child row directly — bypasses the parent's validate() so the
     # subscription check (_assert_access_for_new_rows) is never reached.
@@ -141,13 +153,18 @@ def add_contributor(occasion, contributor_name, phone, card_type="SINGLE"):
     child.admits = card_admits(card_type, None, table_size)
     child.guest_code = guest_code
     child.download_url = download_url
+    child.pledged_amount = pledged
+    child.paid_amount = paid
+    child.balance = balance
+    child.payment_status = payment_status
     child.insert(ignore_permissions=True)
 
     return {"status": "ok", "row_name": child.name, "guest_code": guest_code}
 
 
 @frappe.whitelist()
-def update_contributor(occasion, row_name, contributor_name, phone=None, card_type="SINGLE"):
+def update_contributor(occasion, row_name, contributor_name, phone=None, card_type="SINGLE",
+                       pledged_amount=None, paid_amount=None):
     _require_occasion_write(occasion)
     # Verify the row belongs to this occasion before writing — avoids the need
     # to load the full parent doc (which triggers _assert_access_for_new_rows
@@ -155,15 +172,39 @@ def update_contributor(occasion, row_name, contributor_name, phone=None, card_ty
     if not frappe.db.exists("Occasion Contributor", {"name": row_name, "parent": occasion}):
         frappe.throw(_("Contributor not found on this Occasion."))
     from orion_card.orioncard.doctype.occasion.occasion import card_admits
+    from frappe.utils import flt
     card_type = card_type or "SINGLE"
     table_size = frappe.db.get_value("Occasion", occasion, "table_size")
-    frappe.db.set_value("Occasion Contributor", row_name, {
+    vals = {
         "contributor_name": contributor_name,
         "phone": phone or None,
         "card_type": card_type,
         "admits": card_admits(card_type, None, table_size),
-    })
+    }
+    if pledged_amount is not None:
+        pledged = flt(pledged_amount)
+        paid = max(flt(paid_amount), 0) if paid_amount is not None else flt(
+            frappe.db.get_value("Occasion Contributor", row_name, "paid_amount") or 0
+        )
+        vals["pledged_amount"] = pledged
+        vals["paid_amount"] = paid
+        vals["balance"] = max(pledged - paid, 0)
+        if paid <= 0:
+            vals["payment_status"] = "Not Paid"
+        elif paid >= pledged:
+            vals["payment_status"] = "Fully Paid"
+        else:
+            vals["payment_status"] = "Partially Paid"
+    frappe.db.set_value("Occasion Contributor", row_name, vals)
     return {"status": "ok"}
+
+
+@frappe.whitelist()
+def generate_single_card(occasion, row_name):
+    """Generate/regenerate the invitation card for a single contributor row."""
+    _require_occasion_write(occasion)
+    from orion_card.utils.card_composer import compose_single_guest
+    return compose_single_guest(occasion_name=occasion, guest_row_name=row_name)
 
 
 @frappe.whitelist()

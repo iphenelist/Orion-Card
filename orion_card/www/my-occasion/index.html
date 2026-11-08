@@ -247,8 +247,14 @@
                 <td class="ocd-td-actions">
                   <button class="ocd-action-btn ocd-action-btn--edit" data-row="{{ c.name }}"
                     data-name="{{ c.contributor_name }}" data-phone="{{ c.phone or '' }}"
-                    data-cardtype="{{ c.card_type or 'SINGLE' }}" title="Hariri">
+                    data-cardtype="{{ c.card_type or 'SINGLE' }}"
+                    data-pledged="{{ c.pledged_amount or 0 }}" data-paid="{{ c.paid_amount or 0 }}"
+                    title="Hariri">
                     <svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/></svg>
+                  </button>
+                  <button class="ocd-action-btn ocd-action-btn--gen ocd-gen-card" data-row="{{ c.name }}"
+                    data-name="{{ c.contributor_name }}" title="Tengeneza Kadi">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/><path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/></svg>
                   </button>
                   {% if c.guest_code %}
                   <button class="ocd-action-btn ocd-action-btn--wa ocd-send-wa"
@@ -503,6 +509,10 @@
             <option value="VIP">VIP</option>
             <option value="TABLE">TABLE — Meza</option>
           </select>
+        </div>
+        <div class="ocd-form-row ocd-form-row--2">
+          <div><label class="ocd-label">Ahadi (TZS)</label><input class="ocd-input" type="number" name="pledged_amount" id="contribPledged" value="0" min="0"></div>
+          <div><label class="ocd-label">Kilicholipwa (TZS)</label><input class="ocd-input" type="number" name="paid_amount" id="contribPaid" value="0" min="0"></div>
         </div>
       </div>
       <div id="contribAlert" class="ocd-form-alert" hidden style="margin:0 24px 8px"></div>
@@ -804,6 +814,8 @@
       document.getElementById("contribName").value = "";
       document.getElementById("contribPhone").value = "";
       document.getElementById("contribCardType").value = "SINGLE";
+      document.getElementById("contribPledged").value = "0";
+      document.getElementById("contribPaid").value = "0";
       document.getElementById("contribAlert").hidden = true;
       openModal("contribModal");
     });
@@ -843,6 +855,8 @@
       document.getElementById("contribName").value = btn.dataset.name;
       document.getElementById("contribPhone").value = btn.dataset.phone;
       document.getElementById("contribCardType").value = btn.dataset.cardtype;
+      document.getElementById("contribPledged").value = btn.dataset.pledged || "0";
+      document.getElementById("contribPaid").value = btn.dataset.paid || "0";
       document.getElementById("contribAlert").hidden = true;
       openModal("contribModal");
     });
@@ -862,8 +876,8 @@
         ? "orion_card.api.dashboard.update_contributor"
         : "orion_card.api.dashboard.add_contributor";
       var payload = isEdit
-        ? { occasion: OCCASION, row_name: d.row_name, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type }
-        : { occasion: OCCASION, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type };
+        ? { occasion: OCCASION, row_name: d.row_name, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type, pledged_amount: d.pledged_amount || 0, paid_amount: d.paid_amount || 0 }
+        : { occasion: OCCASION, contributor_name: d.contributor_name, phone: d.phone, card_type: d.card_type, pledged_amount: d.pledged_amount || 0, paid_amount: d.paid_amount || 0 };
       api(method, payload, function (err, res) {
         saveBtn.disabled = false; saveBtn.textContent = "Hifadhi";
         if (err) { showAlert(alertEl, err.message || "Hitilafu imetokea.", true); return; }
@@ -918,6 +932,29 @@
   document.querySelectorAll(".ocd-send-sms").forEach(function (btn) {
     btn.addEventListener("click", function () {
       sendSingle("orion_card.api.sms.send_single", "SMS", btn);
+    });
+  });
+
+  /* ── Per-row card generation ── */
+  document.querySelectorAll(".ocd-gen-card").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var name = btn.dataset.name || "?";
+      btn.disabled = true;
+      var orig = btn.innerHTML;
+      btn.textContent = "…";
+      api("orion_card.api.dashboard.generate_single_card",
+        { occasion: OCCASION, row_name: btn.dataset.row },
+        function (err, res) {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+          if (err) { alert("Hitilafu: " + (err.message || "Imeshindwa.")); return; }
+          var flash = document.createElement("span");
+          flash.textContent = " ✓";
+          flash.style.cssText = "color:var(--oc-green,#16a34a);font-weight:600;font-size:12px";
+          btn.parentNode.appendChild(flash);
+          setTimeout(function () { location.reload(); }, 1200);
+        }
+      );
     });
   });
 

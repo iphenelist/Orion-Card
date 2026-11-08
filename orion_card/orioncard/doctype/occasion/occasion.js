@@ -255,11 +255,12 @@ frappe.ui.form.on("Occasion Contributor", {
             frappe.call({
                 method: "orion_card.utils.card_composer.compose_single_guest",
                 args: { occasion_name: frm.doc.name, guest_row_name: row.name },
+                freeze: true,
                 callback(r) {
                     if (!r.exc) {
                         frappe.show_alert({ message: __("Card generated!"), indicator: "green" });
-                        frm.reload_doc();
                     }
+                    frm.reload_doc();
                 }
             });
         });
