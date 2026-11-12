@@ -1,0 +1,152 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-11-12 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "title",
+  "tab_recipients",
+  "message_section",
+  "message",
+  "send_bulk_btn",
+  "recipients_section",
+  "recipients",
+  "tab_settings",
+  "gateway_section",
+  "sms_provider",
+  "sms_api_key",
+  "sms_sender_id",
+  "col_break_settings",
+  "sms_base_url",
+  "test_section",
+  "test_phone",
+  "send_test_btn"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "BSMS-.YYYY.-",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tab_recipients",
+   "fieldtype": "Tab Break",
+   "label": "Recipients"
+  },
+  {
+   "fieldname": "message_section",
+   "fieldtype": "Section Break",
+   "label": "Message"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "label": "SMS Message",
+   "reqd": 1
+  },
+  {
+   "fieldname": "send_bulk_btn",
+   "fieldtype": "Button",
+   "label": "Send to All"
+  },
+  {
+   "fieldname": "recipients_section",
+   "fieldtype": "Section Break",
+   "label": "Recipients"
+  },
+  {
+   "fieldname": "recipients",
+   "fieldtype": "Table",
+   "label": "Recipients",
+   "options": "Bulk SMS Recipient"
+  },
+  {
+   "fieldname": "tab_settings",
+   "fieldtype": "Tab Break",
+   "label": "SMS Settings"
+  },
+  {
+   "fieldname": "gateway_section",
+   "fieldtype": "Section Break",
+   "label": "Gateway Configuration"
+  },
+  {
+   "fieldname": "sms_provider",
+   "fieldtype": "Select",
+   "label": "Provider",
+   "options": "\nRodSMS\nNotify Africa\nCustom"
+  },
+  {
+   "fieldname": "sms_api_key",
+   "fieldtype": "Password",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "sms_sender_id",
+   "fieldtype": "Data",
+   "label": "Sender ID"
+  },
+  {
+   "fieldname": "col_break_settings",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sms_base_url",
+   "fieldtype": "Data",
+   "label": "API Base URL"
+  },
+  {
+   "fieldname": "test_section",
+   "fieldtype": "Section Break",
+   "label": "Test"
+  },
+  {
+   "fieldname": "test_phone",
+   "fieldtype": "Data",
+   "label": "Test Phone Number"
+  },
+  {
+   "fieldname": "send_test_btn",
+   "fieldtype": "Button",
+   "label": "Send Test SMS"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-12 00:00:00",
+ "modified_by": "Administrator",
+ "module": "OrionCard",
+ "name": "Bulk SMS",
+ "naming_series": "BSMS-.YYYY.-",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "title",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "title_field": "title",
+ "track_changes": 1
+}
