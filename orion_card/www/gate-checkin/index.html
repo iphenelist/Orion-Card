@@ -11,14 +11,14 @@
 <link rel="stylesheet" href="/assets/orion_card/css/orioncard_dashboard.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
-/* Gate page — dark theme on top of dashboard tokens */
+/* Gate page — light theme matching dashboard */
 :root {
-  --gate-bg: #0b0f19;
-  --gate-panel: #151b2b;
-  --gate-panel-2: #1c2438;
-  --gate-border: #2a3350;
-  --gate-text: #f3f4f6;
-  --gate-muted: #8b93a7;
+  --gate-bg: #f5f6f8;
+  --gate-panel: #ffffff;
+  --gate-panel-2: #f0f1f3;
+  --gate-border: #e4e6ea;
+  --gate-text: #0d1b3e;
+  --gate-muted: #4b5563;
   --gate-gold: #8b1527;
   --gate-gold-lt: #e63c50;
   --gate-green: #16a34a;
@@ -29,7 +29,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body.gate-body {
-  background: radial-gradient(circle at 50% 0%, #2a0d14 0%, var(--gate-bg) 55%);
+  background: var(--gate-bg);
   font-family: "Inter", system-ui, sans-serif;
   color: var(--gate-text);
   min-height: 100vh;
@@ -63,10 +63,7 @@ body.gate-body {
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -.02em;
-  background: linear-gradient(135deg, #fff, #c9cede);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--gate-text);
   margin-bottom: 4px;
 }
 .gate-header p { color: var(--gate-muted); font-size: 12px; font-weight: 500; }
@@ -113,8 +110,8 @@ body.gate-body {
   margin-bottom: 5px;
 }
 .gate-stat-num--green { color: var(--gate-gold-lt); }
-.gate-stat-num--red   { color: #f87171; }
-.gate-stat-num--orange{ color: #fb923c; }
+.gate-stat-num--red   { color: var(--gate-red); }
+.gate-stat-num--orange{ color: var(--gate-orange); }
 .gate-stat-label { font-size: 10px; color: var(--gate-muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
 
 /* ── Loading indicator ── */
@@ -148,7 +145,7 @@ body.gate-body {
   border-radius: 18px;
   margin-bottom: 14px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  box-shadow: 0 2px 8px rgba(13,27,62,.08);
 }
 .gate-card-header {
   display: flex;
@@ -194,9 +191,9 @@ body.gate-body {
   width: 100%;
   padding: 13px;
   border-radius: 10px;
-  border: 1px solid var(--gate-border);
+  border: 1.5px solid var(--gate-border);
   background: var(--gate-bg);
-  color: #fff;
+  color: var(--gate-text);
   font-size: 22px;
   letter-spacing: .3em;
   text-align: center;
@@ -239,9 +236,9 @@ body.gate-body {
   width: 100%;
   padding: 13px;
   border-radius: 10px;
-  border: 1px solid var(--gate-border);
+  border: 1.5px solid var(--gate-border);
   background: var(--gate-bg);
-  color: #fff;
+  color: var(--gate-text);
   font-size: 20px;
   letter-spacing: .25em;
   text-align: center;
@@ -254,8 +251,8 @@ body.gate-body {
   margin-top: 10px;
   padding: 13px;
   border-radius: 10px;
-  background: var(--gate-panel-2);
-  border: 1px solid var(--gate-border);
+  background: var(--gate-gold);
+  border: none;
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -263,7 +260,7 @@ body.gate-body {
   font-family: inherit;
   transition: background .15s;
 }
-.gate-manual-btn:hover { background: #232c46; }
+.gate-manual-btn:hover { background: var(--gate-gold-lt); }
 .gate-manual-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Back link ── */
