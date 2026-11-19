@@ -189,12 +189,15 @@ jinja = {"methods": ["orion_card.utils.assets.asset_version"]}
 # ---------------
 
 scheduler_events = {
+	"daily": [
+		"orion_card.orioncard.doctype.occasion.occasion.auto_update_occasion_status",
+	],
 	"cron": {
 		"*/5 * * * *": [
 			"orion_card.api.payments.sync_pending_purchases",
 			"orion_card.api.auth.send_pending_welcome_emails",
 		],
-	}
+	},
 }
 
 # Testing

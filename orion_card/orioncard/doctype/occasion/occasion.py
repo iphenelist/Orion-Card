@@ -459,6 +459,34 @@ class Occasion(Document):
         return {day: amount for day, amount in collected.items() if abs(amount) >= 0.01}
 
 
+def auto_update_occasion_status():
+    """Daily scheduler: advance Occasion status based on occasion_date.
+
+    Draft  → Active    when occasion_date == today (event day arrived).
+    Active/Draft → Completed  when occasion_date < today (event has passed).
+    Manual overrides are preserved — statuses are only ever advanced forward.
+    """
+    today = frappe.utils.getdate()
+
+    # On the event day: Draft becomes Active
+    frappe.db.sql(
+        """UPDATE `tabOccasion`
+           SET status = 'Active', modified = NOW(), modified_by = 'Administrator'
+           WHERE status = 'Draft' AND occasion_date = %s""",
+        today,
+    )
+
+    # Day after: Active (or still-Draft) becomes Completed
+    frappe.db.sql(
+        """UPDATE `tabOccasion`
+           SET status = 'Completed', modified = NOW(), modified_by = 'Administrator'
+           WHERE status IN ('Draft', 'Active') AND occasion_date < %s""",
+        today,
+    )
+
+    frappe.db.commit()
+
+
 @frappe.whitelist()
 def get_new_occasion_access() -> bool:
     """Whether the current user may add contributors before the first save."""
