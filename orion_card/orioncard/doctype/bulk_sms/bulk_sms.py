@@ -1,7 +1,12 @@
+import time
+
 import frappe
 import requests
 from frappe.model.document import Document
 from frappe.utils.password import get_decrypted_password
+
+SEND_DELAY = 0.5  # seconds between sends to avoid rate-limiting
+MAX_RETRIES = 2
 
 
 class BulkSMS(Document):
@@ -91,14 +96,25 @@ def send_bulk(docname):
 	for row in doc.recipients:
 		if row.sent:
 			continue
-		try:
-			doc.send_sms(row.phone_no, doc.message)
-			frappe.db.set_value("Bulk SMS Recipient", row.name, "sent", 1)
-			sent_count += 1
-		except Exception as e:
-			errors.append(f"{row.recipient_name} ({row.phone_no}): {e}")
-
-	frappe.db.commit()
+		last_exc = None
+		for attempt in range(1, MAX_RETRIES + 2):  # 1 try + MAX_RETRIES retries
+			try:
+				doc.send_sms(row.phone_no, doc.message)
+				frappe.db.set_value("Bulk SMS Recipient", row.name, "sent", 1)
+				frappe.db.commit()
+				sent_count += 1
+				last_exc = None
+				break
+			except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+				last_exc = e
+				if attempt <= MAX_RETRIES:
+					time.sleep(attempt * SEND_DELAY)
+			except Exception as e:
+				last_exc = e
+				break
+		if last_exc:
+			errors.append(f"{row.recipient_name} ({row.phone_no}): {last_exc}")
+		time.sleep(SEND_DELAY)
 
 	if errors:
 		return {"status": "partial", "sent": sent_count, "errors": errors}
