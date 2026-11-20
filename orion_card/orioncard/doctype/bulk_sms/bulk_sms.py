@@ -4,7 +4,7 @@ from frappe.model.document import Document
 from frappe.utils.password import get_decrypted_password
 
 
-class BulkSms(Document):
+class BulkSMS(Document):
 	def send_sms(self, phone, message):
 		provider = self.sms_provider
 		if not provider:
