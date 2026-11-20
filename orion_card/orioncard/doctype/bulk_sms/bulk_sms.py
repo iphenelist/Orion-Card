@@ -28,14 +28,19 @@ class BulkSMS(Document):
 			frappe.throw(f"Unknown SMS provider: {provider}")
 
 	def _send_via_rodsms(self, phone, message, api_key, sender_id):
-		base_url = self.sms_base_url or "https://api.rodsms.com/sms/v1"
+		base_url = (self.sms_base_url or "https://rodsms.com/api/v1").rstrip("/")
 		resp = requests.post(
-			f"{base_url}/send",
-			json={"api_key": api_key, "sender_id": sender_id, "phone": phone, "message": message},
+			f"{base_url}/messages",
+			headers={"Authorization": f"Bearer {api_key}"},
+			json={"recipient": phone, "sender_id": sender_id, "message": message},
 			timeout=30,
 		)
 		resp.raise_for_status()
-		return resp.json()
+		result = resp.json()
+		if not result.get("success"):
+			err = result.get("error", {})
+			frappe.throw(err.get("message") or str(err))
+		return result
 
 	def _send_via_notify_africa(self, phone, message, api_key, sender_id):
 		resp = requests.post(
