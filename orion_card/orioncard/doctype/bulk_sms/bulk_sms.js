@@ -1,5 +1,6 @@
 frappe.ui.form.on("Bulk SMS", {
 	refresh(frm) {
+		update_sms_counter(frm);
 		frm.fields_dict.recipients.grid.add_custom_button(__("Send to All"), function () {
 			send_bulk(frm);
 		});
@@ -9,6 +10,10 @@ frappe.ui.form.on("Bulk SMS", {
 		frm.fields_dict.recipients.grid.add_custom_button(__("Download Template"), function () {
 			download_csv_template();
 		});
+	},
+
+	message(frm) {
+		update_sms_counter(frm);
 	},
 
 	send_bulk_btn(frm) {
@@ -62,6 +67,30 @@ frappe.ui.form.on("Bulk SMS Recipient", {
 		});
 	},
 });
+
+function update_sms_counter(frm) {
+	const SINGLE_LIMIT = 160;
+	const MULTI_LIMIT = 153;
+	const field_wrapper = frm.fields_dict.message.$wrapper;
+	const text = frm.doc.message || "";
+	const len = text.length;
+	const parts = len <= SINGLE_LIMIT ? 1 : Math.ceil(len / MULTI_LIMIT);
+	const remaining = parts === 1 ? SINGLE_LIMIT - len : MULTI_LIMIT * parts - len;
+	const over = len > SINGLE_LIMIT;
+
+	let $counter = field_wrapper.find(".sms-char-counter");
+	if (!$counter.length) {
+		$counter = $('<div class="sms-char-counter" style="margin-top:4px;font-size:12px;"></div>');
+		field_wrapper.find(".frappe-control").append($counter);
+	}
+
+	const color = over ? (remaining < 10 ? "#e53e3e" : "#d97706") : "#718096";
+	const label = over
+		? __("{0} chars · {1} SMS parts · {2} remaining in part", [len, parts, remaining])
+		: __("{0} / {1} chars", [len, SINGLE_LIMIT]);
+
+	$counter.css("color", color).text(label);
+}
 
 function upload_recipients_csv(frm) {
 	const input = document.createElement("input");
