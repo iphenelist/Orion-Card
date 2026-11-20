@@ -5,6 +5,9 @@ import requests
 from frappe.model.document import Document
 from frappe.utils.password import get_decrypted_password
 
+from orion_card.api.sms import RODSMS_ERRORS
+from orion_card.utils.phone import normalize_phone
+
 SEND_DELAY = 0.5  # seconds between sends to avoid rate-limiting
 MAX_RETRIES = 2
 
@@ -15,8 +18,13 @@ class BulkSMS(Document):
 		if not provider:
 			frappe.throw("Please configure an SMS provider in the SMS Settings tab.")
 
-		api_key = get_decrypted_password("Bulk SMS", self.name, "sms_api_key") or ""
-		sender_id = self.sms_sender_id or ""
+		api_key = (get_decrypted_password("Bulk SMS", self.name, "sms_api_key") or "").strip()
+		sender_id = (self.sms_sender_id or "").strip()
+
+		if not api_key:
+			frappe.throw("API Key is not set in the SMS Settings tab.")
+		if not sender_id:
+			frappe.throw("Sender ID is not set in the SMS Settings tab.")
 
 		if provider == "RodSMS":
 			return self._send_via_rodsms(phone, message, api_key, sender_id)
@@ -28,32 +36,53 @@ class BulkSMS(Document):
 			frappe.throw(f"Unknown SMS provider: {provider}")
 
 	def _send_via_rodsms(self, phone, message, api_key, sender_id):
+		recipient = normalize_phone(phone)
 		base_url = (self.sms_base_url or "https://rodsms.com/api/v1").rstrip("/")
-		resp = requests.post(
-			f"{base_url}/messages",
-			headers={"Authorization": f"Bearer {api_key}"},
-			json={"recipient": phone, "sender_id": sender_id, "message": message},
-			timeout=30,
-		)
-		resp.raise_for_status()
-		result = resp.json()
-		if not result.get("success"):
-			err = result.get("error", {})
-			frappe.throw(err.get("message") or str(err))
-		return result
+		try:
+			resp = requests.post(
+				f"{base_url}/messages",
+				headers={
+					"Authorization": f"Bearer {api_key}",
+					"Accept": "application/json",
+				},
+				json={"recipient": recipient, "sender_id": sender_id, "message": message},
+				timeout=30,
+			)
+		except requests.RequestException as e:
+			frappe.log_error(title="Bulk SMS - RodSMS unreachable", message=frappe.get_traceback())
+			frappe.throw(
+				f"Could not reach RodSMS: server closed the connection or did not respond. "
+				f"Check your internet connection or try again later. ({type(e).__name__})",
+				title="RodSMS unreachable",
+			)
+		try:
+			result = resp.json() or {}
+		except ValueError:
+			result = {}
+		if not resp.ok or not result.get("success"):
+			error = result.get("error") or {}
+			code = error.get("code") or str(resp.status_code)
+			detail = error.get("message") or resp.text[:300]
+			hint = RODSMS_ERRORS.get(code, "RodSMS request failed.")
+			frappe.throw(f"{hint} ({code}: {detail})")
+		return result.get("data") or {}
 
 	def _send_via_notify_africa(self, phone, message, api_key, sender_id):
 		resp = requests.post(
-			"https://app.notify.africa/api/send/message/token",
+			"https://api.notify.africa/api/v1/api/messages/send",
+			headers={
+				"Authorization": f"Bearer {api_key}",
+				"Content-Type": "application/json",
+			},
 			json={
-				"to": phone,
+				"phone_number": normalize_phone(phone),
 				"message": message,
 				"sender_id": sender_id,
-				"token": api_key,
 			},
 			timeout=30,
 		)
-		resp.raise_for_status()
+		if not resp.ok:
+			frappe.throw(f"Notify Africa SMS API error ({resp.status_code}): {resp.text}")
 		return resp.json()
 
 	def _send_via_custom(self, phone, message, api_key, sender_id):
