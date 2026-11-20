@@ -69,14 +69,12 @@ frappe.ui.form.on("Bulk SMS Recipient", {
 });
 
 function update_sms_counter(frm) {
-	const SINGLE_LIMIT = 160;
-	const MULTI_LIMIT = 153;
+	const MAX_CHARS = 1000;
 	const field_wrapper = frm.fields_dict.message.$wrapper;
 	const text = frm.doc.message || "";
 	const len = text.length;
-	const parts = len <= SINGLE_LIMIT ? 1 : Math.ceil(len / MULTI_LIMIT);
-	const remaining = parts === 1 ? SINGLE_LIMIT - len : MULTI_LIMIT * parts - len;
-	const over = len > SINGLE_LIMIT;
+	const remaining = MAX_CHARS - len;
+	const over = len > MAX_CHARS;
 
 	let $counter = field_wrapper.find(".sms-char-counter");
 	if (!$counter.length) {
@@ -84,10 +82,10 @@ function update_sms_counter(frm) {
 		field_wrapper.find(".frappe-control").append($counter);
 	}
 
-	const color = over ? (remaining < 10 ? "#e53e3e" : "#d97706") : "#718096";
+	const color = over ? "#e53e3e" : remaining < 50 ? "#d97706" : "#718096";
 	const label = over
-		? __("{0} chars · {1} SMS parts · {2} remaining in part", [len, parts, remaining])
-		: __("{0} / {1} chars", [len, SINGLE_LIMIT]);
+		? __("{0} / {1} chars — exceeds RodSMS limit", [len, MAX_CHARS])
+		: __("{0} / {1} chars", [len, MAX_CHARS]);
 
 	$counter.css("color", color).text(label);
 }

@@ -1,11 +1,11 @@
 import time
 
 import frappe
-import requests
+import httpx
 from frappe.model.document import Document
 from frappe.utils.password import get_decrypted_password
 
-from orion_card.api.sms import RODSMS_ERRORS
+from orion_card.api.sms import RODSMS_DEFAULT_BASE_URL, RODSMS_ERRORS
 from orion_card.utils.phone import normalize_phone
 
 SEND_DELAY = 0.5  # seconds between sends to avoid rate-limiting
@@ -14,10 +14,6 @@ MAX_RETRIES = 2
 
 class BulkSMS(Document):
 	def send_sms(self, phone, message):
-		provider = self.sms_provider
-		if not provider:
-			frappe.throw("Please configure an SMS provider in the SMS Settings tab.")
-
 		api_key = (get_decrypted_password("Bulk SMS", self.name, "sms_api_key") or "").strip()
 		sender_id = (self.sms_sender_id or "").strip()
 
@@ -26,75 +22,43 @@ class BulkSMS(Document):
 		if not sender_id:
 			frappe.throw("Sender ID is not set in the SMS Settings tab.")
 
-		if provider == "RodSMS":
-			return self._send_via_rodsms(phone, message, api_key, sender_id)
-		elif provider == "Notify Africa":
-			return self._send_via_notify_africa(phone, message, api_key, sender_id)
-		elif provider == "Custom":
-			return self._send_via_custom(phone, message, api_key, sender_id)
-		else:
-			frappe.throw(f"Unknown SMS provider: {provider}")
-
-	def _send_via_rodsms(self, phone, message, api_key, sender_id):
 		recipient = normalize_phone(phone)
-		base_url = (self.sms_base_url or "https://rodsms.com/api/v1").rstrip("/")
+		if len(recipient) < 10:
+			frappe.throw(f"Invalid phone number '{phone}'.")
+
+		base_url = (self.sms_base_url or RODSMS_DEFAULT_BASE_URL).rstrip("/")
+
 		try:
-			resp = requests.post(
-				f"{base_url}/messages",
-				headers={
-					"Authorization": f"Bearer {api_key}",
-					"Accept": "application/json",
-				},
-				json={"recipient": recipient, "sender_id": sender_id, "message": message},
-				timeout=30,
-			)
-		except requests.RequestException as e:
+			with httpx.Client(http2=True, timeout=30) as client:
+				resp = client.post(
+					f"{base_url}/messages",
+					headers={
+						"Authorization": f"Bearer {api_key}",
+						"Accept": "application/json",
+					},
+					json={"recipient": recipient, "sender_id": sender_id, "message": message},
+				)
+		except httpx.RequestError as e:
 			frappe.log_error(title="Bulk SMS - RodSMS unreachable", message=frappe.get_traceback())
 			frappe.throw(
 				f"Could not reach RodSMS: server closed the connection or did not respond. "
 				f"Check your internet connection or try again later. ({type(e).__name__})",
 				title="RodSMS unreachable",
 			)
+
 		try:
 			result = resp.json() or {}
 		except ValueError:
 			result = {}
-		if not resp.ok or not result.get("success"):
+
+		if not resp.is_success or not result.get("success"):
 			error = result.get("error") or {}
 			code = error.get("code") or str(resp.status_code)
 			detail = error.get("message") or resp.text[:300]
 			hint = RODSMS_ERRORS.get(code, "RodSMS request failed.")
 			frappe.throw(f"{hint} ({code}: {detail})")
+
 		return result.get("data") or {}
-
-	def _send_via_notify_africa(self, phone, message, api_key, sender_id):
-		resp = requests.post(
-			"https://api.notify.africa/api/v1/api/messages/send",
-			headers={
-				"Authorization": f"Bearer {api_key}",
-				"Content-Type": "application/json",
-			},
-			json={
-				"phone_number": normalize_phone(phone),
-				"message": message,
-				"sender_id": sender_id,
-			},
-			timeout=30,
-		)
-		if not resp.ok:
-			frappe.throw(f"Notify Africa SMS API error ({resp.status_code}): {resp.text}")
-		return resp.json()
-
-	def _send_via_custom(self, phone, message, api_key, sender_id):
-		if not self.sms_base_url:
-			frappe.throw("API Base URL is required for Custom provider.")
-		resp = requests.post(
-			self.sms_base_url,
-			json={"api_key": api_key, "sender_id": sender_id, "phone": phone, "message": message},
-			timeout=30,
-		)
-		resp.raise_for_status()
-		return resp.json()
 
 
 @frappe.whitelist()
@@ -131,7 +95,7 @@ def send_bulk(docname):
 		if row.sent:
 			continue
 		last_exc = None
-		for attempt in range(1, MAX_RETRIES + 2):  # 1 try + MAX_RETRIES retries
+		for attempt in range(1, MAX_RETRIES + 2):
 			try:
 				doc.send_sms(row.phone_no, doc.message)
 				frappe.db.set_value("Bulk SMS Recipient", row.name, "sent", 1)
@@ -139,7 +103,7 @@ def send_bulk(docname):
 				sent_count += 1
 				last_exc = None
 				break
-			except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+			except (httpx.RequestError) as e:
 				last_exc = e
 				if attempt <= MAX_RETRIES:
 					time.sleep(attempt * SEND_DELAY)
