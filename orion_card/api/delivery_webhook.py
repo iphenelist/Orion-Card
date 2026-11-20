@@ -1,11 +1,7 @@
-"""Delivery receipt (DLR) webhooks for SMS providers.
+"""Delivery receipt (DLR) webhook for RodSMS.
 
-Register the URLs in each provider's dashboard:
-  RodSMS:        https://<site>/api/method/orion_card.api.delivery_webhook.rodsms_dlr
-  Notify Africa: https://<site>/api/method/orion_card.api.delivery_webhook.notify_africa_dlr
-
-Both handlers accept GET or POST (providers differ on method) and update the
-Occasion Guest Invite Log row that holds the matching gateway_message_id.
+Register in the RodSMS dashboard:
+  https://<site>/api/method/orion_card.api.delivery_webhook.rodsms_dlr
 """
 
 import frappe
@@ -43,22 +39,3 @@ def rodsms_dlr():
 	return {"ok": True}
 
 
-@frappe.whitelist(allow_guest=True)
-def notify_africa_dlr():
-	"""Handle Notify Africa delivery receipt callback.
-
-	Notify Africa sends a POST with form fields or JSON:
-	  {"message_id": "...", "status": "Delivered|Failed", ...}
-	"""
-	data = frappe.local.form_dict
-	message_id = data.get("message_id") or data.get("id") or ""
-	raw_status = data.get("status") or data.get("delivery_status") or ""
-
-	if not message_id:
-		frappe.response["http_status_code"] = 400
-		return {"error": "missing message_id"}
-
-	status = _normalize_status(raw_status)
-	from orion_card.api.messaging import update_delivery_status
-	update_delivery_status(str(message_id), status)
-	return {"ok": True}

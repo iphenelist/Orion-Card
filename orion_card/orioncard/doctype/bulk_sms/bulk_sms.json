@@ -85,7 +85,7 @@
    "fieldname": "sms_provider",
    "fieldtype": "Select",
    "label": "Provider",
-   "options": "\nRodSMS\nNotify Africa\nCustom"
+   "options": "RodSMS"
   },
   {
    "fieldname": "sms_api_key",
